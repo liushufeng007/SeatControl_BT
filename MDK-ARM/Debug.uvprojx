@@ -1333,6 +1333,16 @@
               <FileType>1</FileType>
               <FilePath>..\Src\Cdd\CddModeM_Cfg.c</FilePath>
             </File>
+            <File>
+              <FileName>CddBT616.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Src\Cdd\CddBT616.c</FilePath>
+            </File>
+            <File>
+              <FileName>CddBT616_Cfg.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Src\Cdd\CddBT616_Cfg.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -1625,6 +1635,11 @@
               <FileName>Iwdt.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\Src\Driverif\Iwdt.c</FilePath>
+            </File>
+            <File>
+              <FileName>uartif.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Src\Driverif\uartif.c</FilePath>
             </File>
           </Files>
         </Group>
