@@ -44,6 +44,7 @@
 char    CPU_RunInfo[400];
 #endif
 
+extern void fdiag_Robin(void);
 extern void can_send_test(void);
 /***********************************************************************
  * @brief       : 
@@ -142,9 +143,9 @@ TASK(DRIVERS_UNSAFE)
         {
 			/*CddTest_Task();*/
             tcan_Task();
-            PowerModeHandler();
-            Scm_SeatControl_App();
-            Scm_PowerDown();
+            //PowerModeHandler();
+            //Scm_SeatControl_App();
+            //Scm_PowerDown();
 			CanNm_UserData_Fun();
         }
     }

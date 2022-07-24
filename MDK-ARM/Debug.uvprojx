@@ -1343,6 +1343,11 @@
               <FileType>1</FileType>
               <FilePath>..\Src\Cdd\CddBT616_Cfg.c</FilePath>
             </File>
+            <File>
+              <FileName>CddLed.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Src\Cdd\CddLed.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -1418,6 +1423,16 @@
           </GroupOption>
           <Files>
             <File>
+              <FileName>CanNm_UserData.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Src\App\CanNm_UserData.c</FilePath>
+            </File>
+            <File>
+              <FileName>ButtonCtrl.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Src\App\ButtonCtrl.c</FilePath>
+            </File>
+            <File>
               <FileName>PowerMgmt.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\Src\App\PowerMgmt.c</FilePath>
@@ -1426,11 +1441,6 @@
               <FileName>Scm_SeatControl.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\Src\App\Scm_SeatControl.c</FilePath>
-            </File>
-            <File>
-              <FileName>CanNm_UserData.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\Src\App\CanNm_UserData.c</FilePath>
             </File>
           </Files>
         </Group>

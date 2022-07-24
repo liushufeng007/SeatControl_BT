@@ -40,7 +40,7 @@ void CanNm_UserData_Fun(void)
 	uint8_t Get_Seat_F_WakeupSrc = 0;
 	uint8_t Get_Seat_FastB_WakeupSrc = 0;
 	uint8_t Get_Seat_FastF_WakeupSrc = 0;
-	uint8_t Get_EcuSpec_WakeupSrc = 0;
+//	uint8_t Get_EcuSpec_WakeupSrc = 0;
 
 	Get_IGN_WakeupSrc =        Ioif_Get_WakeupSrc(IGN_Status);
 	Get_Seatback_B_WakeupSrc = Ioif_Get_WakeupSrc(Seatback_B_Key);

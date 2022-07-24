@@ -6,4 +6,13 @@
 //#define CPU_LOAD_OPEN  0
 
 
+
+
+#define SEAT_CTRL_VARIANT_L  0x55
+#define SEAT_CTRL_VARIANT_R  0xAA
+
+
+#define SEAT_CTRL_VARIANT  SEAT_CTRL_VARIANT_L
+
+
 #endif
