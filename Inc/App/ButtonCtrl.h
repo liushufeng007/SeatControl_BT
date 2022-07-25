@@ -23,7 +23,7 @@ typedef enum
 	BTN_ID_CTRL_HEAD_e,
 	
 	BTN_ID_CTRL_VENTILITION_e,	
-	BTN_ID_CTRL_LEG_e,
+	BTN_ID_CTRL_LED_e,
 	BTN_ID_CTRL_MASSAGE_e,
 }ButtonCtrl_Id_e;
 
@@ -42,6 +42,7 @@ typedef enum
 #define DIRECTION_REAR   ((uint8_t)0xA5)
 #define DIRECTION_STOP   ((uint8_t)0xAF)
 
+#define STOP_BTN_TIMEOUT 30
 
 typedef struct
 {

@@ -34,6 +34,9 @@
 #include "CanNm.h"
 #include "il_par.h"
 #include "CanNm_UserData.h"
+
+#include "uartif.h"
+
 #define CHECK_OS_EVENT(event)               (event) == u16Event
 #define CHECK_OS_MSG(msg)                   (msg) == u16Msg
 
@@ -59,6 +62,7 @@ TASK(BSW_COMM)
         {
             IWDT_Clr();
             NW_Task();
+			Uarif_Task();
 #if (SCM_SEATCONTROL_VARIANT == SCM_L_VARIANT)
 			CanNm_MainTask();
 #endif

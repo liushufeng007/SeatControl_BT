@@ -3,11 +3,11 @@
 
 #include "user_init.h"
 
-#define UARTIF_USE_CHANNEL ((UART_Type *)UART0_BASE)  
+#define UARTIF_USE_CHANNEL ((UART_Type *)UART1_BASE)  
 
-#define UARTIF_TASK_PERIOD          1  /*unit:ms*/
+#define UARTIF_TASK_PERIOD          5  /*unit:ms*/
 
-#define UARTIF_FRAME_COMPLETE_TIME           (5/UARTIF_TASK_PERIOD)
+#define UARTIF_FRAME_COMPLETE_TIME           (20/UARTIF_TASK_PERIOD)
 
 #define UARTIF_DELAY_50MS           (5/UARTIF_TASK_PERIOD)
 

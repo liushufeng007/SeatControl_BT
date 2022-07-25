@@ -23,6 +23,8 @@
 
 #define  BT_Connected()   0
 
+
+#define ID_OFFSET  7
 /*******************************************************************************
 |    Enum Definition
 |******************************************************************************/
@@ -40,11 +42,18 @@ typedef enum
 	
 typedef enum
 {
-	BT616_NONE_KEY = 0,
-	BT616_NONE_FORWARD = 'F',
-	BT616_NONE_BACKWARD= 'B',
-	BT616_NONE_STOP= 'S',
-}CddBT616_KEY_VAL_e;
+	BT616_FRONT_REAR = 0,
+	BT616_ANGLE_BACK ,
+	BT616_RATOTE ,
+	BT616_LEG ,
+	BT616_HEAD ,
+	BT616_TOTAL_ANGLE ,
+	BT616_VENT,
+	BT616_MODE,
+	BT616_MASSAGE,
+	MAX_ID
+}CddBT616_Signal_Id_e;
+
 
 
 /*******************************************************************************
@@ -55,7 +64,6 @@ typedef struct
 	CddBT616_Work_State_e State;
 	Uartif_Msg_Str        txst;
 	uint16_t              Txticks;
-	CddBT616_KEY_VAL_e    Button[3];
 }CddBT616_Main_Ctrl_Str;
 
 /*******************************************************************************
@@ -70,12 +78,9 @@ void CddBT616_init(void);
 
 void CddBT616_Task(void);
 
-CddBT616_KEY_VAL_e CddBT616_Pop_Button(void);
 
-void CddBT616_Set_Pos(uint8_t MotorId,uint8_t Pos);;
-void CddBT616_Set_BatVol(uint8_t bat1_vol,uint8_t bat2_vol);
-void CddBT616_Set_HallFault(uint8_t MotorId,uint8_t fault);
-void CddBT616_Set_LearnFlag(uint8_t MotorId,uint8_t Learn);
+void CddBT616_Set_Signal(CddBT616_Signal_Id_e Id,uint8_t val);
+
 
 #endif
 

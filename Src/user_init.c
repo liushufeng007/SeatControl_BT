@@ -16,6 +16,9 @@
 #include "diag_kwp2k_di_core_mgr.h"
 
 #include "CanNm.h"
+
+#include "CddBT616.h"
+
 void UserInit(void)
 {
 	
@@ -48,6 +51,8 @@ void UserInit(void)
 
 	CanNm_Init();
     DiagColdInit();
+
+	CddBT616_init();
 
 /*	DebugUartInit();*/
 	
