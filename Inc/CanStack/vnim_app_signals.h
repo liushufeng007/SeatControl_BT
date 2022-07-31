@@ -16,9 +16,9 @@
 
 #if(SCM_SEATCONTROL_VARIANT == SCM_R_VARIANT)
 extern BOOLEAN msg_123_missing;
-extern BOOLEAN msg_123_never_recvd;
+extern BOOLEAN msg_DDSS_never_recvd;
 extern BOOLEAN msg_234_missing;
-extern BOOLEAN msg_234_never_recvd;
+extern BOOLEAN msg_VIST_never_recvd;
 extern BOOLEAN msg_3B7_missing;
 extern BOOLEAN msg_3B7_never_recvd;
 extern BOOLEAN msg_458_missing;
@@ -76,8 +76,8 @@ extern uint8_t Get_MsgAlive_Counter(void);
 
 
 /*  RX  MESSAGE NEVER RECEIVED MACROS  */
-#define VNIM_IS_VCU_123_MSG_NEVER_RECVD()      (msg_123_never_recvd)
-#define VNIM_IS_ABM_234_MSG_NEVER_RECVD()      (msg_234_never_recvd)
+#define VNIM_IS_VCU_123_MSG_NEVER_RECVD()      (msg_DDSS_never_recvd)
+#define VNIM_IS_ABM_234_MSG_NEVER_RECVD()      (msg_VIST_never_recvd)
 #define VNIM_IS_IHU_3B7_MSG_NEVER_RECVD()      (msg_3B7_never_recvd)
 #define VNIM_IS_BCM_458_MSG_NEVER_RECVD()      (msg_458_never_recvd)
 

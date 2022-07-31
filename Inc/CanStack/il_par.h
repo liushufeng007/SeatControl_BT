@@ -16,35 +16,32 @@
 /* APP mssage ID 45B tx */
 typedef struct {
 	/* Byte0 */
-	UINT8                      SCM_Reserved0: 6;
-	UINT8                      SCM_HMI_Req: 1;
-	UINT8                      SCM_Reserved1: 1;
+	UINT8                      Pos: 8;
 	/* Byte1 */
-	UINT8                      SCM_PsngrSeatMotoDirection_ForwardBack: 2;
-	UINT8                      SCM_Reserved2: 2;
-	UINT8                      SCM_PsngrSeatMotoDirection_SeatBack: 2;
-	UINT8                      SCM_Reserved3: 2;
+	UINT8                      angle_bacck: 5;//bit0~bit4
+	UINT8                      conference_mode: 2;//bit5~bit6
+	UINT8                      reserved_bit_0: 1;
 	/* Byte2 */
-	UINT8                      SCM_Reserved4: 8;
+	UINT8                      autopilot_mode: 2;
+	UINT8                      reserved_bit_1: 6;
 	/* Byte3 */            
-	UINT8                      SCM_PsngrSeatMotoPosition_ForwardBack: 8;
+	UINT8                      reserved_byte0: 8;
 	/* Byte4 */       
-	UINT8                      SCM_Reserved5: 8;
+	UINT8                      reserved_byte1: 8;
 	/* Byte5 */   
-	UINT8                      SCM_PsngrSeatMotoPosition_SeatBack: 8;
+	UINT8                      reserved_byte2: 8;
 	/* Byte6 */
-	UINT8                      SCM_MsgAliveCounter: 4;
-	UINT8                      SCM_Reserved6: 4;
+	UINT8                      reserved_byte3: 4;
 	/* Byte7 */
-	UINT8                      SCM_Reserved7: 8;
-}_SCM_L_45B_msgType;
+	UINT8                      reserved_byte4: 8;
+}_SCM_L_SCM_msgType;
 
 typedef union {
 	UINT8 byte[8];
-	_SCM_L_45B_msgType	SCM_L_45B_msg;
-}_SCM_L_45B_msg_buf;
+	_SCM_L_SCM_msgType	SCM_L_SCM_msg;
+}_SCM_L_SCM_msg_buf;
 
-extern _SCM_L_45B_msg_buf			        il_tx_SCM_L_45B_msg;
+extern _SCM_L_SCM_msg_buf			        il_tx_SCM_L_SCM_msg;
 
 /* Frame Reception Timeout Not Gain/Loss Callback Function Pointer Type Definition */
 typedef void (* pIL_RX_FRAME_NOT_LOSS_INDICATION)( void );
@@ -77,33 +74,41 @@ enum
 
 /*ID 123 rx*/
 typedef struct {
-	UINT8                       unused0: 8;               /*byte0*/
+	UINT8                       welcome_state1: 2;               /*byte0*/
+	UINT8                       unused0: 6;               /*byte1*/
+	
 	UINT8                       unused1: 8;               /*byte1*/
 	UINT8                       unused2: 8;               /*byte2*/
-	UINT8                       VCU_VehSpdHigh: 8;        /*byte3*/
+	UINT8                       unused2_2: 8;        /*byte3*/
 	UINT8                       unused3: 3;
-	UINT8                       VCU_VehSpdLow: 5;         /*byte4*/
+	UINT8                       unused3_2: 5;         /*byte4*/
 	UINT8                       unused4: 4;               /*byte5*/
-	UINT8                       VCU_VehSpd_VD: 1;
+	UINT8                       unused4_2: 1;
 	UINT8                       unused5: 3;            
 	UINT8                       unused6: 8;               /*byte6*/
 	UINT8                       unused7: 8;               /*byte7*/
-}_VCU_123_msgType;
+}_VCU_DDSS_msgType;
 
 /*ID 234 rx*/
 typedef struct {
 	UINT8                       unused0: 8;               /*byte0*/
-	UINT8                       unused1: 2;
-	UINT8                       ABM_PassengerSeatOccSts: 2;
-	UINT8                       unused2: 4;               /*byte1*/
-	UINT8                       unused30: 8;               /*byte2*/
-	UINT8                       unused31: 8;               /*byte3*/
-
-	UINT8                       unused4: 8;               /*byte4*/
-	UINT8                       unused5: 8;               /*byte5*/
+	UINT8                       unused1: 8;
+	
+	UINT8                       unused1_2: 3;
+	UINT8                       Scene_mode: 2;
+	UINT8                       unused1_3: 2;
+	
+	UINT8                       fatigue: 3;               /*byte3*/
+	UINT8                       unused3_2: 5;
+	
+	UINT8                       pos: 8;               /*byte4*/
+	
+	UINT8                       angle: 5;               /*byte5*/
+	UINT8                       unused5_1: 3;               /*byte5*/
+	
 	UINT8                       unused6: 8;               /*byte6*/
 	UINT8                       unused7: 8;               /*byte7*/
-}_ABM_234_msgType;
+}_ABM_VIST_msgType;
 
 /*ID 3B7 rx*/
 typedef struct {
@@ -142,13 +147,13 @@ typedef struct {
 
 typedef union {
 	UINT8 byte[8];
-	_VCU_123_msgType    VCU_123_msg;
-}_VCU_123_msg_buf;
+	_VCU_DDSS_msgType    VCU_DDSS_msg;
+}_VCU_DDSS_msg_buf;
 
 typedef union {
 	UINT8 byte[8];
-	_ABM_234_msgType     ABM_234_msg;
-}_ABM_234_msg_buf;
+	_ABM_VIST_msgType     ABM_VIST_msg;
+}_ABM_VIST_msg_buf;
 
 typedef union {
 	UINT8 byte[8];
@@ -162,8 +167,8 @@ typedef union {
 
 /* RX frame timeout: frame periodic time*5 */
 
-extern _VCU_123_msg_buf     il_rx_VCU_123_msg;
-extern _ABM_234_msg_buf     il_rx_ABM_234_msg;
+extern _VCU_DDSS_msg_buf     il_rx_VCU_DDSS_msg;
+extern _ABM_VIST_msg_buf     il_rx_ABM_VIST_msg;
 extern _IHU_3B7_msg_buf		il_rx_IHU_3B7_msg;
 extern _BCM_458_msg_buf		il_rx_BCM_458_msg;
 
@@ -171,26 +176,24 @@ extern _BCM_458_msg_buf		il_rx_BCM_458_msg;
 /* APP mssage ID 45A tx */
 typedef struct {
 	/* Byte0 */
-	UINT8                      SCM_Reserved0: 6;
-	UINT8                      SCM_DriverSeatLocalCtrlSwithSts: 2;
+	UINT8                      Pos: 8;
 	/* Byte1 */
-	UINT8                      SCM_DriverSeatMotoDirection_ForwardBack: 2;
-	UINT8                      SCM_Reserved1: 2;
-	UINT8                      SCM_DriverSeatMotoDirection_SeatBack: 2;
-	UINT8                      SCM_Reserved2: 2;
+	UINT8                      angle_bacck: 5;//bit0~bit4
+	UINT8                      conference_mode: 2;//bit5~bit6
+	UINT8                      reserved_bit_0: 1;
 	/* Byte2 */
-	UINT8                      SCM_Reserved3: 8;
+	UINT8                      autopilot_mode: 2;
+	UINT8                      reserved_bit_1: 6;
 	/* Byte3 */            
-	UINT8                      SCM_DriverSeatMotoPosition_ForwardBack: 8;
+	UINT8                      reserved_byte0: 8;
 	/* Byte4 */       
-	UINT8                      SCM_Reserved4: 8;
+	UINT8                      reserved_byte1: 8;
 	/* Byte5 */   
-	UINT8                      SCM_DriverSeatMotoPosition_SeatBack: 8;
+	UINT8                      reserved_byte2: 8;
 	/* Byte6 */
-	UINT8                      SCM_MsgAliveCounter: 4;
-	UINT8                      SCM_Reserved5: 4;
+	UINT8                      reserved_byte3: 4;
 	/* Byte7 */
-	UINT8                      SCM_Reserved6: 8;
+	UINT8                      reserved_byte4: 8;
 }_SCM_L_45A_msgType;
 
 /* NM message ID 663 tx */
@@ -198,21 +201,21 @@ typedef struct {
 	/* Byte0 */
 	UINT8                      NM_SCM_SourceNode_ID: 8;
 	/* Byte1 */
-	UINT8                      NM_SCM_RepeatMsgReq: 1;
+	UINT8                      NM_SCM_RepeatMsgReq: 1;//bit0
 	UINT8                      NM_SCM_Reserved0: 3;
 	UINT8                      NM_SCM_ActiveWakeupBit: 1;
-	UINT8                      NM_SCM_Reserved1: 3;
+	UINT8                      NM_SCM_Reserved1: 3;//bit5~bit7
 	/* Byte2 */
 	UINT8                      NM_SCM_UserData_2: 8;
 	/* Byte3 */            
-	UINT8                      NM_SCM_UserData_1_Ignition_Wakeup: 1;
+	UINT8                      NM_SCM_UserData_1_Ignition_Wakeup: 1;//bit0
 	UINT8                      NM_SCM_UserData_1_Reset_Wakeup: 1;
 	UINT8                      NM_SCM_UserData_1_Network_Wakeup: 1;
 	UINT8                      NM_SCM_UserData_1_ECU_Spec_Wakeup: 1;
 	UINT8                      NM_SCM_UserData_1_Network_Awake: 1;
 	UINT8                      NM_SCM_UserData_1_Ignition_Awake: 1;
 	UINT8                      NM_SCM_UserData_1_Diagnostic_Awake: 1;
-	UINT8                      NM_SCM_UserData_1_Spec_Awake: 1;
+	UINT8                      NM_SCM_UserData_1_Spec_Awake: 1;//bit7
 	/* Byte4 */       
 	UINT8                      NM_SCM_UserData_2_NM_State: 3;
 	UINT8                      NM_SCM_UserData_2_GatewayRequest: 1;

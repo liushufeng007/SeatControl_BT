@@ -146,7 +146,7 @@ void Canif_Init(void)
 	CAN_FilterInitStructure.filterIdStandard = 0X741; 	 
 
     CAN_FilterInitStructure.filterIdSRR = 0X01;
-    CAN_FilterInitStructure.filterIdIDE = 0X00;
+    CAN_FilterInitStructure.filterIdIDE = 0X01;
     CAN_FilterInitStructure.filterIdRTR = 0X00;
 
     CAN_FilterInitStructure.filterMaskIdHigh = 0X761;
@@ -154,36 +154,36 @@ void Canif_Init(void)
     CAN_FilterInitStructure.filterMaskIdSRR = 0X00;
     CAN_FilterInitStructure.filterMaskIdIDE = 0X01;            /* 滤波器掩码,1：该位参与滤波器比较，0：不参与 */
     CAN_FilterInitStructure.filterMaskIdRTR = 0x01;
-    CAN_FilterInitStructure.filterEn = FL_ENABLE;
+    CAN_FilterInitStructure.filterEn = FL_DISABLE;
     FL_CAN_FilterInit(CAN, &CAN_FilterInitStructure, FL_CAN_FILTER1);
 
 
     CAN_FilterInitStructure.filterIdExtend = 0X020;       /* 扩展ID */
 	CAN_FilterInitStructure.filterIdStandard = 0X020; 	 
     CAN_FilterInitStructure.filterIdSRR = 0X01;
-    CAN_FilterInitStructure.filterIdIDE = 0X00;
+    CAN_FilterInitStructure.filterIdIDE = 0X01;
     CAN_FilterInitStructure.filterIdRTR = 0X00;
 
     CAN_FilterInitStructure.filterMaskIdHigh = 0X468;
     CAN_FilterInitStructure.filterMaskIdLow = 0X3FFFF;
     CAN_FilterInitStructure.filterMaskIdSRR = 0X00;
-    CAN_FilterInitStructure.filterMaskIdIDE = 0X01;            /* 滤波器掩码,1：该位参与滤波器比较，0：不参与 */
-    CAN_FilterInitStructure.filterMaskIdRTR = 0x01;
-    CAN_FilterInitStructure.filterEn = FL_ENABLE;
+    CAN_FilterInitStructure.filterMaskIdIDE = 0X00;            /* 滤波器掩码,1：该位参与滤波器比较，0：不参与 */
+    CAN_FilterInitStructure.filterMaskIdRTR = 0x00;
+    CAN_FilterInitStructure.filterEn = FL_DISABLE;
     FL_CAN_FilterInit(CAN, &CAN_FilterInitStructure, FL_CAN_FILTER2);
 
     CAN_FilterInitStructure.filterIdExtend = 0X458;       /* 扩展ID */
 	CAN_FilterInitStructure.filterIdStandard = 0X458; 	 
     CAN_FilterInitStructure.filterIdSRR = 0X01;
-    CAN_FilterInitStructure.filterIdIDE = 0X00;
+    CAN_FilterInitStructure.filterIdIDE = 0X01;
     CAN_FilterInitStructure.filterIdRTR = 0X00;
 
     CAN_FilterInitStructure.filterMaskIdHigh = 0X7FF;
     CAN_FilterInitStructure.filterMaskIdLow = 0X3FFFF;
     CAN_FilterInitStructure.filterMaskIdSRR = 0X00;
-    CAN_FilterInitStructure.filterMaskIdIDE = 0X01;            /* 滤波器掩码,1：该位参与滤波器比较，0：不参与 */
-    CAN_FilterInitStructure.filterMaskIdRTR = 0x01;
-    CAN_FilterInitStructure.filterEn = FL_ENABLE;
+    CAN_FilterInitStructure.filterMaskIdIDE = 0X00;            /* 滤波器掩码,1：该位参与滤波器比较，0：不参与 */
+    CAN_FilterInitStructure.filterMaskIdRTR = 0x00;
+    CAN_FilterInitStructure.filterEn = FL_DISABLE;
     FL_CAN_FilterInit(CAN, &CAN_FilterInitStructure, FL_CAN_FILTER3);
 
 #else
@@ -191,7 +191,7 @@ void Canif_Init(void)
 	CAN_FilterInitStructure.filterIdExtend = 0X600; 	  /* 扩展ID */
 	CAN_FilterInitStructure.filterIdStandard = 0X600; 	 
 	CAN_FilterInitStructure.filterIdSRR = 0X01;
-	CAN_FilterInitStructure.filterIdIDE = 0X00;
+	CAN_FilterInitStructure.filterIdIDE = 0X01;
 	CAN_FilterInitStructure.filterIdRTR = 0X00;
 
 	CAN_FilterInitStructure.filterMaskIdHigh = 0X600;
@@ -199,7 +199,7 @@ void Canif_Init(void)
 	CAN_FilterInitStructure.filterMaskIdSRR = 0X00;
 	CAN_FilterInitStructure.filterMaskIdIDE = 0X00; 		   /* 滤波器掩码,1：该位参与滤波器比较，0：不参与 */
 	CAN_FilterInitStructure.filterMaskIdRTR = 0x00;
-	CAN_FilterInitStructure.filterEn = FL_ENABLE;
+	CAN_FilterInitStructure.filterEn = FL_DISABLE;
 	FL_CAN_FilterInit(CAN, &CAN_FilterInitStructure, FL_CAN_FILTER3);
 	FL_CAN_FilterInit(CAN, &CAN_FilterInitStructure, FL_CAN_FILTER4);
 
@@ -207,7 +207,7 @@ void Canif_Init(void)
 	CAN_FilterInitStructure.filterIdExtend = 0X045; 	  /* 扩展ID */
 	CAN_FilterInitStructure.filterIdStandard = 0X045; 	  
 	CAN_FilterInitStructure.filterIdSRR = 0X01;
-	CAN_FilterInitStructure.filterIdIDE = 0X00;
+	CAN_FilterInitStructure.filterIdIDE = 0X01;
 	CAN_FilterInitStructure.filterIdRTR = 0X00;
 
 	CAN_FilterInitStructure.filterMaskIdHigh = 0X1ED;
@@ -215,13 +215,13 @@ void Canif_Init(void)
 	CAN_FilterInitStructure.filterMaskIdSRR = 0X00;
 	CAN_FilterInitStructure.filterMaskIdIDE = 0X01; 		   /* 滤波器掩码,1：该位参与滤波器比较，0：不参与 */
 	CAN_FilterInitStructure.filterMaskIdRTR = 0x01;
-	CAN_FilterInitStructure.filterEn = FL_ENABLE;
+	CAN_FilterInitStructure.filterEn = FL_DISABLE;
 	FL_CAN_FilterInit(CAN, &CAN_FilterInitStructure, FL_CAN_FILTER1);
 
 	CAN_FilterInitStructure.filterIdExtend = 0x781; 	  /* 扩展ID */
 	CAN_FilterInitStructure.filterIdStandard = 0x781; 	 
 	CAN_FilterInitStructure.filterIdSRR = 0X01;
-	CAN_FilterInitStructure.filterIdIDE = 0X00;
+	CAN_FilterInitStructure.filterIdIDE = 0X01;
 	CAN_FilterInitStructure.filterIdRTR = 0X00;
 
 	CAN_FilterInitStructure.filterMaskIdHigh = 0x781;
@@ -229,7 +229,7 @@ void Canif_Init(void)
 	CAN_FilterInitStructure.filterMaskIdSRR = 0X00;
 	CAN_FilterInitStructure.filterMaskIdIDE = 0X00; 		   /* 滤波器掩码,1：该位参与滤波器比较，0：不参与 */
 	CAN_FilterInitStructure.filterMaskIdRTR = 0x00;
-	CAN_FilterInitStructure.filterEn = FL_ENABLE;
+	CAN_FilterInitStructure.filterEn = FL_DISABLE;
 	FL_CAN_FilterInit(CAN, &CAN_FilterInitStructure, FL_CAN_FILTER2);
 
 #endif

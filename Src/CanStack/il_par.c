@@ -37,7 +37,7 @@ enum
 
 };
 
-_SCM_L_45B_msg_buf              il_tx_SCM_L_45B_msg;
+_SCM_L_SCM_msg_buf              il_tx_SCM_L_SCM_msg;
 
 
 const UINT16 il_tx_periodic_count[IL_TX_NUM_MESSAGES] = 
@@ -57,7 +57,7 @@ const UINT8* il_init_tx_per_data[IL_TX_NUM_MESSAGES] =
 
 const UINT8* il_tx_data_ptr[IL_TX_NUM_MESSAGES]=
 {
-  &il_tx_SCM_L_45B_msg.byte[0],
+  &il_tx_SCM_L_SCM_msg.byte[0],
 };
 
 UINT8 il_tx_status[IL_TX_NUM_MESSAGES];
@@ -70,9 +70,9 @@ CAN_TMD const il_tx_tmd[IL_TX_NUM_MESSAGES] =
   {
     CAN_GPNUM_8,                     /* CAN message data length  */
  
-    0x45A,                           /* CAN message identifier   */
+    0x19FF2A36,                           /* CAN message identifier   */
 
-    &il_tx_SCM_L_45B_msg.byte[0],    /* Pointer to Data          */
+    &il_tx_SCM_L_SCM_msg.byte[0],    /* Pointer to Data          */
 
     CANB_TX_STD_DATA,                /* CAN message options      */
 
@@ -83,9 +83,9 @@ CAN_TMD const il_tx_tmd[IL_TX_NUM_MESSAGES] =
   
 
 /* RX frame timeout: frame periodic time*5 */
-_VCU_123_msg_buf     il_rx_VCU_123_msg;
+_VCU_DDSS_msg_buf     il_rx_VCU_DDSS_msg;
 _IHU_3B7_msg_buf     il_rx_IHU_3B7_msg;
-_ABM_234_msg_buf     il_rx_ABM_234_msg;
+_ABM_VIST_msg_buf     il_rx_ABM_VIST_msg;
 _BCM_458_msg_buf     il_rx_BCM_458_msg;
 
 const pIL_TX_FRAME_INDICATION il_tx_Notify_ptr[IL_TX_NUM_MESSAGES]=
@@ -95,8 +95,8 @@ const pIL_TX_FRAME_INDICATION il_tx_Notify_ptr[IL_TX_NUM_MESSAGES]=
 
 UINT8* il_rx_data_ptr[]=
 { 
-	&il_rx_VCU_123_msg.byte[0],
-  &il_rx_ABM_234_msg.byte[0],
+	&il_rx_VCU_DDSS_msg.byte[0],
+  &il_rx_ABM_VIST_msg.byte[0],
   &il_rx_IHU_3B7_msg.byte[0],
 	&il_rx_BCM_458_msg.byte[0]
 };
@@ -115,8 +115,8 @@ UINT16 il_rx_periodic_counter[IL_RX_NUM_MESSAGES];
 
 const UINT8 il_rx_DLC[]=
 {
-  sizeof(il_rx_VCU_123_msg),
-  sizeof(il_rx_ABM_234_msg),
+  sizeof(il_rx_VCU_DDSS_msg),
+  sizeof(il_rx_ABM_VIST_msg),
   sizeof(il_rx_IHU_3B7_msg),
   sizeof(il_rx_BCM_458_msg)
 };
@@ -124,8 +124,8 @@ const UINT8 il_rx_DLC[]=
 
 const pIL_RX_FRAME_INDICATION il_rx_indication_fn[]=
 {
-  Rx_VCU_123_func,
-  Rx_ABM_234_func,
+  Rx_VCU_DDSS_func,
+  Rx_ABM_VIST_func,
   Rx_IHU_3B7_func,
   Rx_BCM_458_func
 };

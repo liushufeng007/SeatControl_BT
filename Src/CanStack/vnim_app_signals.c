@@ -9,9 +9,9 @@
 
 #if(SCM_SEATCONTROL_VARIANT == SCM_R_VARIANT)
 BOOLEAN msg_123_missing = FALSE;
-BOOLEAN msg_123_never_recvd = TRUE;
+BOOLEAN msg_DDSS_never_recvd = TRUE;
 BOOLEAN msg_234_missing = FALSE;
-BOOLEAN msg_234_never_recvd = TRUE;
+BOOLEAN msg_VIST_never_recvd = TRUE;
 BOOLEAN msg_3B7_missing = FALSE;
 BOOLEAN msg_3B7_never_recvd = TRUE;
 BOOLEAN msg_458_missing = FALSE;
@@ -28,9 +28,9 @@ void vnim_set_init_signals(void)
 {
 #if(SCM_SEATCONTROL_VARIANT == SCM_R_VARIANT)
     msg_123_missing = FALSE;
-    msg_123_never_recvd = TRUE;
+    msg_DDSS_never_recvd = TRUE;
     msg_234_missing = FALSE;
-    msg_234_never_recvd = TRUE;
+    msg_VIST_never_recvd = TRUE;
     msg_3B7_missing = FALSE;
     msg_3B7_never_recvd = TRUE;
     msg_458_missing = FALSE;

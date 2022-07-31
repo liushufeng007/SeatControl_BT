@@ -16,16 +16,23 @@
 #include "rx_can.h"
 #include "CddKey_Cfg.h"
 
+#include "CddEeprom.h"
+
+#include "ButtonCtrl.h"
 /*****************************************************************************
 *                                 Macro Definitions                          *
 *----------------------------------------------------------------------------*
 * Definition of macro shall be followed by a comment that explains the       *
 * purpose of the macro.                                                      *
 ******************************************************************************/
-
+#ifndef FALSE
 #define FALSE  (0u)
+#endif
+#ifndef TRUE
 #define TRUE   (1u)
+#endif
 #define MOTOR_DUTY_SCANING  2
+
 
 #if 0
 #define NFC_LOCKED  	(0u)
@@ -53,6 +60,9 @@ UINT8 IHU_SeatFoldReq = 0;
 UINT8 IHU_SeatReleaseReq = 0;
 UINT8 BCM_PsngrSeatMotoPositionReq_ForwardBack = 0;
 UINT8 BCM_PsngrSeatMotoPositionReq_SeatBack = 0;
+
+UINT16 BT_Signal_Group[BT_SIGNAL_GROUP_NUM*2] = {0,0,0,0,0};
+
 #else
 UINT8 SCM_L_BCM_DoorAjarSts_FL = 0;
 UINT8 SCM_L_BCM_FaceRecognitionEnableSts = 0;
@@ -61,6 +71,8 @@ UINT8 SCM_L_BCM_MotoPositionReq_ForwardBack = 0;
 UINT8 SCM_L_BCM_MotoPositionReq_SeatBack = 0;
 #endif
 
+
+uint8_t update_sucess =TRUE;
 
 /* Rx CAN after set motor position */
 UINT16 Set_ForwardBack_TargetPos(void);
@@ -94,6 +106,10 @@ void Message_variable_init(void)
 {
 	UINT8 index;
 
+	
+	CddEeprom_Req_Read(EEPROM_BANK_APP,0,5,BT_Signal_Group);
+	CddEeprom_Req_Read(EEPROM_BANK_APP,0,5,&BT_Signal_Group[BT_SIGNAL_GROUP_NUM]);
+	
 #if(SCM_SEATCONTROL_VARIANT == SCM_R_VARIANT)
 	VCU_VehSpd = 0;
 	VCU_VehSpd_VD = 0x01;
@@ -102,6 +118,8 @@ void Message_variable_init(void)
 	IHU_SeatReleaseReq = 0;
 	BCM_PsngrSeatMotoPositionReq_ForwardBack = 0;
 	BCM_PsngrSeatMotoPositionReq_SeatBack = 0;
+	msg_VIST_never_recvd = TRUE;
+	msg_DDSS_never_recvd = TRUE;
 #else
 	SCM_L_BCM_DoorAjarSts_FL = 0;
 	SCM_L_BCM_FaceRecognitionEnableSts = 0;
@@ -109,7 +127,7 @@ void Message_variable_init(void)
 	SCM_L_BCM_MotoPositionReq_ForwardBack = 0;
 	SCM_L_BCM_MotoPositionReq_SeatBack = 0;
 #endif
-
+	update_sucess =TRUE;
 	#if 0
 	nfc_sw_sts = 1;
 	pre_nfc_sw_sts = 1;
@@ -132,17 +150,22 @@ void Message_variable_init(void)
 }
 
 #if(SCM_SEATCONTROL_VARIANT == SCM_R_VARIANT)
-void Rx_VCU_123_func(void)
+void Rx_VCU_DDSS_func(void)
 {
-	msg_123_never_recvd = FALSE;
-	VCU_VehSpd = (((il_rx_VCU_123_msg.VCU_123_msg.VCU_VehSpdHigh << 5)|(il_rx_VCU_123_msg.VCU_123_msg.VCU_VehSpdLow))*625)/10000;
-	VCU_VehSpd_VD = il_rx_VCU_123_msg.VCU_123_msg.VCU_VehSpd_VD;
+	msg_DDSS_never_recvd = FALSE;
+	//VCU_VehSpd = (((il_rx_VCU_DDSS_msg.VCU_DDSS_msg.VCU_VehSpdHigh << 5)|(il_rx_VCU_123_msg.VCU_123_msg.VCU_VehSpdLow))*625)/10000;
+	//VCU_VehSpd_VD = il_rx_VCU_DDSS_msg.VCU_DDSS_msg.VCU_VehSpd_VD;
+	BT_Signal_Group[BT_Welcome_e] = il_rx_VCU_DDSS_msg.VCU_DDSS_msg.welcome_state1;
 }
 
-void Rx_ABM_234_func(void)
+void Rx_ABM_VIST_func(void)
 {
-	msg_234_never_recvd = FALSE;
-	ABM_PassengerSeatOccSts = il_rx_ABM_234_msg.ABM_234_msg.ABM_PassengerSeatOccSts;
+	msg_VIST_never_recvd = FALSE;
+	//ABM_PassengerSeatOccSts = il_rx_ABM_234_msg.ABM_234_msg.ABM_PassengerSeatOccSts;
+	BT_Signal_Group[BT_Angle_e] = il_rx_ABM_VIST_msg.ABM_VIST_msg.angle;
+	BT_Signal_Group[BT_Fatigue_e] = il_rx_ABM_VIST_msg.ABM_VIST_msg.fatigue;
+	BT_Signal_Group[BT_Pos_e] = il_rx_ABM_VIST_msg.ABM_VIST_msg.pos;
+	BT_Signal_Group[BT_Scene_Mode_e] = il_rx_ABM_VIST_msg.ABM_VIST_msg.Scene_mode;
 }
 
 void Rx_IHU_3B7_func(void)
@@ -166,26 +189,39 @@ static void process_MSG45B(void)
 	UINT8 i = 0;
 
 #if 1
-	il_tx_SCM_L_45B_msg.SCM_L_45B_msg.SCM_HMI_Req = Dis_SCM_HMI_Req;
-	il_tx_SCM_L_45B_msg.SCM_L_45B_msg.SCM_PsngrSeatMotoDirection_ForwardBack = Get_Current_ForwardBackMotor_Dir;
-	il_tx_SCM_L_45B_msg.SCM_L_45B_msg.SCM_PsngrSeatMotoDirection_SeatBack = Get_Current_SeatBackMotor_Dir;
-	il_tx_SCM_L_45B_msg.SCM_L_45B_msg.SCM_PsngrSeatMotoPosition_ForwardBack = ((Get_ForwardBack_Current_Pos())*MOTOR_DUTY_SCANING);
-	il_tx_SCM_L_45B_msg.SCM_L_45B_msg.SCM_PsngrSeatMotoPosition_SeatBack = ((Get_SeatBack_Current_Pos())*MOTOR_DUTY_SCANING);
-	il_tx_SCM_L_45B_msg.SCM_L_45B_msg.SCM_MsgAliveCounter = Get_MsgAlive_Counter();
+	//il_tx_SCM_L_SCM_msg.SCM_L_45B_msg.SCM_HMI_Req = Dis_SCM_HMI_Req;
+	//il_tx_SCM_L_SCM_msg.SCM_L_45B_msg.SCM_PsngrSeatMotoDirection_ForwardBack = Get_Current_ForwardBackMotor_Dir;
+	//il_tx_SCM_L_SCM_msg.SCM_L_45B_msg.SCM_PsngrSeatMotoDirection_SeatBack = Get_Current_SeatBackMotor_Dir;
+	//il_tx_SCM_L_SCM_msg.SCM_L_45B_msg.SCM_PsngrSeatMotoPosition_ForwardBack = ((Get_ForwardBack_Current_Pos())*MOTOR_DUTY_SCANING);
+	//il_tx_SCM_L_SCM_msg.SCM_L_45B_msg.SCM_PsngrSeatMotoPosition_SeatBack = ((Get_SeatBack_Current_Pos())*MOTOR_DUTY_SCANING);
+	//il_tx_SCM_L_SCM_msg.SCM_L_45B_msg.SCM_MsgAliveCounter = Get_MsgAlive_Counter();
+	//il_tx_SCM_L_SCM_msg.il_rx_VCU_DDSS_msg.angle_bacck = 0;
+	//il_tx_SCM_L_SCM_msg.il_rx_VCU_DDSS_msg.autopilot_mode = 0;
+	//il_tx_SCM_L_SCM_msg.il_rx_VCU_DDSS_msg.conference_mode = 0;
+	//il_tx_SCM_L_SCM_msg.il_rx_VCU_DDSS_msg.Pos = 0;
+
+
 #else
-	il_tx_SCM_L_45B_msg.SCM_L_45B_msg.SCM_HMI_Req = 0xFF;
-	il_tx_SCM_L_45B_msg.SCM_L_45B_msg.SCM_PsngrSeatMotoDirection_ForwardBack = 0xFF;
-	il_tx_SCM_L_45B_msg.SCM_L_45B_msg.SCM_PsngrSeatMotoDirection_SeatBack = 0xFF;
-	il_tx_SCM_L_45B_msg.SCM_L_45B_msg.SCM_PsngrSeatMotoPosition_ForwardBack = 0xFF;
-	il_tx_SCM_L_45B_msg.SCM_L_45B_msg.SCM_PsngrSeatMotoPosition_SeatBack = 0xFF;
+	il_tx_SCM_L_SCM_msg.SCM_L_45B_msg.SCM_HMI_Req = 0xFF;
+	il_tx_SCM_L_SCM_msg.SCM_L_45B_msg.SCM_PsngrSeatMotoDirection_ForwardBack = 0xFF;
+	il_tx_SCM_L_SCM_msg.SCM_L_45B_msg.SCM_PsngrSeatMotoDirection_SeatBack = 0xFF;
+	il_tx_SCM_L_SCM_msg.SCM_L_45B_msg.SCM_PsngrSeatMotoPosition_ForwardBack = 0xFF;
+	il_tx_SCM_L_SCM_msg.SCM_L_45B_msg.SCM_PsngrSeatMotoPosition_SeatBack = 0xFF;
 
 #endif
-	fl_str_e.StdId = 0x45B;
+#if(SCM_SEATCONTROL_VARIANT == SCM_R_VARIANT)
+	il_tx_SCM_L_SCM_msg.SCM_L_SCM_msg.angle_bacck = 0;
+	il_tx_SCM_L_SCM_msg.SCM_L_SCM_msg.autopilot_mode = 0;
+	il_tx_SCM_L_SCM_msg.SCM_L_SCM_msg.conference_mode = 0;
+	il_tx_SCM_L_SCM_msg.SCM_L_SCM_msg.Pos = 0;
+
+
+	fl_str_e.StdId = 0x19FF2A36;
 	fl_str_e.DLC = 8;
 
 	for(i=0; i<fl_str_e.DLC; i++)
     {
-        fl_str_e.Data[i] = il_tx_SCM_L_45B_msg.byte[i];        
+        fl_str_e.Data[i] = il_tx_SCM_L_SCM_msg.byte[i];        
     }
 
 	if( TRUE == ServSWM_u_GetKey_IGN_RealVaule() )
@@ -195,7 +231,10 @@ static void process_MSG45B(void)
 			Canif_tx_queue_push_e(fl_str_e);
 		}
 	}
+#else
 
+
+#endif
 	//Vnim_SCM_45B_Send_handler();
 }
 
@@ -222,12 +261,17 @@ static void process_MSG45A(void)
 	UINT8 i = 0;
 	
 	#if 1
-	il_tx_SCM_L_45A_msg.SCM_L_45A_msg.SCM_DriverSeatLocalCtrlSwithSts = Get_SeatSwtichSts();
-	il_tx_SCM_L_45A_msg.SCM_L_45A_msg.SCM_DriverSeatMotoDirection_ForwardBack = Get_Current_ForwardBackMotor_Dir;
-	il_tx_SCM_L_45A_msg.SCM_L_45A_msg.SCM_DriverSeatMotoDirection_SeatBack = Get_Current_SeatBackMotor_Dir;
-	il_tx_SCM_L_45A_msg.SCM_L_45A_msg.SCM_DriverSeatMotoPosition_ForwardBack = ((Get_ForwardBack_Current_Pos())*MOTOR_DUTY_SCANING);
-	il_tx_SCM_L_45A_msg.SCM_L_45A_msg.SCM_DriverSeatMotoPosition_SeatBack = ((Get_SeatBack_Current_Pos())*MOTOR_DUTY_SCANING);
-	il_tx_SCM_L_45A_msg.SCM_L_45A_msg.SCM_MsgAliveCounter = Get_MsgAlive_Counter();
+	//il_tx_SCM_L_45A_msg.SCM_L_45A_msg.SCM_DriverSeatLocalCtrlSwithSts = Get_SeatSwtichSts();
+	//il_tx_SCM_L_45A_msg.SCM_L_45A_msg.SCM_DriverSeatMotoDirection_ForwardBack = Get_Current_ForwardBackMotor_Dir;
+	//il_tx_SCM_L_45A_msg.SCM_L_45A_msg.SCM_DriverSeatMotoDirection_SeatBack = Get_Current_SeatBackMotor_Dir;
+	//il_tx_SCM_L_45A_msg.SCM_L_45A_msg.SCM_DriverSeatMotoPosition_ForwardBack = ((Get_ForwardBack_Current_Pos())*MOTOR_DUTY_SCANING);
+	//il_tx_SCM_L_45A_msg.SCM_L_45A_msg.SCM_DriverSeatMotoPosition_SeatBack = ((Get_SeatBack_Current_Pos())*MOTOR_DUTY_SCANING);
+	//il_tx_SCM_L_45A_msg.SCM_L_45A_msg.SCM_MsgAliveCounter = Get_MsgAlive_Counter();
+	il_tx_SCM_L_45A_msg.SCM_L_45A_msg.angle_bacck = 0;
+	il_tx_SCM_L_45A_msg.SCM_L_45A_msg.autopilot_mode = 0;
+	il_tx_SCM_L_45A_msg.SCM_L_45A_msg.conference_mode = 0;
+	il_tx_SCM_L_45A_msg.SCM_L_45A_msg.Pos = 0;
+	
 	#else
 	il_tx_SCM_L_45A_msg.SCM_L_45A_msg.SCM_DriverSeatLocalCtrlSwithSts = 0xFF;
 	il_tx_SCM_L_45A_msg.SCM_L_45A_msg.SCM_DriverSeatMotoDirection_ForwardBack = 0xFF;
@@ -275,6 +319,126 @@ static void process_MSG663(void)
 }
 #endif
 
+
+void tcan_Btn(void)
+{
+	uint8_t index = 0;
+	uint8_t update = FALSE;
+	ButtonCtrl_Str Btn;
+	
+	index = BT_Pos_e;
+	if(BT_Signal_Group[index] != 0xFFFF)
+	{
+		if(BT_Signal_Group[index] != BT_Signal_Group[BT_BACK(index)])
+		{
+			BT_Signal_Group[BT_BACK(index)] = BT_Signal_Group[index];
+			update = TRUE;
+			Btn.ButtonId = BTN_ID_CTRL_POS_FRONT_REAR_e;
+			Btn.ButtonVal = BT_Signal_Group[index];
+			ButtonCtrl_queue_push_e(Btn);
+		}
+	}
+
+	index = BT_Angle_e;
+	if(BT_Signal_Group[index] != 0xFFFF)
+	{
+		if(BT_Signal_Group[index] != BT_Signal_Group[BT_BACK(index)])
+		{
+			BT_Signal_Group[BT_BACK(index)] = BT_Signal_Group[index];
+			update = TRUE;
+			Btn.ButtonId = BTN_ID_CTRL_BACK_ANGLE_e;
+			Btn.ButtonVal = BT_Signal_Group[index];
+			ButtonCtrl_queue_push_e(Btn);
+		}
+	}
+
+	index = BT_Scene_Mode_e;
+	if(BT_Signal_Group[index] != 0xFFFF)
+	{
+		if(BT_Signal_Group[index] != BT_Signal_Group[BT_BACK(index)])
+		{
+			BT_Signal_Group[BT_BACK(index)] = BT_Signal_Group[index];
+			update = TRUE;
+			switch (BT_Signal_Group[index])
+			{
+				case 1:
+					Btn.ButtonId = BTN_ID_CTRL_PREPARE_MEAL_e;
+				break;
+
+				case 3:
+					Btn.ButtonId = BTN_ID_CTRL_MOVIE_e;
+				break;
+
+				case 5:
+					Btn.ButtonId = BTN_ID_CTRL_SLEEP_e;
+				break;
+
+				default:
+					Btn.ButtonId = BTN_ID_CTRL_OFF_e	;
+				break;
+				
+			}
+			Btn.ButtonVal = BT_Signal_Group[index];
+			ButtonCtrl_queue_push_e(Btn);
+		}
+	}
+
+	index = BT_Fatigue_e;
+	if(BT_Signal_Group[index] != 0xFFFF)
+	{
+		if(BT_Signal_Group[index] != BT_Signal_Group[BT_BACK(index)])
+		{
+			BT_Signal_Group[BT_BACK(index)] = BT_Signal_Group[index];
+			//update = TRUE;
+
+			switch (BT_Signal_Group[index])
+			{
+				case 2:
+					//turn on vent,打开鼓风机
+				break;
+				default:
+					//turn off vent,打开鼓风机
+				break;
+			}
+		}
+	}
+	
+	index = BT_Welcome_e;
+	if(BT_Signal_Group[index] != 0xFFFF)
+	{
+		if(BT_Signal_Group[index] != BT_Signal_Group[BT_BACK(index)])
+		{
+			BT_Signal_Group[BT_BACK(index)] = BT_Signal_Group[index];
+			update = TRUE;
+			Btn.ButtonId = BTN_ID_CTRL_POS_FRONT_REAR_e;
+			switch (BT_Signal_Group[index])
+			{
+				case 1:
+					Btn.ButtonVal = 0;
+				break;
+
+				case 0:
+					Btn.ButtonVal = 100;
+				break;
+			}
+			
+			ButtonCtrl_queue_push_e(Btn);
+		}
+	}
+
+	if(update || !update_sucess)
+	{
+		if(CddEeprom_Req_Write(EEPROM_BANK_APP,0,5,0,BT_Signal_Group))
+		{
+			update_sucess = TRUE;
+		}
+		else
+		{
+			update_sucess = FALSE;
+		}
+	}
+}
+
 void tcan_Task(void)
 {
 	static UINT8 Tcan_Send_Cycle = 0;
@@ -307,7 +471,7 @@ void tcan_Task(void)
 		process_MSG663();
 	}
 #endif
-
+	tcan_Btn();
 }
 
 

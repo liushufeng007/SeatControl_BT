@@ -10,6 +10,19 @@
 #include "il.h"
 #include "il_par.h"
 
+typedef enum{
+
+	BT_Pos_e,
+	BT_Angle_e,
+	BT_Scene_Mode_e,
+	BT_Fatigue_e,
+	BT_Welcome_e,
+	BT_SIGNAL_GROUP_NUM
+}BT_Signal_type_e;
+
+
+#define BT_BACK(a)  (a+BT_SIGNAL_GROUP_NUM)
+
 /* Defines */
 #define   NFC_CMD_ECU   (il_rx_NFC_CMD_REQ_1888A5FF_msg.NFC_CMD_REQ_1888A5FF_msg.NFC_Cmd_ECU)
 #define   NFC_CMD_FUNC  (il_rx_NFC_CMD_REQ_1888A5FF_msg.NFC_CMD_REQ_1888A5FF_msg.NFC_Cmd_Func)
@@ -67,8 +80,8 @@ extern UINT32 odo_meter;
 extern void tcan_Task(void);
 extern void Message_variable_init(void);
 #if(SCM_SEATCONTROL_VARIANT == SCM_R_VARIANT)
-extern void Rx_VCU_123_func(void);
-extern void Rx_ABM_234_func(void);
+extern void Rx_VCU_DDSS_func(void);
+extern void Rx_ABM_VIST_func(void);
 extern void Rx_IHU_3B7_func(void);
 extern void Rx_BCM_458_func(void);
 extern UINT32 VCU_VehSpd;
