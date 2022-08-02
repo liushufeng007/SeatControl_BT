@@ -19,6 +19,13 @@
 #include "CddEeprom.h"
 
 #include "ButtonCtrl.h"
+
+#include "CddMtr_Mng.h"
+
+#include "il_par.h"
+
+extern _SCM_L_45A_msg_buf			        il_tx_SCM_L_45A_msg;
+
 /*****************************************************************************
 *                                 Macro Definitions                          *
 *----------------------------------------------------------------------------*
@@ -186,8 +193,9 @@ void Rx_BCM_458_func(void)
 static void process_MSG45B(void)
 {
 	Canif_Msg_Str fl_str_e;
-	UINT8 i = 0;
-
+	UINT8 temp = 0,i=0;
+	ButtonCtrl_Id_e btnMode;
+	UINT16 temp16 = 0;
 #if 1
 	//il_tx_SCM_L_SCM_msg.SCM_L_45B_msg.SCM_HMI_Req = Dis_SCM_HMI_Req;
 	//il_tx_SCM_L_SCM_msg.SCM_L_45B_msg.SCM_PsngrSeatMotoDirection_ForwardBack = Get_Current_ForwardBackMotor_Dir;
@@ -210,10 +218,31 @@ static void process_MSG45B(void)
 
 #endif
 #if(SCM_SEATCONTROL_VARIANT == SCM_R_VARIANT)
-	il_tx_SCM_L_SCM_msg.SCM_L_SCM_msg.angle_bacck = 0;
-	il_tx_SCM_L_SCM_msg.SCM_L_SCM_msg.autopilot_mode = 0;
-	il_tx_SCM_L_SCM_msg.SCM_L_SCM_msg.conference_mode = 0;
-	il_tx_SCM_L_SCM_msg.SCM_L_SCM_msg.Pos = 0;
+	btnMode = ButtonCtrl_Get_CtrlMode();
+	if(btnMode == BTN_ID_CTRL_MODE_DRIVERIESS_CAR_e)
+	{
+		temp = TRUE;
+	}
+	else
+	{
+		temp = FALSE;
+	}
+	il_tx_SCM_L_45A_msg.SCM_L_45A_msg.autopilot_mode = temp;
+	if(btnMode == BTN_ID_CTRL_MODE_MEETING_e)
+	{
+		temp = TRUE;
+	}
+	else
+	{
+		temp = FALSE;
+	}
+	il_tx_SCM_L_45A_msg.SCM_L_45A_msg.conference_mode = temp;
+	temp16 = CddMtr_Get_Mtr_PosPercent(0);
+	il_tx_SCM_L_45A_msg.SCM_L_45A_msg.Pos = temp16*10/4;
+	
+	temp16 = CddMtr_Get_Mtr_PosPercent(1);
+	il_tx_SCM_L_45A_msg.SCM_L_45A_msg.angle_bacck =  temp16/3;
+
 
 
 	fl_str_e.StdId = 0x19FF2A36;
@@ -258,8 +287,9 @@ void Rx_BCM_457_func(void)
 static void process_MSG45A(void)
 {
 	Canif_Msg_Str fl_str_e;
-	UINT8 i = 0;
-	
+	UINT8 temp = 0;
+	ButtonCtrl_Id_e btnMode;
+	UINT16 temp16 = 0;
 	#if 1
 	//il_tx_SCM_L_45A_msg.SCM_L_45A_msg.SCM_DriverSeatLocalCtrlSwithSts = Get_SeatSwtichSts();
 	//il_tx_SCM_L_45A_msg.SCM_L_45A_msg.SCM_DriverSeatMotoDirection_ForwardBack = Get_Current_ForwardBackMotor_Dir;
@@ -267,11 +297,30 @@ static void process_MSG45A(void)
 	//il_tx_SCM_L_45A_msg.SCM_L_45A_msg.SCM_DriverSeatMotoPosition_ForwardBack = ((Get_ForwardBack_Current_Pos())*MOTOR_DUTY_SCANING);
 	//il_tx_SCM_L_45A_msg.SCM_L_45A_msg.SCM_DriverSeatMotoPosition_SeatBack = ((Get_SeatBack_Current_Pos())*MOTOR_DUTY_SCANING);
 	//il_tx_SCM_L_45A_msg.SCM_L_45A_msg.SCM_MsgAliveCounter = Get_MsgAlive_Counter();
-	il_tx_SCM_L_45A_msg.SCM_L_45A_msg.angle_bacck = 0;
-	il_tx_SCM_L_45A_msg.SCM_L_45A_msg.autopilot_mode = 0;
-	il_tx_SCM_L_45A_msg.SCM_L_45A_msg.conference_mode = 0;
-	il_tx_SCM_L_45A_msg.SCM_L_45A_msg.Pos = 0;
+	btnMode = ButtonCtrl_Get_CtrlMode();
+	if(btnMode == BTN_ID_CTRL_MODE_DRIVERIESS_CAR_e)
+	{
+		temp = TRUE;
+	}
+	else
+	{
+		temp = FALSE;
+	}
+	il_tx_SCM_L_45A_msg.SCM_L_45A_msg.autopilot_mode = temp;
+	if(btnMode == BTN_ID_CTRL_MODE_MEETING_e)
+	{
+		temp = TRUE;
+	}
+	else
+	{
+		temp = FALSE;
+	}
+	il_tx_SCM_L_45A_msg.SCM_L_45A_msg.conference_mode = temp;
+	temp16 = CddMtr_Get_Mtr_PosPercent(0);
+	il_tx_SCM_L_45A_msg.SCM_L_45A_msg.Pos = temp16*10/4;
 	
+	temp16 = CddMtr_Get_Mtr_PosPercent(1);
+	il_tx_SCM_L_45A_msg.SCM_L_45A_msg.angle_bacck =  temp16/3;
 	#else
 	il_tx_SCM_L_45A_msg.SCM_L_45A_msg.SCM_DriverSeatLocalCtrlSwithSts = 0xFF;
 	il_tx_SCM_L_45A_msg.SCM_L_45A_msg.SCM_DriverSeatMotoDirection_ForwardBack = 0xFF;
@@ -280,7 +329,7 @@ static void process_MSG45A(void)
 	il_tx_SCM_L_45A_msg.SCM_L_45A_msg.SCM_DriverSeatMotoPosition_SeatBack = 0xFF;
 	#endif
 
-	fl_str_e.StdId = 0x45A;
+	fl_str_e.StdId = 0x19FF2A36;
 	fl_str_e.DLC = 8;
 
 	for(i=0; i<fl_str_e.DLC; i++)

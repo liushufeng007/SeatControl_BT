@@ -96,4 +96,6 @@ extern void ButtonCtrlInit(void);
 extern void ButtonCtrl_50ms_Task(void);
 
 extern uint8_t ButtonCtrl_queue_push_e(ButtonCtrl_Str fl_str_e);
+
+extern 	ButtonCtrl_Id_e ButtonCtrl_Get_CtrlMode(void);
 #endif

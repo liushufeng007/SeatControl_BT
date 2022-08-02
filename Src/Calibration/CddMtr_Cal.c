@@ -61,6 +61,8 @@ const CddMtr_Mng_Threshold_Ad_Str CddMtr_Mng_Ad_Threshold_Tbl[CDDMTR_HFKF_MAX_NU
 	280,  280, 1290 , 990,  100 , 
 	280,  280, 1290 , 990,  100 , 
 	280,  280, 1290 , 990,  100 ,
+	280,  280, 1290 , 990,  100 , 
+	280,  280, 1290 , 990,  100 ,
 };
 
 const uint8_t CddMtr_Mng_Ad_Ch_Map[CDDMTR_HFKF_MAX_NUM][4] = 
@@ -69,6 +71,8 @@ const uint8_t CddMtr_Mng_Ad_Ch_Map[CDDMTR_HFKF_MAX_NUM][4] =
 	ADCIF_CH_SEAT_BACK_MTR_SNSR_AD,    ADCIF_CH_MotorBack_HALL_AD,     ADCIF_CH_BATT_SW_AD,   ADCIF_CH_BATT1_AD,
 	ADCIF_CH_Motor3_SNSR_AD,           ADCIF_CH_Motor3_HALL_AD,        ADCIF_CH_BATT_SW_AD,   ADCIF_CH_BATT2_AD,
 	ADCIF_CH_Motor4_SNSR_AD,           ADCIF_CH_Motor4_HALL_AD,        ADCIF_CH_BATT_SW_AD,   ADCIF_CH_BATT1_AD,
+	ADCIF_CH_Motor3_SNSR_AD,		   ADCIF_CH_Motor3_HALL_AD, 	   ADCIF_CH_BATT_SW_AD,   ADCIF_CH_BATT2_AD,
+	ADCIF_CH_Motor4_SNSR_AD,		   ADCIF_CH_Motor4_HALL_AD, 	   ADCIF_CH_BATT_SW_AD,   ADCIF_CH_BATT1_AD,
 };
 
 

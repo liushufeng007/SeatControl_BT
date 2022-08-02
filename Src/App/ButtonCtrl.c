@@ -5,11 +5,15 @@
 #include "CddMtr_Mng.h"
 #include "CddLed.h"
 
+#include "CddEeprom.h"
+
 ButtonCtrl_Queue_str ButtonCtrl_queue;
 
 ButtonCtrl_Req_Str ButtonCtrl_Req;
 
 uint8_t StopBtn_Cnt[4];
+uint16_t Button_Mode[1] = {0};
+uint8_t Button_Update_Flag = TRUE;
 
 static uint8_t ButtonCtrl_queue_is_empty(void);
 static uint8_t ButtonCtrl_queue_is_full(void);
@@ -20,8 +24,10 @@ static ButtonCtrl_Req_Str ButtonCtrl_Convert_Pos_EventProcess(ButtonCtrl_Str fl_
 static ButtonCtrl_Mode_Req_Str ButtonCtrl_Convert_Mode_EventProcess(ButtonCtrl_Str fl_str_e);
 static void ButtonCtrl_Motor_ActionProcess(ButtonCtrlReq_Str req,uint8_t mtr_index);
 static void ButtonCtrl_Motor_EventProcess(void);
-static 
-	void ButtonCtrl_Update_StopBtn_Ticks(ButtonCtrl_Str fl_str_e);
+static void ButtonCtrl_Update_StopBtn_Ticks(ButtonCtrl_Str fl_str_e);
+static void ButtonCtrl_Update_Mode(ButtonCtrl_Str fl_str_e);
+static void ButtonCtrl_Update_Check(void);
+
 /*
 
 BTN_ID_CTRL_MODE_ZERO_GRAVITY_e,
@@ -108,7 +114,8 @@ void ButtonCtrlInit(void)
 	memset(&ButtonCtrl_Req,0,sizeof(ButtonCtrl_Req));
 	
 	memset(&StopBtn_Cnt,STOP_BTN_TIMEOUT,sizeof(StopBtn_Cnt));
-	
+	CddEeprom_Req_Read(EEPROM_BANK_APP,100,1,Button_Mode);
+	Button_Update_Flag = TRUE;
 }
 
 
@@ -135,11 +142,14 @@ void ButtonCtrl_50ms_Task(void)
 
 	if(ret_val == TRUE)
 	{
+		ButtonCtrl_Update_Mode(fl_str_e);
 		ButtonCtrl_Update_Req(fl_str_e);
 		ButtonCtrl_Update_StopBtn_Ticks(fl_str_e);
 		ButtonCtrl_Motor_EventProcess();
 		memset(&ButtonCtrl_Req,0,sizeof(ButtonCtrl_Req));
 	}
+
+	ButtonCtrl_Update_Check();
 }
 
 
@@ -235,21 +245,6 @@ uint8_t ButtonCtrl_queue_pull_e(ButtonCtrl_Str * fl_str_e)
 	}
 }
 
-
-
-
-/************************************
-Motor Button Process
-************************************/
-void ButtonCtrl_MotorGroup_EventProcess(ButtonCtrl_Str fl_str_e)
-{
-	uint8_t fl_motor_index  = 0;
-
-	for(fl_motor_index = 0; fl_motor_index < CDDMTR_HFKF_MAX_NUM; fl_motor_index++)
-	{
-		
-	}
-}
 
 /************************************
 Motor action Process
@@ -507,6 +502,58 @@ void ButtonCtrl_Update_StopBtn_Ticks(ButtonCtrl_Str fl_str_e)
 	}
 
 	
+}
+
+/************************************
+update mode
+************************************/
+void ButtonCtrl_Update_Mode(ButtonCtrl_Str fl_str_e)
+{
+	
+	switch (fl_str_e.ButtonId)
+	{
+		case BTN_ID_CTRL_MODE_ZERO_GRAVITY_e:
+		case BTN_ID_CTRL_MODE_DRIVERIESS_CAR_e:
+		case BTN_ID_CTRL_MODE_MEETING_e:
+		case BTN_ID_CTRL_MODE_LEISURE_e:
+		case BTN_ID_CTRL_OFF_e:
+		case BTN_ID_CTRL_MOVIE_e:
+		case BTN_ID_CTRL_SLEEP_e:
+		case BTN_ID_CTRL_PREPARE_MEAL_e:
+		if(Button_Mode[0] != fl_str_e.ButtonId)
+		{	
+			Button_Mode[0] = fl_str_e.ButtonId;
+			Button_Update_Flag = CddEeprom_Req_Write(EEPROM_BANK_APP,100,1,0,Button_Mode);
+		}
+		break;
+		
+		case BTN_ID_CTRL_POS_FRONT_REAR_e:
+		case BTN_ID_CTRL_BACK_ANGLE_e:
+		case BTN_ID_CTRL_ROTATE_e:
+		case BTN_ID_CTRL_HEAD_e:
+		case BTN_ID_CTRL_VENTILITION_e:	
+		case BTN_ID_CTRL_LED_e:
+		case BTN_ID_CTRL_MASSAGE_e:
+		default:
+
+		break;
+	}
+}
+/************************************
+update mode check
+************************************/
+void ButtonCtrl_Update_Check(void)
+{
+	if(FALSE == Button_Update_Flag)
+	{
+		Button_Update_Flag = CddEeprom_Req_Write(EEPROM_BANK_APP,100,1,0,Button_Mode);
+	}
+}
+
+
+ButtonCtrl_Id_e ButtonCtrl_Get_CtrlMode(void)
+{
+	return Button_Mode[0];
 }
 
 

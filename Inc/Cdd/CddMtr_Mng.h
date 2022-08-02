@@ -49,7 +49,7 @@
 #define CDDMTR_MNG_START_VOL             (8000)
 #define CDDMTR_MNG_VOL_LVI_FILTER            (3)
 #define CDDMTR_MNG_VOL_NORMAL_FILTER         (100)
-#define CDDMTR_SHUTDOWN_WRITE_NVM_MOTOR_NUM  (2)
+#define CDDMTR_SHUTDOWN_WRITE_NVM_MOTOR_NUM  (CDDMTR_HFKF_MAX_NUM)
 #define CDDMTR_DEBUG_MTR_LEARN          FALSE
 /*******************************************************************************
 |    Enum Definition

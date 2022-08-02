@@ -40,6 +40,8 @@ const CddMtr_HFKF_Ctrl CddMtr_HFKF_CH_Table[CDDMTR_HFKF_MAX_NUM] =
 	GPIO_NUMBER_3_Motorback_P_EN ,	GPIO_NUMBER_4_Motorback_N_EN ,
 	GPIO_NUMBER_6_Motorseat_N_EN ,  GPIO_NUMBER_5_Motorseat_P_EN,
 	GPIO_NUMBER_7_Motor3_P_EN,GPIO_NUMBER_8_Motor3_N_EN,
+	GPIO_NUMBER_9_Motor4_P_EN,GPIO_NUMBER_10_Motor4_N_EN,
+	GPIO_NUMBER_7_Motor3_P_EN,GPIO_NUMBER_8_Motor3_N_EN,
 	GPIO_NUMBER_9_Motor4_P_EN,GPIO_NUMBER_10_Motor4_N_EN
 };
 /*******************************************************************************

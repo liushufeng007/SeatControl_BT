@@ -71,6 +71,31 @@ enum
 	IL_RX_MESSAGE_DIAG_FUN_7DF
 };
 
+typedef struct {
+	/* Byte0 */
+	UINT8                      Pos: 8;
+	/* Byte1 */
+	UINT8                      angle_bacck: 5;//bit0~bit4
+	UINT8                      conference_mode: 2;//bit5~bit6
+	UINT8                      reserved_bit_0: 1;
+	/* Byte2 */
+	UINT8                      autopilot_mode: 2;
+	UINT8                      reserved_bit_1: 6;
+	/* Byte3 */            
+	UINT8                      reserved_byte0: 8;
+	/* Byte4 */       
+	UINT8                      reserved_byte1: 8;
+	/* Byte5 */   
+	UINT8                      reserved_byte2: 8;
+	/* Byte6 */
+	UINT8                      reserved_byte3: 4;
+	/* Byte7 */
+	UINT8                      reserved_byte4: 8;
+}_SCM_L_45A_msgType;
+typedef union {
+	UINT8 byte[8];
+	_SCM_L_45A_msgType	SCM_L_45A_msg;
+}_SCM_L_45A_msg_buf;
 
 /*ID 123 rx*/
 typedef struct {
@@ -195,6 +220,10 @@ typedef struct {
 	/* Byte7 */
 	UINT8                      reserved_byte4: 8;
 }_SCM_L_45A_msgType;
+typedef union {
+	UINT8 byte[8];
+	_SCM_L_45A_msgType	SCM_L_45A_msg;
+}_SCM_L_45A_msg_buf;
 
 /* NM message ID 663 tx */
 typedef struct {
@@ -228,10 +257,7 @@ typedef struct {
 	UINT8                      NM_SCM_UserData_5_Reserved: 8;
 }_SCM_L_NM_663_msgType;
 
-typedef union {
-	UINT8 byte[8];
-	_SCM_L_45A_msgType	SCM_L_45A_msg;
-}_SCM_L_45A_msg_buf;
+
 
 typedef union {
 	UINT8 byte[8];

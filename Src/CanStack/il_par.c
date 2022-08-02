@@ -112,6 +112,7 @@ const UINT8 il_rx_attr[] =
 
 UINT8 il_rx_status[IL_RX_NUM_MESSAGES];
 UINT16 il_rx_periodic_counter[IL_RX_NUM_MESSAGES];
+_SCM_L_45A_msg_buf              il_tx_SCM_L_45A_msg;
 
 const UINT8 il_rx_DLC[]=
 {
