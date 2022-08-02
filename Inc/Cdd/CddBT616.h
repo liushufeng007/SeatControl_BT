@@ -21,7 +21,7 @@
 #define CDDBT616_TX_PERIOD            (500/UARTIF_TASK_PERIOD)
 
 
-#define  BT_Connected()   0
+#define  BT_Connected()   (Ioif_GetPinLevel(GPIO_NUMBER_C13_BLE_Tran)== FALSE)
 
 
 #define ID_OFFSET  7

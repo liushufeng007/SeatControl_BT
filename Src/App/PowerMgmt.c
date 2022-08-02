@@ -84,24 +84,7 @@ static uint32_t uCurrBatAvgVoltFast = 0;
 void PowerModeInit(void)
 {
     /* Get  Voltage value */
-	uint8_t uIdx = 0;
-	uPower_Mode_Time = 0;
-    uCurrBatAvgVolt = ( 57 * 500 * (Adcif_Get_AdcVal(ADCIF_CH_BATT1_AD)) )/4096; 
-		uCurrBatAvgVoltFast = uCurrBatAvgVolt;
-	
-    for (uIdx = 0; uIdx < POWER_BATTERY_DEBOUNCE_COUNTER; uIdx++ )
-    {
-        auBatteryVoltage[uIdx] = uCurrBatAvgVolt;
-    }
-		
-    for (uIdx = 0; uIdx < POWER_BATTERY_DEBOUNCE_COUNTER; uIdx++ )
-    {
-        auBatteryVoltageFast[uIdx] = uCurrBatAvgVoltFast;
-    }
 
-	CanMessage_Receive_Flag = TRUE;
-
-    return;
 }
 
 
@@ -124,7 +107,7 @@ void PowerModeFastSample_5ms(void)
 	uint8_t uIdx = 0;
     /* Get power converter voltages in mVs    
      * only 12V Battery Voltage need to be monitor */    
-    auBatteryVoltageFast[uVoltageIndex++] = ( 57 * 500 * (Adcif_Get_AdcVal(ADCIF_CH_BATT1_AD)) )/4096;    
+    auBatteryVoltageFast[uVoltageIndex++] = 0;    
     
     if ( uVoltageIndex >= POWER_BATTERY_DEBOUNCE_COUNTER )    
     {    
@@ -160,104 +143,7 @@ void PowerModeHandler(void)
     static uint8_t uPMDiag_Voltage_State = POWER_VOLTAGE_NORMAL;   
     /* Get power converter voltages in mVs    
      * only 12V Battery Voltage need to be monitor */    
-    auBatteryVoltage[uVoltageIndex++] = ( 57 * 500 * (Adcif_Get_AdcVal(ADCIF_CH_BATT1_AD)) )/4096;    
     
-    if ( uVoltageIndex >= POWER_BATTERY_DEBOUNCE_COUNTER )    
-    {    
-        uVoltageIndex = 0;    
-    }    
-        
-    uCurrBatAvgVolt = 0;    
-    for (uIdx = 0; uIdx < POWER_BATTERY_DEBOUNCE_COUNTER; uIdx++ )    
-    {    
-        uCurrBatAvgVolt += auBatteryVoltage[uIdx];    
-    }    
-    uCurrBatAvgVolt /= POWER_BATTERY_DEBOUNCE_COUNTER;    
-		
-    /* Into diagnosis mode, get power voltage value  */    
-    uCurrBatAvgVolt1 = uCurrBatAvgVolt;    
-        
-    if (( ( uCurrBatAvgVolt > uPrevBatAvgVolt ) && ( ( uCurrBatAvgVolt - uPrevBatAvgVolt ) > POWER_BATTERY_TORERANCE ) )    
-     || ( ( uPrevBatAvgVolt > uCurrBatAvgVolt ) && ( ( uPrevBatAvgVolt - uCurrBatAvgVolt ) > POWER_BATTERY_TORERANCE ) ) )    
-    {    
-        uPrevBatAvgVolt = uCurrBatAvgVolt;    
-        uCurrBatAvgVolt = uCurrBatAvgVolt;    
-    }   
-
-	switch(uPMDiag_Voltage_State)
-	{
-			/* Normal mode */
-			case POWER_VOLTAGE_NORMAL:
-				uCANWorking_Voltage_Flag = SEAT_FALSE;
-				PowerVoltage_HLVI_flag = SEAT_FALSE;
-				if( ( uCurrBatAvgVolt > POWER_STANDBY_VOLTAGE_HVI2) || ( uCurrBatAvgVolt < POWER_STANDBY_VOLTAGE_LVI2 ) )
-			    {
-						uPMDiag_Voltage_State = POWER_VOLTAGE_HLVI2;
-			    }
-				else if( (uCurrBatAvgVolt > POWER_STANDBY_VOLTAGE_HVI1) || ( uCurrBatAvgVolt < POWER_STANDBY_VOLTAGE_LVI1 ) )
-				{
-					uPower_Mode_Time ++;
-					if( uPower_Mode_Time > 100 )
-					{
-						uPMDiag_Voltage_State = POWER_VOLTAGE_HLVI1;
-						uPower_Mode_Time = 0;
-					}
-					
-				}
-				else
-				{
-					uPMDiag_Voltage_State = POWER_VOLTAGE_NORMAL;
-					uPower_Mode_Time = 0;
-				}
-				break;
-			/* When voltage value >18.5V or <6.5V, All function disable. */
-			case POWER_VOLTAGE_HLVI2:
-        		uCANWorking_Voltage_Flag = SEAT_TRUE;
-				PowerVoltage_HLVI_flag = SEAT_TRUE;
-				if( (( uCurrBatAvgVolt > POWER_VOLTAGE_LVI2_HYS ) && ( uCurrBatAvgVolt < POWER_VOLTAGE_LVI1_HYS ))\
-					||( ( uCurrBatAvgVolt > POWER_VOLTAGE_HVI1_HYS ) && ( uCurrBatAvgVolt < POWER_VOLTAGE_HVI2_HYS ) ))
-				{
-					uPMDiag_Voltage_State = POWER_VOLTAGE_HLVI1;
-				}
-				else if( (uCurrBatAvgVolt >= POWER_VOLTAGE_LVI1_HYS) && ( uCurrBatAvgVolt <= POWER_VOLTAGE_HVI1_HYS ) )
-				{
-					uPMDiag_Voltage_State = POWER_VOLTAGE_NORMAL;
-				}
-				else
-				{
-					uPMDiag_Voltage_State = POWER_VOLTAGE_HLVI2;
-				}
-				break;
-			/* When voltage value >16.5V or <8.5V, In addition to indicator, other functions keep last state.. */
-			case POWER_VOLTAGE_HLVI1:
-				uCANWorking_Voltage_Flag = SEAT_TRUE;
-				PowerVoltage_HLVI_flag = SEAT_TRUE;
-				if( ( uCurrBatAvgVolt > POWER_STANDBY_VOLTAGE_HVI2) || ( uCurrBatAvgVolt < POWER_STANDBY_VOLTAGE_LVI2 ) )
-				{
-					uPMDiag_Voltage_State = POWER_VOLTAGE_HLVI2;
-				}
-				else if( (uCurrBatAvgVolt >= POWER_VOLTAGE_LVI1_HYS) && ( uCurrBatAvgVolt <= POWER_VOLTAGE_HVI1_HYS ) )
-				{
-					uPower_Mode_Time ++;
-					if( uPower_Mode_Time >= 100 )
-					{
-						uPMDiag_Voltage_State = POWER_VOLTAGE_NORMAL;
-						uPower_Mode_Time = 0;
-					}
-				}
-				else
-				{
-					uPMDiag_Voltage_State = POWER_VOLTAGE_HLVI1;
-					uPower_Mode_Time = 0;
-				}				
-				break;
-			default:
-				/* Do nothing */
-				break;
-	}
-
-	/* Network suspend and resume */
-	Network_Suspend();
 
 }
 
@@ -277,14 +163,14 @@ void Network_Suspend(void)
 
 	if( (SEAT_TRUE == Get_Network_Volt_Flag) && ( SEAT_FALSE == NetWork_Suspend_Flag ) )
 	{
-		vnim_disable_tx();
+		//vnim_disable_tx();
 		NetWork_Suspend_Flag = SEAT_TRUE;
 		NetWork_Resume_Flag = SEAT_FALSE;
 	}
 	
 	if( (SEAT_FALSE == Get_Network_Volt_Flag) && ( SEAT_FALSE == NetWork_Resume_Flag ))
 	{
-		vnim_enable_tx();
+		//vnim_enable_tx();
 		NetWork_Suspend_Flag = SEAT_FALSE;
 		NetWork_Resume_Flag = SEAT_TRUE;		
 	}

@@ -77,18 +77,18 @@ JY Hardware If bitx Mapping
 #define ServSWM_u_GetKey_Test_SW_RealVaule()		    (Ioif_GetPinLevel(GPIO_NUMBER_57_Seatback_F_SW_IO)==0)
 
 #else
-#define ServSWM_u_GetKey_Seatback_B_SW_RealVaule()		(Ioif_GetPinLevel(GPIO_NUMBER_57_Seatback_F_SW_IO)==0)
-#define ServSWM_u_GetKey_Seatback_F_SW_RealVaule()		(Ioif_GetPinLevel(GPIO_NUMBER_12_SeatBack_B_SW_IO)==0)
-#define ServSWM_u_GetKey_Seat_B_SW_RealVaule()		    (Ioif_GetPinLevel(GPIO_NUMBER_16_Seat_FastF_SW_IO)==0)
-#define ServSWM_u_GetKey_Seat_FastB_SW_RealVaule()		(Ioif_GetPinLevel(GPIO_NUMBER_27_Seat_F_SW_IO)==0)
-#define ServSWM_u_GetKey_Seat3_B_SW_RealVaule()		    (Ioif_GetPinLevel(GPIO_NUMBER_42_Seat3_B_SW_IO)==0)
-#define ServSWM_u_GetKey_Seat3_F_SW_RealVaule()		    (Ioif_GetPinLevel(GPIO_NUMBER_32_Seat3_F_SW_IO)==0)
-#define ServSWM_u_GetKey_Seat4_B_SW_RealVaule()		    (Ioif_GetPinLevel(GPIO_NUMBER_38_Seat4_B_SW_IO)==0)
-#define ServSWM_u_GetKey_Seat4_F_SW_RealVaule()		    (Ioif_GetPinLevel(GPIO_NUMBER_61_Seat4_F_SW_IO)==0)
-#define ServSWM_u_GetKey_Seat_FastF_SW_RealVaule()		(Ioif_GetPinLevel(GPIO_NUMBER_69_Seat_FastB_SW_IO)==0)
-#define ServSWM_u_GetKey_Seat_F_SW_RealVaule()		    (Ioif_GetPinLevel(GPIO_NUMBER_23_Seat_B_SW_IO)==0)
-#define ServSWM_u_GetKey_Test_SW_RealVaule()		    (Ioif_GetPinLevel(GPIO_NUMBER_57_Seatback_F_SW_IO)==0)
-#define ServSWM_u_GetKey_IGN_RealVaule()                (Ioif_GetPinLevel(GPIO_NUMBER_53_IGN_INT)==0)
+#define ServSWM_u_GetKey_Seatback_B_SW_RealVaule()		0
+#define ServSWM_u_GetKey_Seatback_F_SW_RealVaule()		0
+#define ServSWM_u_GetKey_Seat_B_SW_RealVaule()		   0
+#define ServSWM_u_GetKey_Seat_FastB_SW_RealVaule()		0
+#define ServSWM_u_GetKey_Seat3_B_SW_RealVaule()		   0
+#define ServSWM_u_GetKey_Seat3_F_SW_RealVaule()		    0
+#define ServSWM_u_GetKey_Seat4_B_SW_RealVaule()		    0
+#define ServSWM_u_GetKey_Seat4_F_SW_RealVaule()		   0
+#define ServSWM_u_GetKey_Seat_FastF_SW_RealVaule()		0
+#define ServSWM_u_GetKey_Seat_F_SW_RealVaule()		    0
+#define ServSWM_u_GetKey_Test_SW_RealVaule()		    0
+#define ServSWM_u_GetKey_IGN_RealVaule()                0
 #endif
 
 

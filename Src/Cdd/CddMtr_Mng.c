@@ -472,8 +472,8 @@ void CddMtr_Update_PowerState(void)
 {
 	uint32_t fl_temp_ad1=0,fl_temp_ad2=0;
 
-	fl_temp_ad1 = Adcif_Get_AdcVal(ADCIF_CH_BATT1_AD);
-	fl_temp_ad2 = Adcif_Get_AdcVal(ADCIF_CH_BATT2_AD);
+	fl_temp_ad1 = Adcif_Get_AdcVal(ADCIF_CH_VBAT_SW_AD_AD);
+	fl_temp_ad2 = Adcif_Get_AdcVal(ADCIF_CH_VBAT_SW_AD_AD);
 	
 	/*fl_PwdMode_vol1 = ( 57 * 500 * fl_temp_ad1 )/4096;*/
 	/*fl_PwdMode_vol2 = ( 57 * 500 * fl_temp_ad2 )/4096;*/
@@ -556,9 +556,9 @@ void CddMtr_Mng_Task(void)
 	}
 	else
 	{
-		fl_bat1_ad = Adcif_Get_AdcVal(ADCIF_CH_BATT1_AD);
+		fl_bat1_ad = Adcif_Get_AdcVal(ADCIF_CH_VBAT_SW_AD_AD);
 		fl_bat1_ad = CddMtr_LookUp_Compensate_Val(fl_bat1_ad);
-		fl_bat2_ad = Adcif_Get_AdcVal(ADCIF_CH_BATT2_AD);
+		fl_bat2_ad = Adcif_Get_AdcVal(ADCIF_CH_VBAT_SW_AD_AD);
 		fl_bat2_ad = CddMtr_LookUp_Compensate_Val(fl_bat2_ad);
 		
 		for(fl_Mtr_Id_u8 = 0 ; fl_Mtr_Id_u8 < CDDMTR_HFKF_MAX_NUM; fl_Mtr_Id_u8 ++)
@@ -572,7 +572,7 @@ void CddMtr_Mng_Task(void)
 			fl_swbat_ad = Adcif_Get_AdcVal(fl_ad_ch);
 			
 			fl_Compensate_ad = fl_bat2_ad;
-			if(ADCIF_CH_BATT1_AD ==  CddMtr_Mng_Ad_Ch_Map[fl_Mtr_Id_u8][3])
+			if(ADCIF_CH_VBAT_SW_AD_AD ==  CddMtr_Mng_Ad_Ch_Map[fl_Mtr_Id_u8][3])
 			{
 				fl_Compensate_ad = fl_bat1_ad;
 			}

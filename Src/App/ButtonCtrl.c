@@ -553,7 +553,11 @@ void ButtonCtrl_Update_Check(void)
 
 ButtonCtrl_Id_e ButtonCtrl_Get_CtrlMode(void)
 {
-	return Button_Mode[0];
+	ButtonCtrl_Id_e BtnId;
+
+	BtnId = (ButtonCtrl_Id_e)Button_Mode[0];
+
+	return BtnId;
 }
 
 

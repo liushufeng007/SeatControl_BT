@@ -8,6 +8,7 @@
 |    Other Header File Inclusion
 |******************************************************************************/
 #include "CddLed.h"
+#include "Ioif.h"
 
 uint8_t CddLed_Req_State = FALSE;
 /*******************************************************************************
@@ -45,11 +46,11 @@ void CddLed_5ms_Task(void)
 {
 	if(CddLed_Req_State == FALSE)
 	{
-
+		Ioif_SetPinLevel(GPIO_NUMBER_B1_AtLamp_EN,FALSE);
 	}
 	else
 	{
-		
+		Ioif_SetPinLevel(GPIO_NUMBER_B1_AtLamp_EN,TRUE);
 	}
 }
 
@@ -67,7 +68,14 @@ Call By			: OS_5ms
 |******************************************************************************/
 void CddLed_Req(uint8_t Req)
 {
-	
+	if(Req)
+	{
+		CddLed_Req_State = TRUE;
+	}
+	else
+	{
+		CddLed_Req_State = FALSE;
+	}
 }
 
 

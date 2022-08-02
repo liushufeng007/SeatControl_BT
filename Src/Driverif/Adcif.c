@@ -44,8 +44,8 @@ void Adcif_Init(void)
     FL_ADC_CommonInitTypeDef    ADC_CommonInitStruct;
     FL_ADC_InitTypeDef          ADC_InitStruct ;
 
-	Ioif_SetPinLevel(GPIO_NUMBER_26_VBAT_SW_EN,TRUE);
-	Ioif_SetPinLevel(GPIO_NUMBER_68_VDD_EN,TRUE);
+	Ioif_SetPinLevel(GPIO_NUMBER_B10_VBAT_SW_EN,TRUE);
+	Ioif_SetPinLevel(GPIO_NUMBER_E7_VDD_EN,TRUE);
 
     FL_ADC_CommonStructInit(&ADC_CommonInitStruct);
     FL_ADC_CommonInit(&ADC_CommonInitStruct);
@@ -72,14 +72,18 @@ void Adcif_Init(void)
     FL_ADC_EnableSequencerChannel(ADC, FL_ADC_EXTERNAL_CH0);   
     FL_ADC_EnableSequencerChannel(ADC, FL_ADC_EXTERNAL_CH1);   
     FL_ADC_EnableSequencerChannel(ADC, FL_ADC_EXTERNAL_CH2);   
+    FL_ADC_EnableSequencerChannel(ADC, FL_ADC_EXTERNAL_CH3);   
     FL_ADC_EnableSequencerChannel(ADC, FL_ADC_EXTERNAL_CH4);   
     FL_ADC_EnableSequencerChannel(ADC, FL_ADC_EXTERNAL_CH5);  
     FL_ADC_EnableSequencerChannel(ADC, FL_ADC_EXTERNAL_CH6);   
     FL_ADC_EnableSequencerChannel(ADC, FL_ADC_EXTERNAL_CH7);  
-    FL_ADC_EnableSequencerChannel(ADC, FL_ADC_EXTERNAL_CH8);   
+    FL_ADC_EnableSequencerChannel(ADC, FL_ADC_EXTERNAL_CH8); 
+    FL_ADC_EnableSequencerChannel(ADC, FL_ADC_EXTERNAL_CH9);   
     FL_ADC_EnableSequencerChannel(ADC, FL_ADC_EXTERNAL_CH11);  
     FL_ADC_EnableSequencerChannel(ADC, FL_ADC_EXTERNAL_CH12);
     FL_ADC_EnableSequencerChannel(ADC, FL_ADC_EXTERNAL_CH13);
+    FL_ADC_EnableSequencerChannel(ADC, FL_ADC_EXTERNAL_CH14);
+    FL_ADC_EnableSequencerChannel(ADC, FL_ADC_EXTERNAL_CH17);
 	
 	ADC_DMA(Adcif_Buffer, ADCIF_CH_MAX_NUM);
 	

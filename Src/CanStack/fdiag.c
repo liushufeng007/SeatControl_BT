@@ -856,7 +856,7 @@ UINT8 fdiag_app_170B_get_BAT_Voltage(UINT8 *buffer)
     UINT16 adc_val_bat = 0;
     UINT8 bat_vol = 0; /* factor :0.1V */
 
-    adc_val_bat = Adcif_Get_AdcVal(ADCIF_CH_BATT1_AD); 
+    adc_val_bat = 0; 
 
     bat_vol = BAT_VOL_BASE + (BAT_VAL_FACOR * (adc_val_bat -  BAT_AD_VAL_BASE) / BAT_AD_VAL_PER_1V); 
     *buffer = bat_vol;
@@ -1647,7 +1647,7 @@ static BOOLEAN DTC_BAT_VOLTAGE_IS_HIGH(void)
     static UINT8 ng_debounce_cnt = 0;
     static UINT8 ok_debounce_cnt = 0;
 
-    adc_val_bat = Adcif_Get_AdcVal(ADCIF_CH_BATT1_AD); 
+    adc_val_bat = 0; 
 
     bat_vol = BAT_VOL_BASE + (BAT_VAL_FACOR * (adc_val_bat -  BAT_AD_VAL_BASE) / BAT_AD_VAL_PER_1V); 
 
@@ -1698,7 +1698,7 @@ static BOOLEAN DTC_BAT_VOLTAGE_IS_LOW(void)
     static UINT8 ng_debounce_cnt = 0;
     static UINT8 ok_debounce_cnt = 0;
 
-    adc_val_bat = Adcif_Get_AdcVal(ADCIF_CH_BATT1_AD); 
+    adc_val_bat = 0; 
 
     bat_vol = BAT_VOL_BASE + (BAT_VAL_FACOR * (adc_val_bat -  BAT_AD_VAL_BASE) / BAT_AD_VAL_PER_1V); 
 

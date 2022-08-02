@@ -11,7 +11,7 @@
 #include "uartif.h"
 #include "CddBT616_Cfg.h"
 #include "CddBT616.h"
-
+#include "il_par.h"
 
 /*******************************************************************************
 |    Macro Definition
@@ -46,9 +46,18 @@ const CddBT616_cmd_Str CddBT616_cmd_AT =
 	sizeof(BT616_Txcmd_AT)/sizeof(uint8_t),
 	sizeof(BT616_Rxcmd_AT)/sizeof(uint8_t)
 };
+#if(SCM_SEATCONTROL_VARIANT == SCM_R_VARIANT)
 
 const uint8_t BT616_Txcmd_Name[] = {'A','T','+','N','A','M','E',0xD,0xA};
-const uint8_t BT616_Rxcmd_Name[] = {0xD,0xA,'+','N','A','M','E','=','J','U','N','Y','I','0','0','1',0xD,0xA,0xD,0xA,'O','K',0xD,0xA};
+const uint8_t BT616_Rxcmd_Name[] = {0xD,0xA,'+','N','A','M','E','=','J','U','N','Y','I','-','-','R',0xD,0xA,0xD,0xA,'O','K',0xD,0xA};
+
+#else
+
+const uint8_t BT616_Txcmd_Name[] = {'A','T','+','N','A','M','E',0xD,0xA};
+const uint8_t BT616_Rxcmd_Name[] = {0xD,0xA,'+','N','A','M','E','=','J','U','N','Y','I','-','-','L',0xD,0xA,0xD,0xA,'O','K',0xD,0xA};
+
+#endif
+
 
 const CddBT616_cmd_Str CddBT616_cmd_Name =
 {
@@ -57,9 +66,18 @@ const CddBT616_cmd_Str CddBT616_cmd_Name =
 	sizeof(BT616_Txcmd_Name)/sizeof(uint8_t),
 	sizeof(BT616_Rxcmd_Name)/sizeof(uint8_t)
 };
+	
+#if(SCM_SEATCONTROL_VARIANT == SCM_R_VARIANT)
 
-const uint8_t BT616_Txcmd_WName[] = {'A','T','+','N','A','M','E','=','J','U','N','Y','I','0','0','1',0xD,0xA};
+const uint8_t BT616_Txcmd_WName[] = {'A','T','+','N','A','M','E','=','J','U','N','Y','I','-','-','R',0xD,0xA};
 const uint8_t BT616_Rxcmd_WName[] = {0xD,0xA,'A','T',0xD,0xA};
+
+#else
+
+const uint8_t BT616_Txcmd_WName[] = {'A','T','+','N','A','M','E','=','J','U','N','Y','I','-','-','L',0xD,0xA};
+const uint8_t BT616_Rxcmd_WName[] = {0xD,0xA,'A','T',0xD,0xA};
+
+#endif
 
 const CddBT616_cmd_Str CddBT616_cmd_WName =
 {

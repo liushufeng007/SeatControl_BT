@@ -64,7 +64,7 @@ Comp sleep init
 
 void Canif_DeInit(void)
 {
-	Ioif_SetPinLevel(GPIO_NUMBER_46_CAN_STB,1);
+	Ioif_SetPinLevel(GPIO_NUMBER_C14_CAN_STB,1);
     FL_CAN_ClearFlag_RXOK(CAN);
 	FL_CAN_DisableIT_RXOK(CAN);      /* 接收中断使能 */
     NVIC_DisableIRQ(CAN_IRQn);
@@ -121,7 +121,7 @@ void Canif_Init(void)
     FL_CAN_InitTypeDef       CAN_InitStructure = {0};
     FL_CAN_FilterInitTypeDef CAN_FilterInitStructure = {0};
 
-	Ioif_SetPinLevel(GPIO_NUMBER_46_CAN_STB,0);
+	Ioif_SetPinLevel(GPIO_NUMBER_C14_CAN_STB,0);
 
 	
 	Canif_rx_queue.queue_in = 0;

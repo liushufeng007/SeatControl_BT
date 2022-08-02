@@ -122,7 +122,7 @@ void CddModeM_DeInit(void)
 	prvStopTickInterruptTimer();
 	__enable_irq();
 	
-	if(Ioif_GetPinLevel(GPIO_NUMBER_53_IGN_INT) == FALSE)
+	if(Ioif_GetPinLevel(GPIO_NUMBER_D5_IGN_INT) == FALSE)
 	{
 	DeepSleep();
 	}
@@ -201,7 +201,7 @@ void CddModeM_Task(void)
 		CanNm_Condition = TRUE;
 	}
 	
-	if(Ioif_GetPinLevel(GPIO_NUMBER_53_IGN_INT) == FALSE)
+	if(Ioif_GetPinLevel(GPIO_NUMBER_D5_IGN_INT) == FALSE)
 	{
 		IGN_Condition = TRUE;
 	}

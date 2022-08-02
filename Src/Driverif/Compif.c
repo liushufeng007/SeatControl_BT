@@ -24,10 +24,18 @@ void LPTIM_IRQHandler(void)
 		CPU_RunTime++;
 #endif
 		AdcIf_Polling();
-		fl_ad_val = Adcif_Get_AdcVal(ADCIF_CH_MotorBack_HALL_AD);
+		fl_ad_val = Adcif_Get_AdcVal(ADCIF_CH_Rail_IO_HALL_AD);
 		CddMtr_Mng_Motor_Step(CDDMTR_HFKF_CH_0,fl_ad_val);
-		fl_ad_val = Adcif_Get_AdcVal(ADCIF_CH_RAIL_MOTOR_HALL_AD);
-		CddMtr_Mng_Motor_Step(CDDMTR_HFKF_CH_1,fl_ad_val);		
+		fl_ad_val = Adcif_Get_AdcVal(ADCIF_CH_Back_IN_IO_HALL_AD);
+		CddMtr_Mng_Motor_Step(CDDMTR_HFKF_CH_1,fl_ad_val);	
+		fl_ad_val = Adcif_Get_AdcVal(ADCIF_CH_Head_IN_IO_HALL_AD);
+		CddMtr_Mng_Motor_Step(CDDMTR_HFKF_CH_2,fl_ad_val);
+		fl_ad_val = Adcif_Get_AdcVal(ADCIF_CH_Angle_IO_HALL_AD);
+		CddMtr_Mng_Motor_Step(CDDMTR_HFKF_CH_3,fl_ad_val);
+		fl_ad_val = Adcif_Get_AdcVal(ADCIF_CH_Rotate_IN_IO_HALL_AD);
+		CddMtr_Mng_Motor_Step(CDDMTR_HFKF_CH_4,fl_ad_val);
+		fl_ad_val = Adcif_Get_AdcVal(ADCIF_CH_Leg_IN_IO_HALL_AD);
+		CddMtr_Mng_Motor_Step(CDDMTR_HFKF_CH_5,fl_ad_val);
     }
 	/**
     if(FL_LPTIM32_IsActiveFlag_Update(LPTIM32))

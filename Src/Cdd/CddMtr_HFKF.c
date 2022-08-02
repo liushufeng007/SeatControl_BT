@@ -31,18 +31,17 @@
 |    Static local variables Declaration
 |******************************************************************************/
 
-
 /*******************************************************************************
 |    Table Definition
 |******************************************************************************/
 const CddMtr_HFKF_Ctrl CddMtr_HFKF_CH_Table[CDDMTR_HFKF_MAX_NUM] =
 {
-	GPIO_NUMBER_3_Motorback_P_EN ,	GPIO_NUMBER_4_Motorback_N_EN ,
-	GPIO_NUMBER_6_Motorseat_N_EN ,  GPIO_NUMBER_5_Motorseat_P_EN,
-	GPIO_NUMBER_7_Motor3_P_EN,GPIO_NUMBER_8_Motor3_N_EN,
-	GPIO_NUMBER_9_Motor4_P_EN,GPIO_NUMBER_10_Motor4_N_EN,
-	GPIO_NUMBER_7_Motor3_P_EN,GPIO_NUMBER_8_Motor3_N_EN,
-	GPIO_NUMBER_9_Motor4_P_EN,GPIO_NUMBER_10_Motor4_N_EN
+	GPIO_NUMBER_A7_Motorsea_P ,	GPIO_NUMBER_A6_Motorseat_N ,
+	GPIO_NUMBER_A3_NLMotorback_P ,  GPIO_NUMBER_A2_NLMotorback_N,
+	GPIO_NUMBER_A8_Motorhead_P,GPIO_NUMBER_A9_Motorhead_N,
+	GPIO_NUMBER_A11_Motorangle_P,GPIO_NUMBER_A10_Motorangle_N,
+	GPIO_NUMBER_B8_Motorrotate_P,GPIO_NUMBER_B9_Motorrotate_N,
+	GPIO_NUMBER_A4_Motorleg_P,GPIO_NUMBER_A5_Motorleg_N
 };
 /*******************************************************************************
 |    Static Local Functions Declaration
