@@ -175,6 +175,7 @@ void UART3_IRQHandler(void)
   * @param  void
   * @retval void
   */
+#if 0
 void UART4_IRQHandler(void)
 {
     uint8_t tmp08;
@@ -203,6 +204,7 @@ void UART4_IRQHandler(void)
         FL_UART_ClearFlag_TXShiftBuffEmpty(UART4);  /* 清除发送中断标志 */
     }
 }
+#endif
 
 /**
   * @brief  UART5中断函数

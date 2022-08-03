@@ -13,6 +13,8 @@ volatile uint32_t CPU_RunTime;
   * @param  void
   * @retval void
   */
+#if 0
+
 void LPTIM_IRQHandler(void)
 {
 	uint16_t fl_ad_val;
@@ -43,15 +45,16 @@ void LPTIM_IRQHandler(void)
         FL_LPTIM32_ClearFlag_CC(LPTIM32,FL_LPTIM32_CHANNEL_1);
     }**/
 }
-
+#endif
 
 /************************************
 Comp poweron init
 ************************************/
 void Compif_Init(void)
 {
-   
+ #if 0
 	   FL_LPTIM16_InitTypeDef      timInit;
+
 
     /*---------------- 定时器时间基准配置 ----------------*/
     FL_LPTIM16_StructInit(&timInit);
@@ -89,7 +92,7 @@ void Compif_Init(void)
 
     /* 使能LPTIM16 */
     FL_LPTIM16_Enable(LPTIM16);
-
+#endif
 }
 /************************************
 Comp sleep init
