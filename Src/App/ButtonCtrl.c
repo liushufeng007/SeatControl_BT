@@ -6,6 +6,7 @@
 #include "CddLed.h"
 
 #include "CddEeprom.h"
+#include "lin.h"
 
 ButtonCtrl_Queue_str ButtonCtrl_queue;
 
@@ -278,6 +279,7 @@ void ButtonCtrl_Motor_ActionProcess(ButtonCtrlReq_Str req,uint8_t mtr_index)
 
 }
 
+
 /************************************
 Motor Button Process
 ************************************/
@@ -323,11 +325,30 @@ void ButtonCtrl_Motor_EventProcess(void)
 	}
 	if(ButtonCtrl_Req.Ventilation.ReqActive == BTNVAL_ON)
 	{
-
+		if(ButtonCtrl_Req.Ventilation.ButtonVal != 0)
+		{
+			LIN_CMD0_Data.SCM_Fan_SCM_msg.Fan_Pwm = 100;
+		}
+		else
+		{
+			LIN_CMD0_Data.SCM_Fan_SCM_msg.Fan_Pwm = 0;
+		}
 	}
 	if(ButtonCtrl_Req.Massage.ReqActive == BTNVAL_ON)
 	{
+		if(ButtonCtrl_Req.Ventilation.ButtonVal <= 3)
+		{
+			LIN_CMD2_Data.SCM_L_SCM_msg.L_mode = ButtonCtrl_Req.Ventilation.ButtonVal;
+		}
 
+		if(ButtonCtrl_Req.Ventilation.ButtonVal == 0)
+		{
+			LIN_CMD2_Data.SCM_L_SCM_msg.L_Func = TRUE;
+		}
+		else
+		{
+			LIN_CMD2_Data.SCM_L_SCM_msg.L_Func = FALSE;
+		}
 	}
 }
 

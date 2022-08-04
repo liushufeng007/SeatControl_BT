@@ -1,7 +1,7 @@
 #ifndef __LIN_H__
 #define __LIN_H__
 #include "main.h"
-
+#include "user_init.h"
 /* 执行时间优化相关宏定义 */
 #define LIN_GPTIM2_ISR_MASK 6   /* 输入捕获通道1和2中断标志, 写1清0 CC1IF和CC2IF */
 #define LIN_GPTIM2_IER_MASK 2   /* 输入捕获通道1中断使能 */
@@ -27,9 +27,16 @@ struct UARTOpStruct_LIN
     uint8_t RxLen;
 };
 typedef enum {
-    LIN_CMD0 = 0x17,
-    LIN_CMD1 = 0x37,  
-    LIN_CMD2 = 0x38,  
+	LIN_CMD0 = 0x11,
+	LIN_CMD1 = 0x12,  
+	LIN_CMD2 = 0x26,  
+	LIN_CMD3 = 0x27,
+	LIN_CMD4 = 0x28,  
+	LIN_CMD5 = 0x55,  
+	LIN_CMD6 = 0x56,
+	
+	LIN_CMD7 = 0x67,  
+	LIN_CMD8 = 0x68,  
     /* 此处增加自定义ID */
 }lin_cmd_t;
 
@@ -92,21 +99,143 @@ typedef struct {
 /* 用户处理 */
 #define LIN_CMD0_LENGTH     3
 #define LIN_CMD0_TIMEOUT    20
-#define LIN_CMD0_PERIOD     100 /* 最大255ms */
+#define LIN_CMD0_PERIOD     20 /* 最大255ms */
 
 #define LIN_CMD1_LENGTH     4
 #define LIN_CMD1_TIMEOUT    30
-#define LIN_CMD1_PERIOD     200 /* 最大255ms */
+#define LIN_CMD1_PERIOD     20 /* 最大255ms */
 
 #define LIN_CMD2_LENGTH     8
 #define LIN_CMD2_TIMEOUT    40
-#define LIN_CMD2_PERIOD     200 /* 最大255ms */
+#define LIN_CMD2_PERIOD     20 /* 最大255ms */
 
-extern uint8_t LIN_CMD0_Data[8];
-extern uint8_t LIN_CMD1_Data[8];
-extern uint8_t LIN_CMD2_Data[8];
 extern lin_cmd_packet_t scheduleTable[];
 #define TABLE_SIZE  (sizeof(scheduleTable)/sizeof(lin_cmd_packet_t))
+
+/* APP mssage ID 45B tx */
+typedef struct {
+	/* Byte0 */
+	UINT8                      L_mode: 3;
+	UINT8                      reserved_byte0_0: 3;
+	UINT8                      L_Func: 1;
+	UINT8                      reserved_byte0_1: 1;
+	/* Byte1 */
+	UINT8                      reserved_byte6: 8;
+	/* Byte2 */
+	UINT8                      reserved_byte5: 8;
+	/* Byte3 */            
+	UINT8                      reserved_byte0: 8;
+	/* Byte4 */       
+	UINT8                      reserved_byte1: 8;
+	/* Byte5 */   
+	UINT8                      reserved_byte2: 8;
+	/* Byte6 */
+	UINT8                      reserved_byte3: 8;
+	/* Byte7 */
+	UINT8                      reserved_byte4: 8;
+}_Seat_msgType;
+
+typedef union {
+	UINT8 byte[8];
+	_Seat_msgType	SCM_L_SCM_msg;
+}_Seat_msgType_buf;
+
+/* APP mssage ID 45B tx */
+typedef struct {
+	/* Byte0 */
+	UINT8                      L_mode_State: 3;
+	UINT8                      reserved_byte0_0: 3;
+	UINT8                      L_Func_ON: 1;
+	UINT8                      reserved_byte0_1: 1;
+	/* Byte1 */
+	UINT8                      reserved_byte6: 8;
+	/* Byte2 */
+	UINT8                      reserved_byte5: 8;
+	/* Byte3 */            
+	UINT8                      reserved_byte0: 8;
+	/* Byte4 */       
+	UINT8                      reserved_byte1: 8;
+	/* Byte5 */   
+	UINT8                      reserved_byte2: 8;
+	/* Byte6 */
+	UINT8                      reserved_byte3: 8;
+	/* Byte7 */
+	UINT8                      reserved_byte4: 8;
+
+}_Seat_msg_L_Status_Type;
+
+typedef union {
+	UINT8 byte[8];
+	_Seat_msg_L_Status_Type	SCM_L_SCM_msg;
+}_Seat_msgType_L_Status_buf;
+
+
+/* APP mssage ID 45B tx */
+typedef struct {
+	/* Byte0 */
+	UINT8                      R_mode_State: 3;
+	UINT8                      reserved_byte0_0: 3;
+	UINT8                      R_Func_ON: 1;
+	UINT8                      reserved_byte0_1: 1;
+	/* Byte1 */
+	UINT8                      reserved_byte6: 8;
+	/* Byte2 */
+	UINT8                      reserved_byte5: 8;
+	/* Byte3 */            
+	UINT8                      reserved_byte0: 8;
+	/* Byte4 */       
+	UINT8                      reserved_byte1: 8;
+	/* Byte5 */   
+	UINT8                      reserved_byte2: 8;
+	/* Byte6 */
+	UINT8                      reserved_byte3: 8;
+	/* Byte7 */
+	UINT8                      reserved_byte4: 8;
+}_Seat_msg_R_Status_Type;
+
+typedef union {
+	UINT8 byte[8];
+	_Seat_msg_R_Status_Type	SCM_R_SCM_msg;
+}_Seat_msgType_R_Status_buf;
+
+
+
+typedef struct {
+	/* Byte0 */
+	UINT8                      Fan_Pwm: 7;
+	UINT8                      reserved_byte0_0: 1;
+	/* Byte1 */
+	UINT8                      reserved_byte6: 8;
+	/* Byte2 */
+	UINT8                      reserved_byte5: 8;
+	/* Byte3 */            
+	UINT8                      reserved_byte0: 8;
+	/* Byte4 */       
+	UINT8                      reserved_byte1: 8;
+	/* Byte5 */   
+	UINT8                      reserved_byte2: 8;
+	/* Byte6 */
+	UINT8                      reserved_byte3: 8;
+	/* Byte7 */
+	UINT8                      reserved_byte4: 8;
+}_SeatFanCtrl_msg_Status_Type;
+
+typedef union {
+	UINT8 byte[8];
+	_SeatFanCtrl_msg_Status_Type	SCM_Fan_SCM_msg;
+}_Seat_msgType_Fan_buf;
+
+
+
+extern _Seat_msgType_Fan_buf LIN_CMD0_Data;
+extern _Seat_msgType_Fan_buf LIN_CMD1_Data;
+extern _Seat_msgType_buf LIN_CMD2_Data;
+extern _Seat_msgType_L_Status_buf LIN_CMD3_Data;
+extern _Seat_msgType_R_Status_buf LIN_CMD4_Data;
+extern _Seat_msgType_Fan_buf LIN_CMD5_Data;
+extern _Seat_msgType_Fan_buf LIN_CMD6_Data;
+
+
 
 void lin_init(void);
 

@@ -26,6 +26,11 @@
 
 extern _SCM_L_45A_msg_buf			        il_tx_SCM_L_45A_msg;
 
+
+
+
+
+
 /*****************************************************************************
 *                                 Macro Definitions                          *
 *----------------------------------------------------------------------------*
@@ -111,7 +116,7 @@ static void nfc_cmd_response(UINT8 nfc_cmd_func, UINT8 nfc_cmd_err_code);
 
 void Message_variable_init(void)
 {
-	UINT8 index;
+ 
 
 	
 	CddEeprom_Req_Read(EEPROM_BANK_APP,0,5,BT_Signal_Group);
@@ -488,10 +493,12 @@ void tcan_Btn(void)
 	}
 }
 
+
+
 void tcan_Task(void)
 {
 	static UINT8 Tcan_Send_Cycle = 0;
-	static UINT8 NM_Send_Cycle = 0;
+ 
 
 	if( Tcan_Send_Cycle < 10 )
 	{

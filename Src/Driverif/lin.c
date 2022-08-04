@@ -10,7 +10,7 @@
 
 
 #define FRAME_DATA_MAX_LEN          11  /* 帧最大数据长度 */
-#define SCHEDULE_FRAME_MAX_NUM      255 /* 进度表最大帧数量 */
+#define SCHEDULE_FRAME_MAX_NUM      25 /* 进度表最大帧数量 */
 
 #define FRAME_TYPE_UNCONDITIONAL    0   /* 无条件帧 */
 #define FRAME_TYPE_EVENT_TRIGGER    1   /* 事件触发帧 */
@@ -123,18 +123,28 @@ typedef struct s_lin_task_type
     lin_schedule_type lin_schedule; /* 进度表 */
 }lin_task_type;
 
-uint16_t schedule_table_slot[100];
+uint16_t schedule_table_slot[10];
 lin_task_type g_lin_task;
 
-uint8_t LIN_CMD0_Data[8] = {0x02, 0x00, 0x00};
-uint8_t LIN_CMD1_Data[8];
-uint8_t LIN_CMD2_Data[8];
+_Seat_msgType_Fan_buf LIN_CMD0_Data;
+_Seat_msgType_Fan_buf LIN_CMD1_Data;
+_Seat_msgType_buf LIN_CMD2_Data;
+_Seat_msgType_L_Status_buf LIN_CMD3_Data;
+_Seat_msgType_R_Status_buf LIN_CMD4_Data;
+_Seat_msgType_Fan_buf LIN_CMD5_Data;
+_Seat_msgType_Fan_buf LIN_CMD6_Data;
+
+
 uint8_t ticks = 0;
 lin_cmd_packet_t scheduleTable[] = {
   /* 用户命令码 */
-  {LIN_CMD0, TRANSMIT, LIN_CMD0_LENGTH, LIN_CMD0_TIMEOUT, LIN_CMD0_PERIOD, LIN_CMD0_Data},
-  {LIN_CMD1, RECEIVE,  LIN_CMD1_LENGTH, LIN_CMD1_TIMEOUT, LIN_CMD1_PERIOD, LIN_CMD1_Data},
-  {LIN_CMD2, RECEIVE,  LIN_CMD2_LENGTH, LIN_CMD2_TIMEOUT, LIN_CMD2_PERIOD, LIN_CMD2_Data},
+  {LIN_CMD0, TRANSMIT, LIN_CMD0_LENGTH, LIN_CMD0_TIMEOUT, LIN_CMD0_PERIOD, LIN_CMD0_Data.byte},
+  {LIN_CMD1, TRANSMIT, LIN_CMD1_LENGTH, LIN_CMD1_TIMEOUT, LIN_CMD1_PERIOD, LIN_CMD1_Data.byte},
+  {LIN_CMD2, TRANSMIT, LIN_CMD2_LENGTH, LIN_CMD2_TIMEOUT, LIN_CMD2_PERIOD, LIN_CMD2_Data.byte},
+  {LIN_CMD3, RECEIVE,  LIN_CMD2_LENGTH, LIN_CMD0_TIMEOUT, LIN_CMD0_PERIOD, LIN_CMD3_Data.byte},
+  {LIN_CMD4, RECEIVE,  LIN_CMD2_LENGTH, LIN_CMD1_TIMEOUT, LIN_CMD1_PERIOD, LIN_CMD4_Data.byte},
+  {LIN_CMD5, RECEIVE,  LIN_CMD2_LENGTH, LIN_CMD2_TIMEOUT, LIN_CMD2_PERIOD, LIN_CMD5_Data.byte},
+  {LIN_CMD6, RECEIVE,  LIN_CMD2_LENGTH, LIN_CMD2_TIMEOUT, LIN_CMD2_PERIOD, LIN_CMD6_Data.byte},
 };
 struct UARTOpStruct_LIN UARTxOp_LIN;
 /**
