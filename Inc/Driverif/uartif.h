@@ -7,7 +7,7 @@
 
 #define UARTIF_TASK_PERIOD          5  /*unit:ms*/
 
-#define UARTIF_FRAME_COMPLETE_TIME           (20/UARTIF_TASK_PERIOD)
+#define UARTIF_FRAME_COMPLETE_TIME           (15/UARTIF_TASK_PERIOD)
 
 #define UARTIF_DELAY_50MS           (5/UARTIF_TASK_PERIOD)
 
@@ -21,6 +21,7 @@ typedef struct
 	
     uint8_t RxLen;  //待接收数据长度
     uint8_t RxOpc;  //已接收数据长度
+    uint8_t RxOpc_bak;  //已接收数据长度
     uint8_t RxPool[UARTIF_MAX_TXRX_SIZE];
 	uint16_t Rxframeticks;
 }UARTOpStruct;

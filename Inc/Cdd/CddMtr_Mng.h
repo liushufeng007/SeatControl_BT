@@ -42,8 +42,8 @@
 
 #define CDDMTR_MNG_MAIN_E2_ADDR         (0)
 
-#define CDDMTR_MNG_7V_AD_VAL            (1006)
-#define CDDMTR_MNG_8V_AD_VAL            (1149)
+#define CDDMTR_MNG_7V_AD_VAL            (800)
+#define CDDMTR_MNG_8V_AD_VAL            (1000)
 #define CDDMTR_MNG_9V_AD_VAL            (1293)
 #define CDDMTR_MNG_STOP_VOL             (7000)
 #define CDDMTR_MNG_START_VOL             (8000)

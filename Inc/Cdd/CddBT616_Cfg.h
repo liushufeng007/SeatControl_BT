@@ -28,7 +28,7 @@ typedef enum
 {
 	BT616_CMD_AT = 0,
 	BT616_CMD_NAME = 1,
-	BT616_CMD_WNAME = 1,
+	BT616_CMD_WNAME = 2,
 }CddBT616_Cmd_e;
 
 

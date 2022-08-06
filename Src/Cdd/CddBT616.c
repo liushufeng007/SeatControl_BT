@@ -128,23 +128,14 @@ uint8_t CddBT616_Check_Parity(uint8_t * data , uint8_t num)
 {
 	uint8_t parity = 0;
 	uint8_t index = 0;
-	uint8_t ckcreslt = 0;
+
 	
 	for(index = 0; index < num ; index ++)
 	{
 		parity = data[index] ^ parity;
 	}
-
-	if(parity == data[index])
-	{
-		ckcreslt = TRUE;
-	}
-	else
-	{
-		ckcreslt = FALSE;
-	}
 	
-	return ckcreslt;
+	return parity;
 }
 
 
@@ -214,6 +205,8 @@ CddTest_init
 void CddBT616_init(void)
 {
 	uint8_t index = 0;
+
+	Ioif_SetPinLevel(GPIO_NUMBER_E3_BLE_RESET,TRUE);
 	memset(&CddBT616_Main_Ctrl,0,sizeof(CddBT616_Main_Ctrl)); 
 	CddBT616_Main_Ctrl.txst.DLC = 18;
 	CddBT616_Main_Ctrl.txst.Data[index++] = 0x75;
@@ -266,14 +259,22 @@ void CddBT616_Task(void)
 	Uartif_Msg_Str fl_str_e;
 	uint8_t ret ;
 	ButtonCtrl_Str btn;
-	
-	if(BT_Connected())
+
+	if(CddBT616_Main_Ctrl.delayticks > CDDBT616_INIT_DELAY)
 	{
-		if(CddBT616_Main_Ctrl.State < BT616_WORK_CHECK_CONNECT)
+		if(BT_Connected())
 		{
-			CddBT616_Main_Ctrl.State = BT616_WORK_CHECK_CONNECT;
+			if(CddBT616_Main_Ctrl.State < BT616_WORK_CHECK_CONNECT)
+			{
+				CddBT616_Main_Ctrl.State = BT616_WORK_CHECK_CONNECT;
+			}
 		}
 	}
+	else
+	{
+		CddBT616_Main_Ctrl.delayticks++;
+	}
+
 
 	switch(CddBT616_Main_Ctrl.State)
 	{
@@ -283,6 +284,7 @@ void CddBT616_Task(void)
 			memcpy(fl_str_e.Data ,CddBT616_Cmd_Table[BT616_CMD_AT][0].tx_ptr,fl_str_e.DLC);
 			Uartif_tx_queue_push_e(fl_str_e);
 			CddBT616_Main_Ctrl.State = BT616_WORK_TEST_RX;
+			CddBT616_Main_Ctrl.statedelayticks = CDDBT616_STATE_DELAY;
 		}
 		break;
 			
@@ -295,6 +297,17 @@ void CddBT616_Task(void)
 					CddBT616_Main_Ctrl.State = BT616_WORK_READ_NAME;
 				}
 			}
+			else
+			{
+				if(CddBT616_Main_Ctrl.statedelayticks == 0)
+				{
+					CddBT616_Main_Ctrl.State = BT616_WORK_TEST_TX;
+				}
+				else
+				{
+					CddBT616_Main_Ctrl.statedelayticks --;
+				}
+			}
 		}
 		break;
 				
@@ -304,7 +317,7 @@ void CddBT616_Task(void)
 			memcpy(fl_str_e.Data ,CddBT616_Cmd_Table[BT616_CMD_NAME][0].tx_ptr,fl_str_e.DLC);
 			Uartif_tx_queue_push_e(fl_str_e);
 			CddBT616_Main_Ctrl.State = BT616_WORK_CHECK_NAME;
-
+			CddBT616_Main_Ctrl.statedelayticks = CDDBT616_STATE_DELAY;
 		}
 		break;
 
@@ -314,11 +327,22 @@ void CddBT616_Task(void)
 			{
 				if(FALSE == memcmp(fl_str_e.Data ,CddBT616_Cmd_Table[BT616_CMD_NAME][0].rx_ptr,CddBT616_Cmd_Table[BT616_CMD_NAME][0].rx_len))
 				{
-					CddBT616_Main_Ctrl.State = BT616_WORK_READ_NAME;
+					CddBT616_Main_Ctrl.State = BT616_WORK_CHECK_CONNECT;
 				}
 				else
 				{
 					CddBT616_Main_Ctrl.State = BT616_WORK_WRITE_NAME;
+				}
+			}
+			else
+			{
+				if(CddBT616_Main_Ctrl.statedelayticks == 0)
+				{
+					CddBT616_Main_Ctrl.State = BT616_WORK_TEST_TX;
+				}
+				else
+				{
+					CddBT616_Main_Ctrl.statedelayticks --;
 				}
 			}
 		}
@@ -329,7 +353,8 @@ void CddBT616_Task(void)
 			fl_str_e.DLC = CddBT616_Cmd_Table[BT616_CMD_WNAME][0].tx_len;
 			memcpy(fl_str_e.Data ,CddBT616_Cmd_Table[BT616_CMD_WNAME][0].tx_ptr,fl_str_e.DLC);
 			Uartif_tx_queue_push_e(fl_str_e);
-			CddBT616_Main_Ctrl.State = BT616_WORK_CHECK_NAME;
+			CddBT616_Main_Ctrl.State = BT616_WORK_W_CHECK_NAME;
+			CddBT616_Main_Ctrl.statedelayticks = CDDBT616_STATE_DELAY;
 		}
 		break;
 
@@ -337,13 +362,24 @@ void CddBT616_Task(void)
 		{
 			if(TRUE == Uartif_rx_queue_pull_e(&fl_str_e))
 			{
-				if(FALSE == memcmp(fl_str_e.Data ,CddBT616_Cmd_Table[BT616_CMD_WNAME][0].rx_ptr,CddBT616_Cmd_Table[BT616_CMD_WNAME][0].rx_len))
+				if(FALSE == memcmp(fl_str_e.Data ,CddBT616_Cmd_Table[BT616_CMD_AT][0].rx_ptr,CddBT616_Cmd_Table[BT616_CMD_AT][0].rx_len))
 				{
 					CddBT616_Main_Ctrl.State = BT616_WORK_CHECK_CONNECT;
 				}
 				else
 				{
 					CddBT616_Main_Ctrl.State = BT616_WORK_WRITE_NAME;
+				}
+			}
+			else
+			{
+				if(CddBT616_Main_Ctrl.statedelayticks == 0)
+				{
+					CddBT616_Main_Ctrl.State = BT616_WORK_TEST_TX;
+				}
+				else
+				{
+					CddBT616_Main_Ctrl.statedelayticks --;
 				}
 			}
 		}
@@ -382,7 +418,7 @@ void CddBT616_Task(void)
 						ret = CddBT616_Check_RxFormat(fl_str_e.Data);
 						if(ret == TRUE)
 						{
-							btn = CddBT616_Search_Btn(fl_str_e.Data[3]);
+							btn = CddBT616_Search_Btn(fl_str_e.Data[2]);
 							ButtonCtrl_queue_push_e(btn);
 						}
 					}

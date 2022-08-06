@@ -44,7 +44,7 @@ void Adcif_Init(void)
     FL_ADC_CommonInitTypeDef    ADC_CommonInitStruct;
     FL_ADC_InitTypeDef          ADC_InitStruct ;
 
-	Ioif_SetPinLevel(GPIO_NUMBER_B10_VBAT_SW_EN,TRUE);
+	Ioif_SetPinLevel(GPIO_NUMBER_B10_VBAT_SW_EN,FALSE);
 	Ioif_SetPinLevel(GPIO_NUMBER_E7_VDD_EN,TRUE);
 
     FL_ADC_CommonStructInit(&ADC_CommonInitStruct);

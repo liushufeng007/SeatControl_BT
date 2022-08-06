@@ -37,7 +37,7 @@
 |******************************************************************************/
 
 const uint8_t BT616_Txcmd_AT[] = {'A','T',0xD,0xA};
-const uint8_t BT616_Rxcmd_AT[] = {0xD,0xA,'A','T',0xD,0xA};
+const uint8_t BT616_Rxcmd_AT[] = {0xD,0xA,'O','K',0xD,0xA};
 
 const CddBT616_cmd_Str CddBT616_cmd_AT =
 {

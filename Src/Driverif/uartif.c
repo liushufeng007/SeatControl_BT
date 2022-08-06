@@ -43,7 +43,7 @@ void Uartx_RxFrameComplete_Detect(void)
 	Uartif_Msg_Str fl_str_e;
 
 	/*rx buffer is empty*/
-	if(UARTxOp.RxOpc > 0)
+	if(UARTxOp.RxOpc > 0 && UARTxOp.RxOpc == UARTxOp.RxOpc_bak)
 	{
 		if(UARTxOp.Rxframeticks >= UARTIF_FRAME_COMPLETE_TIME)
 		{
@@ -54,6 +54,7 @@ void Uartx_RxFrameComplete_Detect(void)
 			UARTxOp.RxOpc = 0;
 			__enable_irq();
 			(void)Uartif_rx_queue_push_e(fl_str_e);
+			UARTxOp.Rxframeticks = 0;
 		}
 		else
 		{
@@ -62,7 +63,8 @@ void Uartx_RxFrameComplete_Detect(void)
 	}
 	else
 	{
-		UARTxOp.Rxframeticks = 0;	
+		UARTxOp.Rxframeticks = 0;
+		UARTxOp.RxOpc_bak = UARTxOp.RxOpc;
 	}
 }
 
@@ -83,7 +85,7 @@ void UART0_IRQHandler(void)
         /* 中断转发接收到的数据 */
         tmp08 = FL_UART_ReadRXBuff(UART0); /* 接收中断标志可通过读取rxreg寄存器清除 */
         //FL_UART_WriteTXBuff(UART0, tmp08);
-        Uartx_RxHandle(tmp08);
+       // Uartx_RxHandle(tmp08);
     }
 
     /* 发送中断处理 */
@@ -92,10 +94,10 @@ void UART0_IRQHandler(void)
     {
         /* 发送中断标志可通过写txreg寄存器清除或txif写1清除 */
         /* 发送指定长度的数据 */
-        if(UARTxOp.TxOpc < UARTxOp.TxLen)
+        //if(UARTxOp.TxOpc < UARTxOp.TxLen)
         {
             FL_UART_WriteTXBuff(UART0, UARTxOp.TxBuf[UARTxOp.TxOpc]); /* 发送一个数据 */
-            UARTxOp.TxOpc++;
+           // UARTxOp.TxOpc++;
         }
 
         FL_UART_ClearFlag_TXShiftBuffEmpty(UART0);    /* 清除发送中断标志 */
@@ -115,10 +117,15 @@ void UART1_IRQHandler(void)
     if((FL_ENABLE == FL_UART_IsEnabledIT_RXBuffFull(UART1))
             && (FL_SET == FL_UART_IsActiveFlag_RXBuffFull(UART1)))
     {
-        /* 中断转发接收到的数据 */
-        tmp08 = FL_UART_ReadRXBuff(UART1); /* 接收中断标志可通过读取rxreg寄存器清除 */
-        FL_UART_WriteTXBuff(UART1, tmp08);
-    }
+		/* 中断转发接收到的数据 */
+		tmp08 = FL_UART_ReadRXBuff(UART1); /* 接收中断标志可通过读取rxreg寄存器清除 */
+		if(UARTxOp.RxOpc < UARTIF_MAX_TXRX_SIZE)
+		{
+			UARTxOp.RxPool[UARTxOp.RxOpc] = tmp08; 
+			UARTxOp.RxOpc++;
+		}
+
+	 }
 
     /* 发送中断处理 */
     if((FL_ENABLE == FL_UART_IsEnabledIT_TXShiftBuffEmpty(UART1))
@@ -310,20 +317,20 @@ void Uartx_Init(UART_Type *UARTx)
             //          FL_GPIO_Init(GPIOB, &GPIO_InitStruct);
 
             /* PC2:UART1-RX */
-            GPIO_InitStruct.pin        = FL_GPIO_PIN_2;
+            GPIO_InitStruct.pin        = FL_GPIO_PIN_13;
             GPIO_InitStruct.mode       = FL_GPIO_MODE_DIGITAL;
             GPIO_InitStruct.outputType = FL_GPIO_OUTPUT_PUSHPULL;
             GPIO_InitStruct.pull       = FL_ENABLE;
             GPIO_InitStruct.remapPin   = FL_DISABLE;
-            FL_GPIO_Init(GPIOC, &GPIO_InitStruct);
+            FL_GPIO_Init(GPIOB, &GPIO_InitStruct);
             
             /* PC3:UART1-TX */
-            GPIO_InitStruct.pin        = FL_GPIO_PIN_3;
+            GPIO_InitStruct.pin        = FL_GPIO_PIN_14;
             GPIO_InitStruct.mode       = FL_GPIO_MODE_DIGITAL;
             GPIO_InitStruct.outputType = FL_GPIO_OUTPUT_PUSHPULL;
             GPIO_InitStruct.pull       = FL_DISABLE;
             GPIO_InitStruct.remapPin   = FL_DISABLE;
-            FL_GPIO_Init(GPIOC, &GPIO_InitStruct);
+            FL_GPIO_Init(GPIOB, &GPIO_InitStruct);
 
             UART_InitStruct.clockSrc = FL_CMU_UART1_CLK_SOURCE_APBCLK;
             /* NVIC中断配置 */

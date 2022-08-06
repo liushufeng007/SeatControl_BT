@@ -18,7 +18,8 @@
 #include "CanNm.h"
 
 #include "CddBT616.h"
-
+#include "lin.h"
+#include "ButtonCtrl.h"
 void UserInit(void)
 {
 	
@@ -53,6 +54,8 @@ void UserInit(void)
     DiagColdInit();
 
 	CddBT616_init();
+	lin_init();
+	ButtonCtrlInit();
 
 /*	DebugUartInit();*/
 	

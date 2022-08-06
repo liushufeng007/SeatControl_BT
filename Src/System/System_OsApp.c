@@ -37,6 +37,10 @@
 
 #include "uartif.h"
 
+#include "CddBT616.h"
+
+#include "ButtonCtrl.h"
+
 #define CHECK_OS_EVENT(event)               (event) == u16Event
 #define CHECK_OS_MSG(msg)                   (msg) == u16Msg
 
@@ -92,8 +96,9 @@ TASK(BSW_DIAGNOSE)
     {
         if (CHECK_OS_MSG(eSYSTEM_TIMER_EVENT_50MS))
         {
-                fdiag_Robin();
-                DiagMain();
+               // fdiag_Robin();
+               // DiagMain();
+        	ButtonCtrl_50ms_Task();
         }
 		if (CHECK_OS_MSG(eSYSTEM_TIMER_EVENT_5MS))
         {
@@ -119,6 +124,7 @@ TASK(DRIVERS_SAFE)
 			CddEeprom_Task();            
             PowerModeFastSample_5ms();
 			CddModeM_Task();
+			CddBT616_Task();
         }
         if (CHECK_OS_MSG(eSYSTEM_TIMER_EVENT_1MS))
         {
@@ -145,12 +151,12 @@ TASK(DRIVERS_UNSAFE)
     {
         if (CHECK_OS_MSG(eSYSTEM_TIMER_EVENT_10MS))
         {
-			/*CddTest_Task();*/
+			CddTest_Task();
             tcan_Task();
             //PowerModeHandler();
             //Scm_SeatControl_App();
             //Scm_PowerDown();
-			CanNm_UserData_Fun();
+			//CanNm_UserData_Fun();
         }
     }
 }
