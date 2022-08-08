@@ -40,6 +40,7 @@
 #include "CddBT616.h"
 
 #include "ButtonCtrl.h"
+#include "CddLed.h"
 
 #define CHECK_OS_EVENT(event)               (event) == u16Event
 #define CHECK_OS_MSG(msg)                   (msg) == u16Msg
@@ -68,7 +69,7 @@ TASK(BSW_COMM)
             NW_Task();
 			Uarif_Task();
 #if (SCM_SEATCONTROL_VARIANT == SCM_L_VARIANT)
-			CanNm_MainTask();
+		//	CanNm_MainTask();
 #endif
         }
 
@@ -122,9 +123,11 @@ TASK(DRIVERS_SAFE)
 			/*CddKey_5ms_Task();*/
 			CddMtr_Mng_Task();
 			CddEeprom_Task();            
-            PowerModeFastSample_5ms();
+            //PowerModeFastSample_5ms();
 			CddModeM_Task();
 			CddBT616_Task();
+			
+			CddLed_5ms_Task();
         }
         if (CHECK_OS_MSG(eSYSTEM_TIMER_EVENT_1MS))
         {

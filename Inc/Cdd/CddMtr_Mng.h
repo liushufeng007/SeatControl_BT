@@ -47,7 +47,7 @@
 #define CDDMTR_MNG_9V_AD_VAL            (1293)
 #define CDDMTR_MNG_STOP_VOL             (7000)
 #define CDDMTR_MNG_START_VOL             (8000)
-#define CDDMTR_MNG_VOL_LVI_FILTER            (3)
+#define CDDMTR_MNG_VOL_LVI_FILTER            (8)
 #define CDDMTR_MNG_VOL_NORMAL_FILTER         (100)
 #define CDDMTR_SHUTDOWN_WRITE_NVM_MOTOR_NUM  (CDDMTR_HFKF_MAX_NUM)
 #define CDDMTR_DEBUG_MTR_LEARN          FALSE

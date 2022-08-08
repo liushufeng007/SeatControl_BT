@@ -72,18 +72,18 @@ typedef struct {
 #define LIN_SYN_BIT_GAP_PERCENTAGE      19 >> 7                         /* (x/100 = y >> 7, x为期望的差距, y为计算出的值, 如x=15, 则y=19), 同步段各位与起始位差距, 超出则判定为错误 */
 
 #define LIN_UART                    UART4
-#define LIN_UART_RX_GPIO            GPIOD
-#define LIN_UART_RX_PIN             FL_GPIO_PIN_0
-#define LIN_UART_TX_GPIO            GPIOD
-#define LIN_UART_TX_PIN             FL_GPIO_PIN_1
+#define LIN_UART_RX_GPIO            GPIOB
+#define LIN_UART_RX_PIN             FL_GPIO_PIN_2
+#define LIN_UART_TX_GPIO            GPIOB
+#define LIN_UART_TX_PIN             FL_GPIO_PIN_3
 #define LIN_UART_TX_PIN_IDX         1
-#define LIN_UART_TX_PIN_FCR_MASK    0xC                                  /* (3 << (LIN_UART_TX_PIN_IDX << 1)) 便于优化执行时间 */
-#define LIN_UART_TX_PIN_FCR_OUTPUT  4                                    /* (0 << (LIN_UART_TX_PIN_IDX << 1)) */
-#define LIN_UART_TX_PIN_FCR_DIGIT   8                                    /* (2 << (LIN_UART_TX_PIN_IDX << 1)) */
+#define LIN_UART_TX_PIN_FCR_MASK    0xC0                                  /* (3 << (LIN_UART_TX_PIN_IDX << 1)) 便于优化执行时间 */
+#define LIN_UART_TX_PIN_FCR_OUTPUT  0x40                                    /* (0 << (LIN_UART_TX_PIN_IDX << 1)) */
+#define LIN_UART_TX_PIN_FCR_DIGIT   0x80                                    /* (2 << (LIN_UART_TX_PIN_IDX << 1)) */
 #define LIN_UART_RX_PIN_IDX         0
-#define LIN_UART_RX_PIN_FCR_MASK    3                                    /* (3 << (LIN_UART_RX_PIN_IDX << 1)) */
+#define LIN_UART_RX_PIN_FCR_MASK    0x30                                    /* (3 << (LIN_UART_RX_PIN_IDX << 1)) */
 #define LIN_UART_RX_PIN_FCR_INPUT   0                                    /* (0 << (LIN_UART_RX_PIN_IDX << 1)) */
-#define LIN_UART_RX_PIN_FCR_DIGIT   2                                    /* (2 << (LIN_UART_RX_PIN_IDX << 1)) */
+#define LIN_UART_RX_PIN_FCR_DIGIT   0x20                                    /* (2 << (LIN_UART_RX_PIN_IDX << 1)) */
 #define LIN_RX_EXTI_LINE            FL_GPIO_EXTI_LINE_12
 #define LIN_RX_EXTI_LINE_PIN        FL_GPIO_EXTI_LINE_12_PD0
 #define LIN_RX_EXTI_LINE_INDEX      12

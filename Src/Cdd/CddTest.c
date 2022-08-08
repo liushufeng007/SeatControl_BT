@@ -49,7 +49,7 @@
 
 uint32_t g_Temp_U32 = 0;
 uint16_t g_Temp_val = 0;
-
+uint16_t g_Temp_ch = 0;
 /* ============================================  Define  ============================================ */
 #define TEST_WORDS  20
 
@@ -159,69 +159,69 @@ void CddTest_Task(void)
 		break;
 
 		case 1:
-			CddMtr_Learn_Req(0,CDDMTR_MNG_LEARN_ENABLE);
+			CddMtr_Learn_Req(g_Temp_ch,CDDMTR_MNG_LEARN_ENABLE);
 			//CddMtr_Learn_Req(1,CDDMTR_MNG_LEARN_ENABLE);
 			g_Temp_U32 = 0;
 		break;
 
 		case 2:
-			CddMtr_Learn_Req(0,CDDMTR_MNG_LEARN_DISABLE);
+			CddMtr_Learn_Req(g_Temp_ch,CDDMTR_MNG_LEARN_DISABLE);
 			//CddMtr_Learn_Req(1,CDDMTR_MNG_LEARN_DISABLE);
 			g_Temp_U32 = 0;
 		break;
 
 		case 3:
-			CddMtr_Direction_Req(0,CDDMTR_MNG_DIRECTION_FORWARD);
+			CddMtr_Direction_Req(g_Temp_ch,CDDMTR_MNG_DIRECTION_FORWARD);
 			g_Temp_U32 = 0;
 		break;
 
 		case 4:
-			CddMtr_Direction_Req(0,CDDMTR_MNG_DIRECTION_BACKWARD);
+			CddMtr_Direction_Req(g_Temp_ch,CDDMTR_MNG_DIRECTION_BACKWARD);
 			g_Temp_U32 = 0;
 		break;
 
 		case 5:
-			CddMtr_Direction_Req(0,CDDMTR_MNG_DIRECTION_STOP);
+			CddMtr_Direction_Req(g_Temp_ch,CDDMTR_MNG_DIRECTION_STOP);
 			g_Temp_U32 = 0;
 		break;
 
 		case 6:
-			CddMtr_Percent_Req(0,g_Temp_val);
+			CddMtr_Percent_Req(g_Temp_ch,g_Temp_val);
 			g_Temp_U32 = 0;
 		break;
 
 
 		case 7:
-			CddMtr_Learn_Req(1,CDDMTR_MNG_LEARN_ENABLE);
+			CddMtr_Learn_Req(g_Temp_ch,CDDMTR_MNG_LEARN_ENABLE);
 			g_Temp_U32 = 0;
 		break;
 
 		case 8:
-			CddMtr_Learn_Req(1,CDDMTR_MNG_LEARN_DISABLE);
+			CddMtr_Learn_Req(g_Temp_ch,CDDMTR_MNG_LEARN_DISABLE);
 			g_Temp_U32 = 0;
 		break;
 		case 9:
-			CddMtr_Direction_Req(1,CDDMTR_MNG_DIRECTION_FORWARD);
+			CddMtr_Direction_Req(g_Temp_ch,CDDMTR_MNG_DIRECTION_FORWARD);
 			g_Temp_U32 = 0;
 		break;
 
 		case 10:
-			CddMtr_Direction_Req(1,CDDMTR_MNG_DIRECTION_BACKWARD);
+			CddMtr_Direction_Req(g_Temp_ch,CDDMTR_MNG_DIRECTION_BACKWARD);
 			g_Temp_U32 = 0;
 		break;
 
 		case 11:
-			CddMtr_Direction_Req(1,CDDMTR_MNG_DIRECTION_STOP);
+			CddMtr_Direction_Req(g_Temp_ch,CDDMTR_MNG_DIRECTION_STOP);
 			g_Temp_U32 = 0;
 		break;
 
 		case 12:
-			CddMtr_Percent_Req(1,g_Temp_val);
+			CddMtr_Percent_Req(g_Temp_ch,g_Temp_val);
 			g_Temp_U32 = 0;
 		break;
 		
 		case 155:
-			CddMtr_Percent_Req(1,fl_current_val);
+			CddMtr_Percent_Req(g_Temp_ch,fl_current_val);
 			g_Temp_U32 = 0;
 		break;
 

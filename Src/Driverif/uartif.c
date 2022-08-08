@@ -297,6 +297,13 @@ void Uartx_Init(UART_Type *UARTx)
             NVIC_DisableIRQ(UART0_IRQn);
             NVIC_SetPriority(UART0_IRQn, 2); /* 中断优先级配置 */
             NVIC_EnableIRQ(UART0_IRQn);
+
+			UART_InitStruct.baudRate			= 115200;									  /* 波特率 */
+			UART_InitStruct.dataWidth			= FL_UART_DATA_WIDTH_8B;					/* 数据位数 */
+			UART_InitStruct.stopBits			= FL_UART_STOP_BIT_WIDTH_1B;				/* 停止位 */
+			UART_InitStruct.parity				= FL_UART_PARITY_NONE;						/* 奇偶校验 */
+			UART_InitStruct.transferDirection	= FL_UART_DIRECTION_TX_RX;					/* 接收-发送使能 */
+			FL_UART_Init(UARTx, &UART_InitStruct);
             break;
 
         case UART1_BASE:
@@ -337,6 +344,13 @@ void Uartx_Init(UART_Type *UARTx)
             NVIC_DisableIRQ(UART1_IRQn);
             NVIC_SetPriority(UART1_IRQn, 2); /* 中断优先级配置 */
             NVIC_EnableIRQ(UART1_IRQn);
+
+			UART_InitStruct.baudRate			= 115200;									  /* 波特率 */
+			UART_InitStruct.dataWidth			= FL_UART_DATA_WIDTH_8B;					/* 数据位数 */
+			UART_InitStruct.stopBits			= FL_UART_STOP_BIT_WIDTH_1B;				/* 停止位 */
+			UART_InitStruct.parity				= FL_UART_PARITY_NONE;						/* 奇偶校验 */
+			UART_InitStruct.transferDirection	= FL_UART_DIRECTION_TX_RX;					/* 接收-发送使能 */
+			FL_UART_Init(UARTx, &UART_InitStruct);
             break;
 
         case UART3_BASE:
@@ -376,6 +390,13 @@ void Uartx_Init(UART_Type *UARTx)
             NVIC_DisableIRQ(UART3_IRQn);
             NVIC_SetPriority(UART3_IRQn, 2); /* 中断优先级配置 */
             NVIC_EnableIRQ(UART3_IRQn);
+
+			UART_InitStruct.baudRate			= 115200;									  /* 波特率 */
+			UART_InitStruct.dataWidth			= FL_UART_DATA_WIDTH_8B;					/* 数据位数 */
+			UART_InitStruct.stopBits			= FL_UART_STOP_BIT_WIDTH_1B;				/* 停止位 */
+			UART_InitStruct.parity				= FL_UART_PARITY_NONE;						/* 奇偶校验 */
+			UART_InitStruct.transferDirection	= FL_UART_DIRECTION_TX_RX;					/* 接收-发送使能 */
+			FL_UART_Init(UARTx, &UART_InitStruct);
             break;
 
 
@@ -416,6 +437,13 @@ void Uartx_Init(UART_Type *UARTx)
             NVIC_DisableIRQ(UART4_IRQn);
             NVIC_SetPriority(UART4_IRQn, 2); /* 中断优先级配置 */
             NVIC_EnableIRQ(UART4_IRQn);
+
+			UART_InitStruct.baudRate			= 19200;									  /* 波特率 */
+			UART_InitStruct.dataWidth			= FL_UART_DATA_WIDTH_8B;					/* 数据位数 */
+			UART_InitStruct.stopBits			= FL_UART_STOP_BIT_WIDTH_1B;				/* 停止位 */
+			UART_InitStruct.parity				= FL_UART_PARITY_NONE;						/* 奇偶校验 */
+			UART_InitStruct.transferDirection	= FL_UART_DIRECTION_TX_RX;					/* 接收-发送使能 */
+			FL_UART_Init(UARTx, &UART_InitStruct);
             break;
 
         case UART5_BASE:
@@ -455,18 +483,19 @@ void Uartx_Init(UART_Type *UARTx)
             NVIC_DisableIRQ(UART5_IRQn);
             NVIC_SetPriority(UART5_IRQn, 2); /* 中断优先级配置 */
             NVIC_EnableIRQ(UART5_IRQn);
+			
+			UART_InitStruct.baudRate			= 115200;									  /* 波特率 */
+			UART_InitStruct.dataWidth			= FL_UART_DATA_WIDTH_8B;					/* 数据位数 */
+			UART_InitStruct.stopBits			= FL_UART_STOP_BIT_WIDTH_1B;				/* 停止位 */
+			UART_InitStruct.parity				= FL_UART_PARITY_NONE;						/* 奇偶校验 */
+			UART_InitStruct.transferDirection	= FL_UART_DIRECTION_TX_RX;					/* 接收-发送使能 */
+			FL_UART_Init(UARTx, &UART_InitStruct);
             break;
 
         default:
             break;
     }
 
-    UART_InitStruct.baudRate            = 115200;                                     /* 波特率 */
-    UART_InitStruct.dataWidth           = FL_UART_DATA_WIDTH_8B;                    /* 数据位数 */
-    UART_InitStruct.stopBits            = FL_UART_STOP_BIT_WIDTH_1B;                /* 停止位 */
-    UART_InitStruct.parity              = FL_UART_PARITY_NONE;                      /* 奇偶校验 */
-    UART_InitStruct.transferDirection   = FL_UART_DIRECTION_TX_RX;                  /* 接收-发送使能 */
-    FL_UART_Init(UARTx, &UART_InitStruct);
 
 }
 

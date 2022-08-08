@@ -133,6 +133,7 @@ _Seat_msgType_L_Status_buf LIN_CMD3_Data;
 _Seat_msgType_R_Status_buf LIN_CMD4_Data;
 _Seat_msgType_Fan_buf LIN_CMD5_Data;
 _Seat_msgType_Fan_buf LIN_CMD6_Data;
+uint32_t ticks_delay ;
 
 
 uint8_t ticks = 0;
@@ -286,7 +287,9 @@ void lin_send_syn(lin_schedule_data_type *plin_shcedule_data)
  
     /* 切换为输出引脚 */
     LIN_UART_TX_GPIO->FCR |= LIN_UART_TX_PIN_FCR_OUTPUT;
-    FL_DelayUs(LIN_BREAK_BIT * 1000000 / LIN_BAUDRATE);
+    //FL_DelayUs(LIN_BREAK_BIT * 1000000 / LIN_BAUDRATE);
+    ticks_delay = 106 * LIN_BREAK_BIT; /*50us * LIN_BREAK_BIT*/
+	while(ticks_delay -- );
     LIN_UART_TX_GPIO->FCR &= ~LIN_UART_TX_PIN_FCR_MASK;
 
     /* 切换为数字引脚 */

@@ -303,6 +303,13 @@ void FL_CAN_FIFO_Read(void)
     //uint32_t real_id;
 
     RxMessage.StdId = FL_CAN_ReadRXMessageID(CAN);
+	data1 = RxMessage.StdId ;
+	data2 = RxMessage.StdId ;
+	
+	data1 = (data1 << 18) & 0x1FFC0000;
+	data2 = (data2 >> 13) & 0x3FFFF;
+	RxMessage.StdId = data1 | data2;
+	
     RxMessage.DLC = FL_CAN_ReadRXMessageLength(CAN);
 
     data1 = FL_CAN_ReadRXMessageWord1(CAN);
@@ -569,7 +576,7 @@ void Canif_task(void)
 		/*Software Queue is Not empty*/
 		if(TRUE == Canif_tx_queue_pull_e(&fl_str_e))
 		{
-			FL_CAN_Frame_Send(FL_CAN_FORMAT_STANDARD_DATA,&fl_str_e);
+			FL_CAN_Frame_Send(FL_CAN_FORMAT_EXTEND_DATA,&fl_str_e);
 
 			gl_tx_id = fl_str_e.StdId;
 		}

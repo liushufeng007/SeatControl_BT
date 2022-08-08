@@ -20,6 +20,9 @@
 #include "CddBT616.h"
 #include "lin.h"
 #include "ButtonCtrl.h"
+
+#include "CddLed.h"
+
 void UserInit(void)
 {
 	
@@ -56,7 +59,7 @@ void UserInit(void)
 	CddBT616_init();
 	lin_init();
 	ButtonCtrlInit();
-
+	Init_CddLed();
 /*	DebugUartInit();*/
 	
 }

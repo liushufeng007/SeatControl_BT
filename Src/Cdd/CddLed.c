@@ -26,6 +26,8 @@ Call By			: ECUM
 void Init_CddLed(void)
 {
 	CddLed_Req_State = FALSE;
+	
+	Ioif_SetPinLevel(GPIO_NUMBER_B1_AtLamp_EN,FALSE);
 }
 
 
@@ -52,6 +54,15 @@ void CddLed_5ms_Task(void)
 	{
 		Ioif_SetPinLevel(GPIO_NUMBER_B1_AtLamp_EN,TRUE);
 	}
+
+#if 0
+	__disable_irq();
+	Ioif_SetPinLevel(GPIO_NUMBER_B1_AtLamp_EN,TRUE);
+	ticks_delay = 106 ; /*50us*/
+	while(ticks_delay -- );
+	Ioif_SetPinLevel(GPIO_NUMBER_B1_AtLamp_EN,FALSE);
+	__enable_irq();
+#endif
 }
 
 /*******************************************************************************

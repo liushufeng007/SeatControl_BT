@@ -59,35 +59,36 @@ const ButtonCtrl_Mode_Req_Str ButtonCtrl_Req_Convert_Table[] =
 {
 /*frontrear      |    Back_Angle  |  Rotate         |  Head            | Leg              |   Total Angle    */  
 BTNVAL_ON, 30,    BTNVAL_ON, 30,    BTNVAL_OFF,  0,   BTNVAL_OFF,  0,    BTNVAL_ON, 30   ,   BTNVAL_ON,  0,    
-BTNVAL_ON, 30,	  BTNVAL_ON, 30,	BTNVAL_ON,  0,    BTNVAL_OFF,  0,	 BTNVAL_OFF, 30	 ,	 BTNVAL_OFF,  0,	
+BTNVAL_ON, 40,	  BTNVAL_ON, 40,	BTNVAL_ON,  0,    BTNVAL_OFF,  0,	 BTNVAL_OFF, 30	 ,	 BTNVAL_OFF,  0,	
 
-BTNVAL_ON, 30,	  BTNVAL_ON, 30,	BTNVAL_ON,  0,    BTNVAL_OFF,  0,	 BTNVAL_OFF, 30	 ,	 BTNVAL_OFF,  0,	
+BTNVAL_ON, 50,	  BTNVAL_ON, 50,	BTNVAL_ON,  0,    BTNVAL_OFF,  0,	 BTNVAL_OFF, 30	 ,	 BTNVAL_OFF,  0,	
 
-BTNVAL_ON, 30,	  BTNVAL_ON, 30,	BTNVAL_OFF,  0,   BTNVAL_OFF,  0,	 BTNVAL_ON, 30	 ,	 BTNVAL_OFF,  0,	
-BTNVAL_ON, MAXP,  BTNVAL_ON, 30,	BTNVAL_ON,  0,    BTNVAL_ON,  0,	 BTNVAL_ON, 30  ,	 BTNVAL_ON,  0,	   
-BTNVAL_ON, 30,	  BTNVAL_ON, 30,	BTNVAL_ON,  0,    BTNVAL_OFF,  0,	 BTNVAL_OFF, 30	 ,	 BTNVAL_OFF,  0,	
+BTNVAL_ON, 60,	  BTNVAL_ON, 60,	BTNVAL_OFF,  0,   BTNVAL_OFF,  0,	 BTNVAL_ON, 30	 ,	 BTNVAL_OFF,  0,	
+BTNVAL_ON, MAXP,  BTNVAL_ON, 70,	BTNVAL_ON,  0,    BTNVAL_ON,  0,	 BTNVAL_ON, 30  ,	 BTNVAL_ON,  0,	   
+BTNVAL_ON, 70,	  BTNVAL_ON, 80,	BTNVAL_ON,  0,    BTNVAL_OFF,  0,	 BTNVAL_OFF, 30	 ,	 BTNVAL_OFF,  0,	
 
-BTNVAL_ON, 30,    BTNVAL_OFF, 30,	BTNVAL_ON,  0,    BTNVAL_OFF,  0,	 BTNVAL_ON, 30  ,	 BTNVAL_OFF,  0,	
-BTNVAL_ON, 30,    BTNVAL_OFF, 30,	BTNVAL_ON,  0,   BTNVAL_OFF,  0,	 BTNVAL_OFF, 30  ,	 BTNVAL_OFF,  0,	
+BTNVAL_ON, 80,    BTNVAL_OFF, 90,	BTNVAL_ON,  0,    BTNVAL_OFF,  0,	 BTNVAL_ON, 30  ,	 BTNVAL_OFF,  0,	
+BTNVAL_ON, 90,    BTNVAL_OFF, 75,	BTNVAL_ON,  0,   BTNVAL_OFF,  0,	 BTNVAL_OFF, 30  ,	 BTNVAL_OFF,  0,	
 };
 
 #elif SEAT_CTRL_VARIANT == SEAT_CTRL_VARIANT_L
 
 const ButtonCtrl_Mode_Req_Str ButtonCtrl_Req_Convert_Table[] = 
 {
-/*frontrear      |    Back_Angle  |  Rotate         |  Head            | Leg              |   Total Angle */     
+/*frontrear      |    Back_Angle  |  Rotate         |  Head            | Leg              |   Total Angle    */  
 BTNVAL_ON, 30,    BTNVAL_ON, 30,    BTNVAL_OFF,  0,   BTNVAL_OFF,  0,    BTNVAL_ON, 30   ,   BTNVAL_ON,  0,    
-BTNVAL_ON, 30,	  BTNVAL_ON, 30,	BTNVAL_ON,  0,    BTNVAL_OFF,  0,	 BTNVAL_OFF, 30	 ,	 BTNVAL_OFF,  0,	
+BTNVAL_ON, 40,	  BTNVAL_ON, 40,	BTNVAL_ON,  0,    BTNVAL_OFF,  0,	 BTNVAL_OFF, 30	 ,	 BTNVAL_OFF,  0,	
 
-BTNVAL_ON, 30,	  BTNVAL_ON, 30,	BTNVAL_ON,  0,    BTNVAL_OFF,  0,	 BTNVAL_OFF, 30	 ,	 BTNVAL_OFF,  0,	
+BTNVAL_ON, 50,	  BTNVAL_ON, 50,	BTNVAL_ON,  0,    BTNVAL_OFF,  0,	 BTNVAL_OFF, 30	 ,	 BTNVAL_OFF,  0,	
 
-BTNVAL_ON, 30,	  BTNVAL_ON, 30,	BTNVAL_OFF,  0,   BTNVAL_OFF,  0,	 BTNVAL_ON, 30	 ,	 BTNVAL_OFF,  0,	
-BTNVAL_ON, MAXP,  BTNVAL_ON, 30,	BTNVAL_ON,  0,    BTNVAL_ON,  0,	 BTNVAL_ON, 30  ,	 BTNVAL_ON,  0,	   
-BTNVAL_ON, 30,	  BTNVAL_ON, 30,	BTNVAL_ON,  0,    BTNVAL_OFF,  0,	 BTNVAL_OFF, 30	 ,	 BTNVAL_OFF,  0,	
+BTNVAL_ON, 60,	  BTNVAL_ON, 60,	BTNVAL_OFF,  0,   BTNVAL_OFF,  0,	 BTNVAL_ON, 30	 ,	 BTNVAL_OFF,  0,	
+BTNVAL_ON, MAXP,  BTNVAL_ON, 70,	BTNVAL_ON,  0,    BTNVAL_ON,  0,	 BTNVAL_ON, 30  ,	 BTNVAL_ON,  0,	   
+BTNVAL_ON, 70,	  BTNVAL_ON, 80,	BTNVAL_ON,  0,    BTNVAL_OFF,  0,	 BTNVAL_OFF, 30	 ,	 BTNVAL_OFF,  0,	
 
-BTNVAL_ON, 30,    BTNVAL_OFF, 30,	BTNVAL_ON,  0,    BTNVAL_OFF,  0,	 BTNVAL_ON, 30  ,	 BTNVAL_OFF,  0,	
-BTNVAL_OFF, 30,   BTNVAL_OFF, 30,	BTNVAL_OFF,  0,   BTNVAL_OFF,  0,	 BTNVAL_OFF, 30  ,	 BTNVAL_OFF,  0,	
+BTNVAL_ON, 80,    BTNVAL_OFF, 90,	BTNVAL_ON,  0,    BTNVAL_OFF,  0,	 BTNVAL_ON, 30  ,	 BTNVAL_OFF,  0,	
+BTNVAL_ON, 90,    BTNVAL_OFF, 75,	BTNVAL_ON,  0,   BTNVAL_OFF,  0,	 BTNVAL_OFF, 30  ,	 BTNVAL_OFF,  0,	
 };
+
 
 #endif
 
@@ -292,23 +293,23 @@ void ButtonCtrl_Motor_EventProcess(void)
 	}
 	if(ButtonCtrl_Req.ButtonCtrl_Mode.Back_Angle_Motor.ReqActive == BTNVAL_ON)
 	{
-		ButtonCtrl_Motor_ActionProcess(ButtonCtrl_Req.ButtonCtrl_Mode.Back_Angle_Motor,0);
+		ButtonCtrl_Motor_ActionProcess(ButtonCtrl_Req.ButtonCtrl_Mode.Back_Angle_Motor,3);
 	}
 	if(ButtonCtrl_Req.ButtonCtrl_Mode.Rotate_Motor.ReqActive == BTNVAL_ON)
 	{
-		ButtonCtrl_Motor_ActionProcess(ButtonCtrl_Req.ButtonCtrl_Mode.Rotate_Motor,0);
+		ButtonCtrl_Motor_ActionProcess(ButtonCtrl_Req.ButtonCtrl_Mode.Rotate_Motor,4);
 	}
 	if(ButtonCtrl_Req.ButtonCtrl_Mode.Head_Motor.ReqActive == BTNVAL_ON)
 	{
-		ButtonCtrl_Motor_ActionProcess(ButtonCtrl_Req.ButtonCtrl_Mode.Head_Motor,0);
+		ButtonCtrl_Motor_ActionProcess(ButtonCtrl_Req.ButtonCtrl_Mode.Head_Motor,2);
 	}
 	if(ButtonCtrl_Req.ButtonCtrl_Mode.Leg_Motor.ReqActive == BTNVAL_ON)
 	{
-		ButtonCtrl_Motor_ActionProcess(ButtonCtrl_Req.ButtonCtrl_Mode.Leg_Motor,0);
+		ButtonCtrl_Motor_ActionProcess(ButtonCtrl_Req.ButtonCtrl_Mode.Leg_Motor,5);
 	}
 	if(ButtonCtrl_Req.ButtonCtrl_Mode.Total_Angle_Motor.ReqActive == BTNVAL_ON)
 	{
-		ButtonCtrl_Motor_ActionProcess(ButtonCtrl_Req.ButtonCtrl_Mode.Total_Angle_Motor,0);
+		ButtonCtrl_Motor_ActionProcess(ButtonCtrl_Req.ButtonCtrl_Mode.Total_Angle_Motor,1);
 	}
 
 	

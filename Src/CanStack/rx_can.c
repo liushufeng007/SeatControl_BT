@@ -250,7 +250,7 @@ static void process_MSG45B(void)
 
 
 
-	fl_str_e.StdId = 0x19FF2A36;
+	fl_str_e.ExtId = 0x19FF2A36;
 	fl_str_e.DLC = 8;
 
 	for(i=0; i<fl_str_e.DLC; i++)
@@ -258,9 +258,9 @@ static void process_MSG45B(void)
         fl_str_e.Data[i] = il_tx_SCM_L_SCM_msg.byte[i];        
     }
 
-	if( TRUE == ServSWM_u_GetKey_IGN_RealVaule() )
+	//if( TRUE == ServSWM_u_GetKey_IGN_RealVaule() )
 	{
-		if( (il_status & IL_STATUS_TX_SUSPEND) != IL_STATUS_TX_SUSPEND )
+		//if( (il_status & IL_STATUS_TX_SUSPEND) != IL_STATUS_TX_SUSPEND )
 		{
 			Canif_tx_queue_push_e(fl_str_e);
 		}
@@ -334,7 +334,7 @@ static void process_MSG45A(void)
 	il_tx_SCM_L_45A_msg.SCM_L_45A_msg.SCM_DriverSeatMotoPosition_SeatBack = 0xFF;
 	#endif
 
-	fl_str_e.StdId = 0x19FF2A36;
+	fl_str_e.ExtId = 0x19FF2A36;
 	fl_str_e.DLC = 8;
 
 	for(i=0; i<fl_str_e.DLC; i++)
@@ -343,7 +343,7 @@ static void process_MSG45A(void)
     }
 
 
-	if((il_status & IL_STATUS_TX_SUSPEND) != IL_STATUS_TX_SUSPEND )
+	//if((il_status & IL_STATUS_TX_SUSPEND) != IL_STATUS_TX_SUSPEND )
 	{
 		Canif_tx_queue_push_e(fl_str_e);
 	}
