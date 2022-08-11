@@ -42,11 +42,8 @@
 
 #define DLL_NUM_RX_VECTORS         (1)
 
-#if(SCM_SEATCONTROL_VARIANT == SCM_R_VARIANT)
 #define DLL_RX_VECTOR_0_NUM_RX_IDS     (6)
-#else
-#define DLL_RX_VECTOR_0_NUM_RX_IDS     (4)
-#endif
+
 
 
 
@@ -121,7 +118,6 @@ static UINT8 busoff_sts;
 
 /* CAN Hardware Receive Vector 0 */
 
-#if(SCM_SEATCONTROL_VARIANT == SCM_R_VARIANT)
 static DLL_RX_VECTOR_DISPATCH const
 dllRxIdsVector0[  DLL_RX_VECTOR_0_NUM_RX_IDS ] =
 {
@@ -132,16 +128,7 @@ dllRxIdsVector0[  DLL_RX_VECTOR_0_NUM_RX_IDS ] =
     { 0x741u, ((UINT16)  IL_RX_MESSAGE_DIAG_PHY_741), DLL_RX_TP_FRAME },
     { 0x7DFu, ((UINT16)  IL_RX_MESSAGE_DIAG_FUN_7DF), DLL_RX_TP_FRAME },
 };
-#else
-static DLL_RX_VECTOR_DISPATCH const
-dllRxIdsVector0[  DLL_RX_VECTOR_0_NUM_RX_IDS ] =
-{
-	{ 0x19FF25A2, ((UINT16)  IL_RX_MESSAGE_VCU_123), DLL_RX_IL_FRAME },	
-	{ 0x19FF2141, ((UINT16)  IL_RX_MESSAGE_ABM_234), DLL_RX_IL_FRAME },
-    { 0x7A1u, ((UINT16)  IL_RX_MESSAGE_DIAG_PHY_7A1), DLL_RX_TP_FRAME },
-    { 0x7DFu, ((UINT16)  IL_RX_MESSAGE_DIAG_FUN_7DF), DLL_RX_TP_FRAME },
-};
-#endif
+
 
 /* ===========================================================================
 //  Received Frame Dispatch Table

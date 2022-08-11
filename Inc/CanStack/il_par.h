@@ -11,7 +11,6 @@
 /* ===========================================================================
 //  P U B L I C   M A C R O S
 // =========================================================================*/
-#if(SCM_SEATCONTROL_VARIANT == SCM_R_VARIANT)
 
 /* APP mssage ID 45B tx */
 typedef struct {
@@ -194,156 +193,9 @@ typedef union {
 
 extern _VCU_DDSS_msg_buf     il_rx_VCU_DDSS_msg;
 extern _ABM_VIST_msg_buf     il_rx_ABM_VIST_msg;
-extern _IHU_3B7_msg_buf		il_rx_IHU_3B7_msg;
+extern _SCM_L_SCM_msg_buf		il_rx_Diver_Conference_msg;
 extern _BCM_458_msg_buf		il_rx_BCM_458_msg;
 
-#else
-/* APP mssage ID 45A tx */
-typedef struct {
-	/* Byte0 */
-	UINT8                      Pos: 8;
-	/* Byte1 */
-	UINT8                      angle_bacck: 5;//bit0~bit4
-	UINT8                      conference_mode: 2;//bit5~bit6
-	UINT8                      reserved_bit_0: 1;
-	/* Byte2 */
-	UINT8                      autopilot_mode: 2;
-	UINT8                      reserved_bit_1: 6;
-	/* Byte3 */            
-	UINT8                      reserved_byte0: 8;
-	/* Byte4 */       
-	UINT8                      reserved_byte1: 8;
-	/* Byte5 */   
-	UINT8                      reserved_byte2: 8;
-	/* Byte6 */
-	UINT8                      reserved_byte3: 4;
-	/* Byte7 */
-	UINT8                      reserved_byte4: 8;
-}_SCM_L_45A_msgType;
-typedef union {
-	UINT8 byte[8];
-	_SCM_L_45A_msgType	SCM_L_45A_msg;
-}_SCM_L_45A_msg_buf;
-
-/* NM message ID 663 tx */
-typedef struct {
-	/* Byte0 */
-	UINT8                      NM_SCM_SourceNode_ID: 8;
-	/* Byte1 */
-	UINT8                      NM_SCM_RepeatMsgReq: 1;//bit0
-	UINT8                      NM_SCM_Reserved0: 3;
-	UINT8                      NM_SCM_ActiveWakeupBit: 1;
-	UINT8                      NM_SCM_Reserved1: 3;//bit5~bit7
-	/* Byte2 */
-	UINT8                      NM_SCM_UserData_2: 8;
-	/* Byte3 */            
-	UINT8                      NM_SCM_UserData_1_Ignition_Wakeup: 1;//bit0
-	UINT8                      NM_SCM_UserData_1_Reset_Wakeup: 1;
-	UINT8                      NM_SCM_UserData_1_Network_Wakeup: 1;
-	UINT8                      NM_SCM_UserData_1_ECU_Spec_Wakeup: 1;
-	UINT8                      NM_SCM_UserData_1_Network_Awake: 1;
-	UINT8                      NM_SCM_UserData_1_Ignition_Awake: 1;
-	UINT8                      NM_SCM_UserData_1_Diagnostic_Awake: 1;
-	UINT8                      NM_SCM_UserData_1_Spec_Awake: 1;//bit7
-	/* Byte4 */       
-	UINT8                      NM_SCM_UserData_2_NM_State: 3;
-	UINT8                      NM_SCM_UserData_2_GatewayRequest: 1;
-	UINT8                      NM_SCM_UserData_2_Reserved: 4;
-	/* Byte5 */   
-	UINT8                      NM_SCM_UserData_3_Reserved: 8;
-	/* Byte6 */
-	UINT8                      NM_SCM_UserData_4_Reserved: 8;
-	/* Byte7 */
-	UINT8                      NM_SCM_UserData_5_Reserved: 8;
-}_SCM_L_NM_663_msgType;
-
-
-
-typedef union {
-	UINT8 byte[8];
-	_SCM_L_NM_663_msgType	SCM_L_NM_663_msg;
-}_SCM_L_NM_663_msg_buf;
-
-extern _SCM_L_45A_msg_buf			        il_tx_SCM_L_45A_msg;
-extern _SCM_L_NM_663_msg_buf			    il_tx_SCM_L_NM_663_msg;
-
-
-/* Frame Reception Timeout Not Gain/Loss Callback Function Pointer Type Definition */
-typedef void (* pIL_RX_FRAME_NOT_LOSS_INDICATION)( void );
-
-/* transmit message at once after can init finished */
-#define IL_TX_IMMEDIATELY	CAN_DISABLE
-
-/*Add Tx for A90*/
-
-#define IL_TX_NUM_MESSAGES          (2)
-
-/*Add Rx for A90*/
-#define IL_RX_NUM_MESSAGES          (4)
-
-#define IL_TX_NUM_PERIODIC          (2)
-
-#define IL_TX_NUM_IDS               (4)
-
-
-enum
-{
-    IL_RX_MESSAGE_BCM_245,
-    IL_RX_MESSAGE_IHU_457,
-	IL_RX_MESSAGE_DIAG_PHY_7A1,
-	IL_RX_MESSAGE_DIAG_FUN_7DF
-};
-
-
-/*ID 245 rx*/
-typedef struct {
-	UINT8                       unused0: 8;               /*byte0*/
-	UINT8                       unused1: 8;               /*byte1*/
-	UINT8                       unused2: 8;               /*byte2*/
-	UINT8                       BCM_DoorAjarSts_FL: 1;    /*byte3*/
-	UINT8                       unused3: 7;
-
-	UINT8                       unused4: 8;               /*byte4*/
-	UINT8                       unused5: 8;               /*byte5*/
-	UINT8                       unused6: 8;               /*byte6*/
-	UINT8                       unused7: 8;               /*byte7*/
-}_BCM_245_msgType;
-
-/*ID 457 rx*/
-typedef struct {
-	UINT8                       unused0: 2;
-	UINT8                       BCM_FaceRecognitionEnableSts: 2;               
-	UINT8                       BCM_EntryExitSeatCtrlEnableSts: 2;            
-	UINT8                       unused1: 2;                          /*byte0*/
-
-	UINT8                       unused2: 8;                          /*byte1*/
-
-	UINT8                       BCM_MotoPositionReq_ForwardBack: 8;  /*byte2*/
-              
-	UINT8                       unused3: 8;                          /*byte3*/
-
-	UINT8                       BCM_MotoPositionReq_SeatBack: 8;     /*byte4*/
-	UINT8                       unused4: 8;                          /*byte5*/
-	UINT8                       unused5: 8;                          /*byte6*/
-	UINT8                       unused6: 8;                          /*byte7*/
-
-}_BCM_457_msgType;
-
-typedef union {
-	UINT8 byte[8];
-	_BCM_245_msgType    BCM_245_msg;
-}_BCM_245_msg_buf;
-
-typedef union {
-	UINT8 byte[8];
-	_BCM_457_msgType     BCM_457_msg;
-}_BCM_457_msg_buf;
-
-/* RX frame timeout: frame periodic time*5 */
-
-extern _BCM_245_msg_buf		il_rx_BCM_245_msg;
-extern _BCM_457_msg_buf		il_rx_BCM_457_msg;
-#endif
 
 #define IlSetEvent(c) IlUtilSetStatusBits(&il_tx_status[c], IL_TX_STATUS_EVENT_TX_PENDING )
 

@@ -40,7 +40,6 @@
 // =========================================================================*/
 #define VTP_PERIODICITY          (5)
 
-#if(SCM_SEATCONTROL_VARIANT == SCM_R_VARIANT)
 /* ===========================================================================
 //
 // Name(s):         VTP_XXX_RESPONSE_ID
@@ -67,35 +66,7 @@
 /* The CAN Id for Diag Request from tool */
 #define VTP_DIAG_REQUEST_ID                 (0x741)
 
-#else
 
-/* ===========================================================================
-//
-// Name(s):         VTP_XXX_RESPONSE_ID
-//
-// Description:     This paramter specifies the TP Tx ID associated with 
-//                  the TP channel XXX
-//
-// Templates:       #define VTP_DIAG_RESPONSE_ID                 (0xXXX)
-//
-// =========================================================================*/
-/* The CAN Id for Diag RESPONSE from ECU */
-#define VTP_DIAG_RESPONSE_ID                (0x7A9)
-
-/* ===========================================================================
-//
-// Name(s):         VTP_XXX_REQUEST_ID
-//
-// Description:     This paramter specifies the TP Rx ID associated with 
-//                  the TP channel XXX
-//
-// Templates:       #define VTP_DIAG_REQUEST_ID                 XXXX
-//
-// =========================================================================*/
-/* The CAN Id for Diag Request from tool */
-#define VTP_DIAG_REQUEST_ID                 (0x7A1)
-
-#endif
 /* ===========================================================================
 //
 // Name:            VTP_FUNC_DIAG_REQUEST_ID

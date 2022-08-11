@@ -263,9 +263,9 @@ uint32_t Get_VoltVaule_Fast(void)
 *******************************************************************************/
 void Clean_Receive_Message_Flag(void)
 {
-#if(SCM_SEATCONTROL_VARIANT == SCM_R_VARIANT)
+
 	CanMessage_Receive_Flag = FALSE;
-#endif
+
 }
 
 /*******************************************************************************
@@ -275,9 +275,9 @@ void Clean_Receive_Message_Flag(void)
 *******************************************************************************/
 void Set_Receive_Message_Flag(void)
 {
-#if(SCM_SEATCONTROL_VARIANT == SCM_R_VARIANT)
+
 	CanMessage_Receive_Flag = TRUE;
-#endif
+
 }
 
 /*******************************************************************************
@@ -311,34 +311,14 @@ void Scm_PowerDown(void)
 		IGN_Key_Debounce = 0;
 	}
 
-	/* IGN ON Send NM message, IGN OFF stop Send NM message */
-#if(SCM_SEATCONTROL_VARIANT == SCM_L_VARIANT)
-	if( 1 == Get_IGN_key_Sts )
-	{
-		CanNmCtrl_Req_NetWork(0);
-	}
-	else
-	{
-		CanNmCtrl_Release_NetWork(0);
-	}
 
-
-	/* Get Network and motor condition */
-	if(BusSleep_STATE_E_0 == CanNmCtrl_Get_CanNm_State(0))
-	{
-		Nm_ConditionFlag = TRUE;
-	}
-#endif
 	/* Get Motor sleep flag */
 	CddMtr_Get_SleepFlag = CddMtr_Get_SleepCondition();
 
 	
 	/* Judge MCU sleep condition, Concition match 5s, MCU entry sleep mode */
-#if(SCM_SEATCONTROL_VARIANT == SCM_L_VARIANT)
 	if( ( TRUE == CddMtr_Get_SleepFlag ) && ( TRUE == Nm_ConditionFlag ))
-#else
-	if( ( TRUE == CddMtr_Get_SleepFlag ) && ( TRUE == CanMessage_Receive_Flag ))
-#endif
+
 	{
 		Entry_Sleep_Mode ++;
 	}

@@ -14,6 +14,8 @@
 #include "ButtonCtrl.h"
 #include "IoIf.h"
 #include "lin.h"
+#include "CddMtr_Mng.h"
+#include "il_par.h"
 /*******************************************************************************
 |    Macro Definition
 |******************************************************************************/
@@ -51,6 +53,7 @@ const uint8_t BT_cmd_to_Button_ID[][3] =
 	0xA3, BTN_ID_CTRL_MODE_MEETING_e  , 0,
 	0xA4, BTN_ID_CTRL_MODE_LEISURE_e  , 0,
 	0xA5, BTN_ID_CTRL_LED_e  , 0,
+	0xA6, BTN_ID_CTRL_LED_e  , 1,
 
 	0xB0, 0  , 0,
 	0xB1, BTN_ID_CTRL_POS_FRONT_REAR_e  , DIRECTION_FRONT,
@@ -250,6 +253,165 @@ void CddBT616_Set_Pos(uint8_t MotorId,uint8_t Pos)
 }
 
 /************************************
+CddBT616 update Signal
+************************************/
+void CddBT616_Update_Signal(void)
+{
+	uint8_t index;
+	ButtonCtrl_Id_e mode;
+	index = 5;
+	CddBT616_Main_Ctrl.txst.Data[index++] = 0xFF;
+	CddBT616_Main_Ctrl.txst.Data[index++] = 0xFF;
+	CddBT616_Main_Ctrl.txst.Data[index++] = 0xFF;
+	CddBT616_Main_Ctrl.txst.Data[index++] = 0xFF;
+	CddBT616_Main_Ctrl.txst.Data[index++] = 0xFF;
+	CddBT616_Main_Ctrl.txst.Data[index++] = 0xFF;
+	index = 5;
+	if(CDDMTR_MNG_LEARN_VALID == CddMtr_Get_LearnData_Status(0))
+	{
+		CddBT616_Main_Ctrl.txst.Data[index++] = CddMtr_Get_Mtr_PosPercent(0);
+	}
+	if(CDDMTR_MNG_LEARN_VALID == CddMtr_Get_LearnData_Status(1))
+	{
+		CddBT616_Main_Ctrl.txst.Data[index++] = CddMtr_Get_Mtr_PosPercent(1);
+	}
+	if(CDDMTR_MNG_LEARN_VALID == CddMtr_Get_LearnData_Status(4))
+	{
+		CddBT616_Main_Ctrl.txst.Data[index++] = CddMtr_Get_Mtr_PosPercent(4);
+	}
+	if(CDDMTR_MNG_LEARN_VALID == CddMtr_Get_LearnData_Status(5))
+	{
+		CddBT616_Main_Ctrl.txst.Data[index++] = CddMtr_Get_Mtr_PosPercent(5);
+	}
+	if(CDDMTR_MNG_LEARN_VALID == CddMtr_Get_LearnData_Status(2))
+	{
+		CddBT616_Main_Ctrl.txst.Data[index++] = CddMtr_Get_Mtr_PosPercent(2);
+	}
+	if(CDDMTR_MNG_LEARN_VALID == CddMtr_Get_LearnData_Status(3))
+	{
+		CddBT616_Main_Ctrl.txst.Data[index++] = CddMtr_Get_Mtr_PosPercent(3);
+	}
+#if(SCM_SEATCONTROL_VARIANT == SCM_R_VARIANT)
+	if(LIN_CMD6_Data.SCM_Fan_SCM_msg.Fan_Pwm > 50 )
+	{
+		CddBT616_Main_Ctrl.txst.Data[index++] = 0xE1;
+	}
+	else
+	{
+		CddBT616_Main_Ctrl.txst.Data[index++] = 0xE0;
+	}
+
+	mode = ButtonCtrl_Get_CtrlMode();
+
+	switch (mode)
+	{
+		case BTN_ID_CTRL_MODE_ZERO_GRAVITY_e: CddBT616_Main_Ctrl.txst.Data[index++] = 0xA0;   break;
+		case BTN_ID_CTRL_MODE_DRIVERIESS_CAR_e: CddBT616_Main_Ctrl.txst.Data[index++] = 0xA1;   break;
+		case BTN_ID_CTRL_MODE_MEETING_e:  CddBT616_Main_Ctrl.txst.Data[index++] = 0xA2;  break;
+		case BTN_ID_CTRL_MODE_LEISURE_e:  CddBT616_Main_Ctrl.txst.Data[index++] = 0xA3;  break;
+		case BTN_ID_CTRL_OFF_e:  CddBT616_Main_Ctrl.txst.Data[index++] = 0xA4;  break;
+		case BTN_ID_CTRL_MOVIE_e: CddBT616_Main_Ctrl.txst.Data[index++] = 0xA5;   break;
+		case BTN_ID_CTRL_SLEEP_e:  CddBT616_Main_Ctrl.txst.Data[index++] = 0xA0;  break;
+		case BTN_ID_CTRL_PREPARE_MEAL_e:  CddBT616_Main_Ctrl.txst.Data[index++] = 0xA0;  break;
+
+		case BTN_ID_CTRL_POS_FRONT_REAR_e:
+		case BTN_ID_CTRL_BACK_ANGLE_e:
+		case BTN_ID_CTRL_ROTATE_e:
+		case BTN_ID_CTRL_HEAD_e:
+		case BTN_ID_CTRL_VENTILITION_e:	
+		case BTN_ID_CTRL_LED_e:
+		case BTN_ID_CTRL_MASSAGE_e:
+		default:
+			CddBT616_Main_Ctrl.txst.Data[index++] = 0xFF;
+		break;
+	}
+
+	if(LIN_CMD4_Data.SCM_R_SCM_msg.R_mode_State ==0 )
+	{
+		CddBT616_Main_Ctrl.txst.Data[index++] = 0xE0;
+	}
+	else if(LIN_CMD4_Data.SCM_R_SCM_msg.R_mode_State ==1 )
+	{
+		CddBT616_Main_Ctrl.txst.Data[index++] = 0xE1;
+	}
+	else if(LIN_CMD4_Data.SCM_R_SCM_msg.R_mode_State ==2 )
+	{
+		CddBT616_Main_Ctrl.txst.Data[index++] = 0xE2;
+	}
+	else if(LIN_CMD4_Data.SCM_R_SCM_msg.R_mode_State ==3 )
+	{
+		CddBT616_Main_Ctrl.txst.Data[index++] = 0xE3;
+	}
+	else
+	{
+		CddBT616_Main_Ctrl.txst.Data[index++] = 0xFF;
+	}
+	
+
+#else
+	if(LIN_CMD5_Data.SCM_Fan_SCM_msg.Fan_Pwm > 50 )
+	{
+		CddBT616_Main_Ctrl.txst.Data[index++] = 0xE1;
+	}
+	else
+	{
+		CddBT616_Main_Ctrl.txst.Data[index++] = 0xE0;
+	}
+
+	mode = ButtonCtrl_Get_CtrlMode();
+
+	switch (mode)
+	{
+		case BTN_ID_CTRL_MODE_ZERO_GRAVITY_e: CddBT616_Main_Ctrl.txst.Data[index++] = 0xA0;   break;
+		case BTN_ID_CTRL_MODE_DRIVERIESS_CAR_e: CddBT616_Main_Ctrl.txst.Data[index++] = 0xA1;   break;
+		case BTN_ID_CTRL_MODE_MEETING_e:  CddBT616_Main_Ctrl.txst.Data[index++] = 0xA2;  break;
+		case BTN_ID_CTRL_MODE_LEISURE_e:  CddBT616_Main_Ctrl.txst.Data[index++] = 0xA3;  break;
+		case BTN_ID_CTRL_OFF_e:  CddBT616_Main_Ctrl.txst.Data[index++] = 0xA4;  break;
+		case BTN_ID_CTRL_MOVIE_e: CddBT616_Main_Ctrl.txst.Data[index++] = 0xA5;   break;
+		case BTN_ID_CTRL_SLEEP_e:  CddBT616_Main_Ctrl.txst.Data[index++] = 0xA0;  break;
+		case BTN_ID_CTRL_PREPARE_MEAL_e:  CddBT616_Main_Ctrl.txst.Data[index++] = 0xA0;  break;
+
+		case BTN_ID_CTRL_POS_FRONT_REAR_e:
+		case BTN_ID_CTRL_BACK_ANGLE_e:
+		case BTN_ID_CTRL_ROTATE_e:
+		case BTN_ID_CTRL_HEAD_e:
+		case BTN_ID_CTRL_VENTILITION_e:	
+		case BTN_ID_CTRL_LED_e:
+		case BTN_ID_CTRL_MASSAGE_e:
+		default:
+			CddBT616_Main_Ctrl.txst.Data[index++] = 0xFF;
+		break;
+	}
+
+	
+
+	if(LIN_CMD3_Data.SCM_L_SCM_msg.L_mode_State ==0 )
+	{
+		CddBT616_Main_Ctrl.txst.Data[index++] = 0xE0;
+	}
+	else if(LIN_CMD3_Data.SCM_L_SCM_msg.L_mode_State ==1 )
+	{
+		CddBT616_Main_Ctrl.txst.Data[index++] = 0xE1;
+	}
+	else if(LIN_CMD3_Data.SCM_L_SCM_msg.L_mode_State ==2 )
+	{
+		CddBT616_Main_Ctrl.txst.Data[index++] = 0xE2;
+	}
+	else if(LIN_CMD3_Data.SCM_L_SCM_msg.L_mode_State ==3 )
+	{
+		CddBT616_Main_Ctrl.txst.Data[index++] = 0xE3;
+	}
+	else
+	{
+		CddBT616_Main_Ctrl.txst.Data[index++] = 0xFF;
+	}
+	
+
+#endif	
+
+}
+
+/************************************
 CddTest_Task
 
 ************************************/
@@ -406,6 +568,8 @@ void CddBT616_Task(void)
 				if(CddBT616_Main_Ctrl.Txticks++ > CDDBT616_TX_PERIOD)
 				{					
 					CddBT616_Main_Ctrl.Txticks = 0;
+					
+					CddBT616_Update_Signal();
 					memcpy(&fl_str_e,&CddBT616_Main_Ctrl.txst,sizeof(fl_str_e));
 					fl_str_e.Data[17] = CddBT616_Cal_Parity(fl_str_e.Data,17);
 					Uartif_tx_queue_push_e(fl_str_e);
@@ -419,7 +583,19 @@ void CddBT616_Task(void)
 						if(ret == TRUE)
 						{
 							btn = CddBT616_Search_Btn(fl_str_e.Data[2]);
-							ButtonCtrl_queue_push_e(btn);
+#if(SCM_SEATCONTROL_VARIANT == SCM_L_VARIANT)
+							switch (btn.ButtonId)
+							{
+								case BTN_ID_CTRL_PREPARE_MEAL_e:  ; break;
+								default:ButtonCtrl_queue_push_e(btn);break;
+							}
+#else
+							switch (btn.ButtonId)
+							{
+								case BTN_ID_CTRL_MODE_DRIVERIESS_CAR_e:  ; break;
+								default:ButtonCtrl_queue_push_e(btn);break;
+							}
+#endif
 						}
 					}
 				}

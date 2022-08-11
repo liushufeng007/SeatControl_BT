@@ -64,14 +64,10 @@ static BOOLEAN DTC_IS_SEAT_HALL_SHROTBAT(void);
 static BOOLEAN DTC_IS_BACK_HALL_SHROTGND(void);
 static BOOLEAN DTC_IS_BACK_HALL_SHROTBAT(void);
 
-#if(SCM_SEATCONTROL_VARIANT == SCM_R_VARIANT)
 static BOOLEAN DTC_VCU_MSG123_IS_TIMEOUT(void);
 static BOOLEAN DTC_BCM_MSG458_IS_TIMEOUT(void);
 static BOOLEAN DTC_ABM_MSG234_IS_TIMEOUT(void);
-#else
-static BOOLEAN DTC_BCM_MSG245_IS_TIMEOUT(void);
-static BOOLEAN DTC_BCM_MSG457_IS_TIMEOUT(void);
-#endif
+
 
 static void f_diag_Handle_DTC_Logging(void);
 
@@ -140,26 +136,8 @@ static UINT8 seed_to_get_key[4] = {0x55,0xaa,0xaa,0x55};
 #define IOCTL_BLD_DOOR_INDEX       2
 #define IOCTL_REC_DOOR_INDEX       3
 
-#if(SCM_SEATCONTROL_VARIANT == SCM_L_VARIANT)
-/* 0X22 service DIDs */
-#define F183_BOOT_SW_VERSION    'V','1','0','1','0','0','0','0','0','0','0','0','0','0','0','0'
-#define F187_ECU_PART_NUMBER    'R','H','0','2','-','6','8','0','1','3','2','0','1'
-#define F188_ECU_SW_NUMBER      'S','C','M','L','_','D','_','2','2','_','0','1','_','0','1'
-#define F189_ECU_SW_VERSION     'S','0','0','0','0','0','0','A'
-#define F18A_SUPPLIER_ID        '8','M','Q'
-#define F18B_ECU_MANUFACTURE_DATE    0x20, 0x22, 0x06, 0x25
-#define F18C_SERIAL_NUMBER      '9','9','9','9','9','9','2','2','0','6','1','5','1','A','5','0'
-#define F190_VIN_DATA_ID        'A','B','C','D','E','F','G','0','1','2','3','4','5','6','7','8','9'
-#define F191_HW_VER_NUMBER      'H','0','1','_','0','0','_','0','0','S','L'
-#define F193_ECU_HW_NUMBER      'H','A','R','D','W','A','R','E','N','U','M','B','E','R','2'
-#define F195_ECU_SW_NUMBER      'D','7','E','5','T','0','0','J','U','N','Y','I','0','0','A'
-#define F197_ECU_NAME           'T','Y','_','D','S','C','M',' ',' ',' '
-#define F199_PROGRAM_DATE                  0x20, 0x22, 0x06, 0x25
-#define F19D_VEHICLE_MANUFACTURE_DATE      0x20, 0x22, 0x06, 0x25
-#define F1A0_VEHICLE_CONFIG_DATA      0x0
-#define F1F0_PROGRAM_COUNTER     0x0,0x3
 
-#else
+
 /* 0X22 service DIDs */
 #define F183_BOOT_SW_VERSION    'V','1','0','1','0','0','0','0','0','0','0','0','0','0','0','0'
 #define F187_ECU_PART_NUMBER    'R','H','0','2','-','6','9','0','1','3','2','0','1'
@@ -177,8 +155,6 @@ static UINT8 seed_to_get_key[4] = {0x55,0xaa,0xaa,0x55};
 #define F19D_VEHICLE_MANUFACTURE_DATE      0x20, 0x22, 0x06, 0x25
 #define F1A0_VEHICLE_CONFIG_DATA      0x0
 #define F1F0_PROGRAM_COUNTER     0x0,0x3
-
-#endif  /* end of #if(SCM_SEATCONTROL_VARIANT == SCM_L_VARIANT) */
 
 #define F187_ECU_PART_NUMBER_LEN    (13U)
 #define F188_ECU_SW_NUMBER_LEN      (15U)
@@ -2101,7 +2077,6 @@ static BOOLEAN DTC_IS_BACK_HALL_SHROTBAT(void)
 }
 
 
-#if(SCM_SEATCONTROL_VARIANT == SCM_R_VARIANT)
 
 static BOOLEAN DTC_VCU_MSG123_IS_TIMEOUT(void)
 {
@@ -2141,35 +2116,6 @@ static BOOLEAN DTC_ABM_MSG234_IS_TIMEOUT(void)
     }
 }
 
-#else
-
-static BOOLEAN DTC_BCM_MSG245_IS_TIMEOUT(void)
-{
-    if((VNIM_IS_BCM_245_MSG_MISSING() != FALSE) || (VNIM_IS_BCM_245_MSG_NEVER_RECVD() != FALSE))
-    {
-        return TRUE;        
-    }
-    else
-    {
-        return FALSE;
-    }
-}
-
-
-static BOOLEAN DTC_BCM_MSG457_IS_TIMEOUT(void)
-{
-    if((VNIM_IS_BCM_457_MSG_MISSING() != FALSE) || (VNIM_IS_BCM_457_MSG_NEVER_RECVD() != FALSE))
-    {
-        return TRUE;        
-    }
-    else
-    {
-        return FALSE;
-    }
-}
-
-
-#endif
 
 /****************************************************************************
 Function Name     : DTC_GW320_IS_TIMEOUT
@@ -2255,7 +2201,7 @@ static void f_diag_Handle_DTC_Logging( void )
         KernelClearRefineError(DTC_ERC_CAN_BUS_OFF,DTC_LOG_STAT_NOT_USED);
     }
 
-#if(SCM_SEATCONTROL_VARIANT == SCM_R_VARIANT) /* Varint passenger */
+
     if(DTC_IS_EASY_IN_SW_STUCK() != FALSE)
     {
         KernelLogRefineError(DTC_ERC_EASY_IN_SW_STUCK,DTC_LOG_STAT_NOT_USED);
@@ -2301,18 +2247,7 @@ static void f_diag_Handle_DTC_Logging( void )
         KernelClearRefineError(DTC_ERC_ABM_MESSAGE_LOST,DTC_LOG_STAT_NOT_USED);
     }
 
-#else  /* Varint Driver */
 
-    if((DTC_BCM_MSG245_IS_TIMEOUT() != FALSE) && (DTC_BCM_MSG457_IS_TIMEOUT() != FALSE))
-    {
-        KernelLogRefineError(DTC_BCM_MESSAGE_LOST,DTC_LOG_STAT_NOT_USED);
-    }
-    else
-    {
-        KernelClearRefineError(DTC_BCM_MESSAGE_LOST,DTC_LOG_STAT_NOT_USED);
-    }
-    
-#endif
 
     if(DTC_IS_SEAT_FORWARD_SW_STUCK() != FALSE)
     {

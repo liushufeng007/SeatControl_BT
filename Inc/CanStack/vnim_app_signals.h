@@ -14,7 +14,6 @@
 #define INVALID_TIME            INVALID_TIME_2SEC
 #define INVALID_TIMER_MAX       (INVALID_TIME/16)
 
-#if(SCM_SEATCONTROL_VARIANT == SCM_R_VARIANT)
 extern BOOLEAN msg_123_missing;
 extern BOOLEAN msg_DDSS_never_recvd;
 extern BOOLEAN msg_234_missing;
@@ -25,12 +24,7 @@ extern BOOLEAN msg_458_missing;
 extern BOOLEAN msg_458_never_recvd;
 extern UINT8 Dis_SCM_HMI_Req_Count;
 extern UINT8 Dis_SCM_HMI_Req;
-#else
-extern BOOLEAN msg_245_missing;
-extern BOOLEAN msg_245_never_recvd;
-extern BOOLEAN msg_457_missing;
-extern BOOLEAN msg_457_never_recvd;
-#endif
+
 
 
 /* CAN baudrate adaptive config macro */
@@ -67,7 +61,6 @@ extern uint8_t Get_MsgAlive_Counter(void);
 #define IlSetEvent_LS(c)    IlUtilSetStatusBits(&il_tx_status[c],IL_TX_STATUS_EVENT_TX_PENDING)
 #define IlSetPeriod_LS(c)   IlUtilSetStatusBits(&il_tx_status[c],IL_TX_STATUS_PERIODIC_TX_PENDING)
 
-#if(SCM_SEATCONTROL_VARIANT == SCM_R_VARIANT)
 /*  RX  MESSAGE MISSING MACROS  */
 #define VNIM_IS_VCU_123_MSG_MISSING()          (msg_123_missing)
 #define VNIM_IS_ABM_234_MSG_MISSING()          (msg_234_missing)
@@ -85,20 +78,7 @@ extern void Vnim_VCU_123_Timeout(void);
 extern void Vnim_ABM_234_Timeout(void);
 extern void Vnim_IHU_3B7_Timeout(void);
 extern void Vnim_BCM_458_Timeout(void);
-#else
-/*  RX  MESSAGE MISSING MACROS  */
-#define VNIM_IS_BCM_245_MSG_MISSING()          (msg_245_missing)
-#define VNIM_IS_BCM_457_MSG_MISSING()          (msg_457_missing)
 
-
-/*  RX  MESSAGE NEVER RECEIVED MACROS  */
-#define VNIM_IS_BCM_245_MSG_NEVER_RECVD()      (msg_245_never_recvd)
-#define VNIM_IS_BCM_457_MSG_NEVER_RECVD()      (msg_457_never_recvd)
-
-extern void Vnim_BCM_245_Timeout(void);
-
-extern void Vnim_BCM_457_Timeout(void);
-#endif
 
 
 

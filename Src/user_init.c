@@ -49,6 +49,7 @@ void UserInit(void)
 	CddTest_init();
 
 	
+	Init_CddLed();
     PowerModeInit();
     Message_variable_init();
     Scm_SeatControl_Init();
@@ -59,7 +60,6 @@ void UserInit(void)
 	CddBT616_init();
 	lin_init();
 	ButtonCtrlInit();
-	Init_CddLed();
 /*	DebugUartInit();*/
 	
 }

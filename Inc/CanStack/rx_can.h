@@ -17,6 +17,7 @@ typedef enum{
 	BT_Scene_Mode_e,
 	BT_Fatigue_e,
 	BT_Welcome_e,
+	BT_Conference_Mode_e,
 	BT_SIGNAL_GROUP_NUM
 }BT_Signal_type_e;
 
@@ -79,20 +80,14 @@ extern UINT32 odo_meter;
 ******************************************************************************/
 extern void tcan_Task(void);
 extern void Message_variable_init(void);
-#if(SCM_SEATCONTROL_VARIANT == SCM_R_VARIANT)
 extern void Rx_VCU_DDSS_func(void);
 extern void Rx_ABM_VIST_func(void);
-extern void Rx_IHU_3B7_func(void);
+extern void Rx_Driver_Conference_func(void);
 extern void Rx_BCM_458_func(void);
 extern UINT32 VCU_VehSpd;
 extern UINT8 VCU_VehSpd_VD;
 extern UINT8 ABM_PassengerSeatOccSts;
-extern UINT8 IHU_SeatFoldReq;
-extern UINT8 IHU_SeatReleaseReq;
-#else
-extern void Rx_BCM_245_func(void);
-extern void Rx_BCM_457_func(void);
-#endif
+
 
 
 #if 0

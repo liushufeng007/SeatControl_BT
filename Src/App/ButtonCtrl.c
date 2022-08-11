@@ -7,13 +7,20 @@
 
 #include "CddEeprom.h"
 #include "lin.h"
+#include "il.h"
+
+#include "il_par.h"
+
+#define MODE_E2_LEN  4
 
 ButtonCtrl_Queue_str ButtonCtrl_queue;
 
 ButtonCtrl_Req_Str ButtonCtrl_Req;
 
 uint8_t StopBtn_Cnt[4];
-uint16_t Button_Mode[1] = {0};
+uint16_t Button_Mode[MODE_E2_LEN] = {0};
+
+
 uint8_t Button_Update_Flag = TRUE;
 
 static uint8_t ButtonCtrl_queue_is_empty(void);
@@ -116,8 +123,13 @@ void ButtonCtrlInit(void)
 	memset(&ButtonCtrl_Req,0,sizeof(ButtonCtrl_Req));
 	
 	memset(&StopBtn_Cnt,STOP_BTN_TIMEOUT,sizeof(StopBtn_Cnt));
-	CddEeprom_Req_Read(EEPROM_BANK_APP,100,1,Button_Mode);
+	CddEeprom_Req_Read(EEPROM_BANK_APP,100,MODE_E2_LEN,Button_Mode);
 	Button_Update_Flag = TRUE;
+	LIN_CMD0_Data.SCM_Fan_SCM_msg.Fan_Pwm = Button_Mode[1];
+	LIN_CMD1_Data.SCM_Fan_SCM_msg.Fan_Pwm = Button_Mode[1];
+	LIN_CMD2_Data.SCM_L_SCM_msg.L_mode = Button_Mode[2];
+	LIN_CMD2_Data.SCM_L_SCM_msg.L_mode = Button_Mode[3];
+	LIN_CMD2_Data.SCM_L_SCM_msg.L_Func = Button_Mode[4];
 }
 
 
@@ -329,27 +341,37 @@ void ButtonCtrl_Motor_EventProcess(void)
 		if(ButtonCtrl_Req.Ventilation.ButtonVal != 0)
 		{
 			LIN_CMD0_Data.SCM_Fan_SCM_msg.Fan_Pwm = 100;
+			LIN_CMD1_Data.SCM_Fan_SCM_msg.Fan_Pwm = 100;
+			Button_Mode[1] = 100;
 		}
 		else
 		{
 			LIN_CMD0_Data.SCM_Fan_SCM_msg.Fan_Pwm = 0;
+			LIN_CMD1_Data.SCM_Fan_SCM_msg.Fan_Pwm = 0;
+			Button_Mode[1] = 0;
 		}
+		Button_Update_Flag = FALSE;
 	}
 	if(ButtonCtrl_Req.Massage.ReqActive == BTNVAL_ON)
 	{
 		if(ButtonCtrl_Req.Ventilation.ButtonVal <= 3)
 		{
 			LIN_CMD2_Data.SCM_L_SCM_msg.L_mode = ButtonCtrl_Req.Ventilation.ButtonVal;
+			Button_Mode[2] = ButtonCtrl_Req.Ventilation.ButtonVal;
 		}
 
-		if(ButtonCtrl_Req.Ventilation.ButtonVal == 0)
+		if(ButtonCtrl_Req.Ventilation.ButtonVal != 0)
 		{
 			LIN_CMD2_Data.SCM_L_SCM_msg.L_Func = TRUE;
+			Button_Mode[3] = TRUE;
 		}
 		else
 		{
 			LIN_CMD2_Data.SCM_L_SCM_msg.L_Func = FALSE;
+			Button_Mode[3] = FALSE;
 		}
+		
+		Button_Update_Flag = FALSE;
 	}
 }
 
@@ -545,7 +567,7 @@ void ButtonCtrl_Update_Mode(ButtonCtrl_Str fl_str_e)
 		if(Button_Mode[0] != fl_str_e.ButtonId)
 		{	
 			Button_Mode[0] = fl_str_e.ButtonId;
-			Button_Update_Flag = CddEeprom_Req_Write(EEPROM_BANK_APP,100,1,0,Button_Mode);
+			Button_Update_Flag = CddEeprom_Req_Write(EEPROM_BANK_APP,100,MODE_E2_LEN,0,Button_Mode);
 		}
 		break;
 		
@@ -568,7 +590,7 @@ void ButtonCtrl_Update_Check(void)
 {
 	if(FALSE == Button_Update_Flag)
 	{
-		Button_Update_Flag = CddEeprom_Req_Write(EEPROM_BANK_APP,100,1,0,Button_Mode);
+		Button_Update_Flag = CddEeprom_Req_Write(EEPROM_BANK_APP,100,MODE_E2_LEN,0,Button_Mode);
 	}
 }
 

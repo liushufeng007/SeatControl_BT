@@ -68,9 +68,6 @@ TASK(BSW_COMM)
             IWDT_Clr();
             NW_Task();
 			Uarif_Task();
-#if (SCM_SEATCONTROL_VARIANT == SCM_L_VARIANT)
-		//	CanNm_MainTask();
-#endif
         }
 
 #ifdef CPU_LOAD_OPEN
@@ -132,12 +129,14 @@ TASK(DRIVERS_SAFE)
         if (CHECK_OS_MSG(eSYSTEM_TIMER_EVENT_1MS))
         {
 			Canif_task();
+			
         }
     }
 	
 		if (CHECK_OS_EVENT(SYSTEM_OS_EVENT_EEPROM_REQ))
 		{
-			CddEeprom_Task();			 
+			CddEeprom_Task();		
+			
 		}
 
 }

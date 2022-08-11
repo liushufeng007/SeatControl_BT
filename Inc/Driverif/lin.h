@@ -27,13 +27,13 @@ struct UARTOpStruct_LIN
     uint8_t RxLen;
 };
 typedef enum {
-	LIN_CMD0 = 0x11,
-	LIN_CMD1 = 0x12,  
-	LIN_CMD2 = 0x26,  
-	LIN_CMD3 = 0x27,
-	LIN_CMD4 = 0x28,  
-	LIN_CMD5 = 0x55,  
-	LIN_CMD6 = 0x56,
+	LIN_CMD0 = 0x0B,
+	LIN_CMD1 = 0x0C,  
+	LIN_CMD2 = 0x1A,  
+	LIN_CMD3 = 0x1B,
+	LIN_CMD4 = 0x1C,  
+	LIN_CMD5 = 0x2A,  
+	LIN_CMD6 = 0x2C,
 	
 	LIN_CMD7 = 0x67,  
 	LIN_CMD8 = 0x68,  
@@ -97,17 +97,22 @@ typedef struct {
 #define LIN_SLP_DISABLE()   FL_GPIO_SetOutputPin(LIN_SLP_GPIO, LIN_SLP_PIN)
 
 /* 用户处理 */
-#define LIN_CMD0_LENGTH     3
+#define LIN_CMD0_LENGTH     8
 #define LIN_CMD0_TIMEOUT    20
 #define LIN_CMD0_PERIOD     20 /* 最大255ms */
 
-#define LIN_CMD1_LENGTH     4
+#define LIN_CMD1_LENGTH     8
 #define LIN_CMD1_TIMEOUT    30
 #define LIN_CMD1_PERIOD     20 /* 最大255ms */
 
 #define LIN_CMD2_LENGTH     8
 #define LIN_CMD2_TIMEOUT    40
-#define LIN_CMD2_PERIOD     20 /* 最大255ms */
+#define LIN_CMD2_PERIOD     10 /* 最大255ms */
+
+#define LIN_DELAY_10ms      10
+#define LIN_DELAY_30ms      30
+#define LIN_DELAY_20ms      20
+#define LIN_DELAY_30ms      30
 
 extern lin_cmd_packet_t scheduleTable[];
 #define TABLE_SIZE  (sizeof(scheduleTable)/sizeof(lin_cmd_packet_t))
@@ -120,7 +125,10 @@ typedef struct {
 	UINT8                      L_Func: 1;
 	UINT8                      reserved_byte0_1: 1;
 	/* Byte1 */
-	UINT8                      reserved_byte6: 8;
+	UINT8                      R_mode: 3;
+	UINT8                      reserved_byte1_0: 3;
+	UINT8                      R_Func: 1;
+	UINT8                      reserved_byte1_1: 1;
 	/* Byte2 */
 	UINT8                      reserved_byte5: 8;
 	/* Byte3 */            

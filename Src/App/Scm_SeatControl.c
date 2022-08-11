@@ -47,7 +47,7 @@ static UINT8 Forword_Back_Rest = 0;
 static UINT8 Seat_Back_Rest = 0;
 static BOOLEAN Motor_Learn_Start = 0;
 static UINT8 Seat_Manual_Mode = 0;
-#if(SCM_SEATCONTROL_VARIANT == SCM_R_VARIANT)
+
 static UINT8 Seat_EasyStatus = 0;
 static UINT8 Seat_EntryStatus = 0;
 static UINT8 PreGet_FastF_Key = 0;
@@ -56,7 +56,7 @@ static UINT8 PreGetIHU_SeatFoldReq = 0;
 static UINT8 PreGetIHU_SeatReleaseReq = 0;
 UINT8 Dis_SCM_HMI_Req = 0;
 UINT8 Dis_SCM_HMI_Req_Count = 0;
-#endif
+
 static UINT8 PreSeatB_Key = 0;
 static UINT8 PreSeatF_Key= 0;
 static UINT8 PreSeatBackB_Key= 0;
@@ -110,12 +110,10 @@ void Scm_SeatControl_Init(void)
     Forword_Back_Rest = 0;
     Seat_Back_Rest = 0;
     Motor_Learn_Start = 0;
-#if(SCM_SEATCONTROL_VARIANT == SCM_R_VARIANT)
     Seat_EasyStatus = 0;
     Seat_EntryStatus = 0;
     Dis_SCM_HMI_Req = 0;
     Dis_SCM_HMI_Req_Count = 0;
-#endif
 }
 
 
@@ -139,11 +137,8 @@ void Scm_SeatLearn_Func(void)
 
     static UINT8 Motor_Learn_Start_Count = 0;
 
-#if(SCM_SEATCONTROL_VARIANT == SCM_R_VARIANT)
     Seat_FastF_Key = ServSWM_u_GetKey_Seat_FastF_SW_RealVaule();
-#else
-    Seat_FastF_Key = ServSWM_u_GetKey_Seatback_F_SW_RealVaule();
-#endif
+
 
     if( (FALSE == Get_Voltage_Flag()) )
     {
@@ -213,11 +208,8 @@ void Scm_SeatLearn_Func(void)
         }
     }
 
-#if(SCM_SEATCONTROL_VARIANT == SCM_R_VARIANT)
     if( (1 == Motor_Learn_Start) && ( Motor_Learn_Start_Count >= 150 ) && ( (1 == Scm_GetKey_Func()) || (TRUE == Get_Voltage_Flag()) || (1 == ABM_PassengerSeatOccSts) ||((0 != VCU_VehSpd) && (VCU_VehSpd_VD == 0x0)) ))
-#else
-    if( (1 == Motor_Learn_Start) && (Motor_Learn_Start_Count >= 150) && ( (1 == Scm_GetKey_Func()) || (TRUE == Get_Voltage_Flag()) ))
-#endif
+
     {
         Seat_StduyTime = 500;
         Motor_Learn_Start = 0;
@@ -421,7 +413,8 @@ UINT8 Scm_GetSeatBackF_Key_Func(void)
     return (Return_Sts);
 
 }
-#if(SCM_SEATCONTROL_VARIANT == SCM_R_VARIANT)
+
+
 /*******************************************************************************
 * Function Name: Scm_SeatControl_Func
 ********************************************************************************
@@ -453,8 +446,8 @@ void Scm_SeatControl_Func(void)
     //Seat_Back_TargetPos = Set_SeatBack_TargetPos();
     Get_FastF_Key = ServSWM_u_GetKey_Seat_FastF_SW_RealVaule();
     Get_FastB_Key = ServSWM_u_GetKey_Seat_FastB_SW_RealVaule();
-    GetIHU_SeatFoldReq = IHU_SeatFoldReq;
-    GetIHU_SeatReleaseReq = IHU_SeatReleaseReq;
+    GetIHU_SeatFoldReq = 0;
+    GetIHU_SeatReleaseReq = 0;
 
     if( 0 == Motor_Learn_Start )
     {
@@ -893,8 +886,6 @@ void Scm_SeatControl_Func(void)
                 else
                 {}
 
-                IHU_SeatFoldReq = 0;
-                IHU_SeatReleaseReq = 0;
             }
             /* Rest Mode */
             else if( ( 0 == Seat_EasyStatus ) && ( 0 == Seat_EntryStatus ) )
@@ -994,461 +985,7 @@ void Scm_SeatControl_Func(void)
 
 }
 
-#else
-/*******************************************************************************
-* Function Name: Scm_SeatControl_Func
-********************************************************************************
-*
-* Summary:
-*  This API is called to Scm_SeatControl_Func
-*
-* Parameters:
-*  None
-*
-* Return:
-*  None
-*
-*******************************************************************************/
-void Scm_SeatControl_Func(void)
-{
-	UINT8 GetForwardBack_LearnSts = 0;
-	UINT8 GetSeatBack_LearnSts = 0;
-    UINT8 Forword_Back_TargetPos = 0;
-    UINT8 Seat_Back_TargetPos = 0;
 
-	
-    GetForwardBack_LearnSts = CddMtr_Get_LearnData_Status(1);
-    GetSeatBack_LearnSts = CddMtr_Get_LearnData_Status(0);
-    Forword_Back_TargetPos = Set_ForwardBack_TargetPos();
-    Seat_Back_TargetPos = Set_SeatBack_TargetPos();
-	
-    /* Clean Reset mode */
-    if( ((1 == Seat_Back_Rest) || (1 == Forword_Back_Rest)) )
-    {
-        if( (((CddMtr_Get_Hall_Fault_Status(0) == CDDMTR_MNG_HALL_SHORTGND) || (CddMtr_Get_Hall_Fault_Status(0) == CDDMTR_MNG_HALL_SHORTBAT_OPEN))
-			|| (1 == Scm_Get_Target_Func(0,Set_SeatBack_TargetPos()))) && ( 1 == Seat_Back_Rest ) )
-        {
-            CddMtr_Percent_Req(0, (CddMtr_Get_Mtr_PosPercent(0)*100));
-            Seat_Back_Rest = 0;
-        }
-
-        if( (((CddMtr_Get_Hall_Fault_Status(1) == CDDMTR_MNG_HALL_SHORTGND) || (CddMtr_Get_Hall_Fault_Status(1) == CDDMTR_MNG_HALL_SHORTBAT_OPEN))
-			|| (1 == Scm_Get_Target_Func(1,Set_ForwardBack_TargetPos()))) && ( 1 == Forword_Back_Rest ) )
-        {
-            CddMtr_Percent_Req(1, (CddMtr_Get_Mtr_PosPercent(1)*100));
-            Forword_Back_Rest = 0;
-        }
-    }
-
-    if( 0 == Motor_Learn_Start )
-    {
-        if(FALSE == Get_Voltage_Flag())
-        {
-            /* Manual Mode */
-            if(  (ServSWM_u_GetKey_Seat_B_SW_RealVaule()) || (ServSWM_u_GetKey_Seat_F_SW_RealVaule())
-            || (ServSWM_u_GetKey_Seatback_B_SW_RealVaule()) || (ServSWM_u_GetKey_Seatback_F_SW_RealVaule()) )
-            {
-                Seat_Manual_Mode = 1;
-                if( ( 1== Seat_Back_Rest ) || ( 1== Forword_Back_Rest ))
-                {
-                    Seat_Back_Rest = 0;
-                    Forword_Back_Rest = 0;
-                    CddMtr_Percent_Req(0, (CddMtr_Get_Mtr_PosPercent(0)*100));
-                    CddMtr_Percent_Req(1, (CddMtr_Get_Mtr_PosPercent(1)*100));
-                }
-            }
-            else if( (PreSeat_Back_TargetPos != Seat_Back_TargetPos) || (PreForword_Back_TargetPos != Forword_Back_TargetPos) )
-            {
-                Seat_Manual_Mode = 0;
-            }
-            else
-            {}
-
-            if( 1 == Seat_Manual_Mode )
-            {
-                /* Forward Back Motor -> 0% */
-                if( ServSWM_u_GetKey_Seat_F_SW_RealVaule() )
-                {
-                    if( GetForwardBack_LearnSts == CDDMTR_MNG_LEARNDATA_INVALID )
-                    {
-                        if( ( CddMtr_Get_Mtr_PosPercent(1) >= 0 ) && ( CddMtr_Get_Mtr_PosPercent(1) <= 100) )
-                        {
-                            if( 1 == Scm_GetSeatF_Key_Func() )
-                            {
-                                CddMtr_Direction_Req(1,CDDMTR_MNG_DIRECTION_FORWARD );
-                            }
-                            
-                        }
-                        SCM_DrvSeatMotoPos_ForwardBack = 0xFE;
-                    }
-                    else
-                    {
-                        if((CddMtr_Get_Hall_Fault_Status(1) == CDDMTR_MNG_HALL_SHORTGND) || (CddMtr_Get_Hall_Fault_Status(1) == CDDMTR_MNG_HALL_SHORTBAT_OPEN) )  /* Judge forward back hall sensor signal status */
-                        {
-                            SCM_DrvSeatMotoPos_ForwardBack = 0xFF;
-                            if( 1 == Scm_GetSeatF_Key_Func() )
-                            {
-                                CddMtr_Direction_Req(1,CDDMTR_MNG_DIRECTION_FORWARD );
-                            }
-                            
-                            if(SeatF_HallFault_Count <= 200)
-                            {
-                                SeatF_HallFault_Count ++;
-                            }
-
-                            if( SeatF_HallFault_Count == 200 )
-                            {
-                                CddMtr_Direction_Req(1,CDDMTR_MNG_DIRECTION_STOP );
-                            }
-                            
-                        }
-                        else
-                        {
-                            if( CddMtr_Get_Mtr_PosPercent(1) > MOTOR_POS_MIN1 )
-                            {
-                                if( 1 == Scm_GetSeatF_Key_Func() )
-                                {
-                                    CddMtr_Percent_Req(1, MOTOR_POS_MIN);     /* Soft point */
-                                }
-                            }
-                            else
-                            {
-                                if( 1 == Scm_GetSeatF_Key_Func() )
-                                {
-                                    CddMtr_Percent_Req(1, MOTOR_HARD_POS_MIN);   /* Hard point */
-                                }
-                            }
-                            // SCM_DrvSeatMotoPos_ForwardBack = CddMtr_Get_Mtr_PosPercent(1);  /* Normal status */
-                            // Get_Current_ForwardBackMotor_Dir = CddMtr_Get_Mtr_Run_Direction(1); /* Get Forward back Direction */
-                        }
-                    }
-                }
-                else
-                {
-                    SeatF_HallFault_Count = 0;
-                    if( GetForwardBack_LearnSts == CDDMTR_MNG_LEARNDATA_INVALID )
-                    {
-                        if( 2 == Scm_GetSeatF_Key_Func() )
-                        {
-                            CddMtr_Direction_Req(1,CDDMTR_MNG_DIRECTION_STOP );
-                        }
-                    }
-                    else
-                    {
-                        if((CddMtr_Get_Hall_Fault_Status(1) == CDDMTR_MNG_HALL_SHORTGND) || (CddMtr_Get_Hall_Fault_Status(1) == CDDMTR_MNG_HALL_SHORTBAT_OPEN))
-                        {
-                            if( 2 == Scm_GetSeatF_Key_Func() )
-                            {
-                                CddMtr_Direction_Req(1,CDDMTR_MNG_DIRECTION_STOP );
-                            }
-                        }
-                        else
-                        {
-                            if( 2 == Scm_GetSeatF_Key_Func() )
-                            {
-                                CddMtr_Percent_Req(1, (CddMtr_Get_Mtr_PosPercent(1)*100));
-                            }
-                        }
-                    }
-                }
-                /* Forward Back Motor -> 100% */
-                if( ServSWM_u_GetKey_Seat_B_SW_RealVaule() )
-                {
-                    if( GetForwardBack_LearnSts == CDDMTR_MNG_LEARNDATA_INVALID )
-                    {
-                        if( ( CddMtr_Get_Mtr_PosPercent(1) >= 0 ) && ( CddMtr_Get_Mtr_PosPercent(1) <= 100) )
-                        {
-                            if( 1 == Scm_GetSeatB_Key_Func() )
-                            {
-                                CddMtr_Direction_Req(1,CDDMTR_MNG_DIRECTION_BACKWARD );
-                            }
-                            
-                        }
-                        SCM_DrvSeatMotoPos_ForwardBack = 0xFE;
-                    }
-                    else
-                    {
-                        if((CddMtr_Get_Hall_Fault_Status(1) == CDDMTR_MNG_HALL_SHORTGND) || (CddMtr_Get_Hall_Fault_Status(1) == CDDMTR_MNG_HALL_SHORTBAT_OPEN))  /* Judge forward back hall sensor signal status */
-                        {
-                            SCM_DrvSeatMotoPos_ForwardBack = 0xFF;
-                            if( 1 == Scm_GetSeatB_Key_Func() )
-                            {
-                                CddMtr_Direction_Req(1,CDDMTR_MNG_DIRECTION_BACKWARD );
-                            }
-                            
-                            if(SeatB_HallFault_Count <= 200)
-                            {
-                                SeatB_HallFault_Count ++;
-                            }
-
-                            if( SeatB_HallFault_Count == 200 )
-                            {
-                                CddMtr_Direction_Req(1,CDDMTR_MNG_DIRECTION_STOP );
-                            }
-                        }
-                        else
-                        {
-                            if( CddMtr_Get_Mtr_PosPercent(1) < MOTOR_POS_MAX1 )
-                            {
-                                if( 1 == Scm_GetSeatB_Key_Func() )
-                                {
-                                    CddMtr_Percent_Req(1, MOTOR_POS_MAX);   /* Soft point */
-                                }
-                            }
-                            else
-                            {
-                                if( 1 == Scm_GetSeatB_Key_Func() )
-                                {
-                                    CddMtr_Percent_Req(1, MOTOR_HARD_POS_MAX);  /* Hard point */
-                                }
-                            }
-                            // SCM_DrvSeatMotoPos_ForwardBack = CddMtr_Get_Mtr_PosPercent(1);  /* Normal status */
-                            // Get_Current_ForwardBackMotor_Dir = CddMtr_Get_Mtr_Run_Direction(1); /* Get Forward back Direction */
-                        }
-                    }
-                }
-                else
-                {
-                    SeatB_HallFault_Count = 0;
-                    if( GetForwardBack_LearnSts == CDDMTR_MNG_LEARNDATA_INVALID )
-                    {
-                        if( 2 == Scm_GetSeatB_Key_Func() )
-                        {
-                            CddMtr_Direction_Req(1,CDDMTR_MNG_DIRECTION_STOP );
-                        }
-                    }
-                    else
-                    {
-                        if((CddMtr_Get_Hall_Fault_Status(1) == CDDMTR_MNG_HALL_SHORTGND) || (CddMtr_Get_Hall_Fault_Status(1) == CDDMTR_MNG_HALL_SHORTBAT_OPEN))
-                        {
-                            if( 2 == Scm_GetSeatB_Key_Func() )
-                            {
-                                CddMtr_Direction_Req(1,CDDMTR_MNG_DIRECTION_STOP );
-                            }
-                        }
-                        else
-                        {
-                            if( 2 == Scm_GetSeatB_Key_Func() )
-                            {
-                                CddMtr_Percent_Req(1, (CddMtr_Get_Mtr_PosPercent(1)*100));
-                            }
-                        }
-                    }
-                }
-                /* Seat Back Motor -> 0% */
-                if( ServSWM_u_GetKey_Seatback_F_SW_RealVaule() )
-                {
-                    if(  GetSeatBack_LearnSts == CDDMTR_MNG_LEARNDATA_INVALID )
-                    {
-                        if( ( CddMtr_Get_Mtr_PosPercent(0) >= 0 ) && ( CddMtr_Get_Mtr_PosPercent(0) <= 100) )
-                        {
-                            if( 1 == Scm_GetSeatBackF_Key_Func() )
-                            {
-                                CddMtr_Direction_Req(0,CDDMTR_MNG_DIRECTION_FORWARD );
-                            }
-                            
-                        }
-                        SCM_DrvSeatMotoPos_SeatBack = 0xFE;
-                    }
-                    else
-                    {
-                        if((CddMtr_Get_Hall_Fault_Status(0) == CDDMTR_MNG_HALL_SHORTGND) || (CddMtr_Get_Hall_Fault_Status(0) == CDDMTR_MNG_HALL_SHORTBAT_OPEN))  /* Judge forward back hall sensor signal status */
-                        {
-                            SCM_DrvSeatMotoPos_SeatBack = 0xFF;
-                            if( 1 == Scm_GetSeatBackF_Key_Func() )
-                            {
-                                CddMtr_Direction_Req(0,CDDMTR_MNG_DIRECTION_FORWARD );
-                            }
-                            
-                            if(SeatBackF_HallFault_Count <= 200)
-                            {
-                                SeatBackF_HallFault_Count ++;
-                            }
-
-                            if( SeatBackF_HallFault_Count == 200 )
-                            {
-                                CddMtr_Direction_Req(0,CDDMTR_MNG_DIRECTION_STOP );
-                            }
-                            
-                        }
-                        else
-                        {
-                            if( CddMtr_Get_Mtr_PosPercent(0) > MOTOR_POS_MIN1 )
-                            {
-                                if( 1 == Scm_GetSeatBackF_Key_Func() )
-                                {
-                                    CddMtr_Percent_Req(0, MOTOR_POS_MIN);   /* Soft point */
-                                }
-                            }
-                            else
-                            {
-                                if(  1 == Scm_GetSeatBackF_Key_Func() )
-                                {
-                                    CddMtr_Percent_Req(0, MOTOR_HARD_POS_MIN);  /* Hard point */
-                                }
-                            }
-                            // SCM_DrvSeatMotoPos_SeatBack = CddMtr_Get_Mtr_PosPercent(0);  /* Normal status */
-                            // Get_Current_SeatBackMotor_Dir = CddMtr_Get_Mtr_Run_Direction(0); /* Get SeatBack Direction */
-                        }
-                    }
-                }
-                else
-                {
-                    SeatBackF_HallFault_Count = 0;
-                    if( GetSeatBack_LearnSts == CDDMTR_MNG_LEARNDATA_INVALID )
-                    {
-                        if( 2 == Scm_GetSeatBackF_Key_Func() )
-                        {
-                            CddMtr_Direction_Req(0,CDDMTR_MNG_DIRECTION_STOP );
-                        }
-                    }
-                    else
-                    {
-                        if((CddMtr_Get_Hall_Fault_Status(0) == CDDMTR_MNG_HALL_SHORTGND) || (CddMtr_Get_Hall_Fault_Status(0) == CDDMTR_MNG_HALL_SHORTBAT_OPEN))
-                        {
-                            if( 2 == Scm_GetSeatBackF_Key_Func() )
-                            {
-                                CddMtr_Direction_Req(0,CDDMTR_MNG_DIRECTION_STOP );
-                            }
-                        }
-                        else
-                        {
-                            if( 2 == Scm_GetSeatBackF_Key_Func() )
-                            {
-                                CddMtr_Percent_Req(0, (CddMtr_Get_Mtr_PosPercent(0)*100));
-                            }
-                        }
-                    }
-                }
-
-                /* Seat Back Motor -> 100% */
-                if( ServSWM_u_GetKey_Seatback_B_SW_RealVaule() )
-                {
-                    if(  GetSeatBack_LearnSts == CDDMTR_MNG_LEARNDATA_INVALID )
-                    {
-                        if( ( CddMtr_Get_Mtr_PosPercent(0) >= 0 ) && ( CddMtr_Get_Mtr_PosPercent(0) <= 100) )
-                        {
-                            if( 1 == Scm_GetSeatBackB_Key_Func() )
-                            {
-                                CddMtr_Direction_Req(0,CDDMTR_MNG_DIRECTION_BACKWARD );
-                            }
-                            
-                        }
-                        SCM_DrvSeatMotoPos_SeatBack = 0xFE;
-                    }
-                    else
-                    {
-                        if((CddMtr_Get_Hall_Fault_Status(0) == CDDMTR_MNG_HALL_SHORTGND) || (CddMtr_Get_Hall_Fault_Status(0) == CDDMTR_MNG_HALL_SHORTBAT_OPEN))  /* Judge forward back hall sensor signal status */
-                        {
-                            SCM_DrvSeatMotoPos_SeatBack = 0xFF;
-                            if( 1 == Scm_GetSeatBackB_Key_Func() )
-                            {
-                                CddMtr_Direction_Req(0,CDDMTR_MNG_DIRECTION_BACKWARD );
-                            }
-                            
-                            if(SeatBackB_HallFault_Count <= 200)
-                            {
-                                SeatBackB_HallFault_Count ++;
-                            }
-
-                            if( SeatBackB_HallFault_Count == 200 )
-                            {
-                                CddMtr_Direction_Req(0,CDDMTR_MNG_DIRECTION_STOP );
-                            }
-                        }
-                        else
-                        {
-                            if( CddMtr_Get_Mtr_PosPercent(0) < MOTOR_POS_MAX1 )
-                            {
-                                if( 1 == Scm_GetSeatBackB_Key_Func() )
-                                {
-                                    CddMtr_Percent_Req(0, MOTOR_POS_MAX);    /* Soft point */
-                                }
-                            }
-                            else
-                            {
-                                if( 1 == Scm_GetSeatBackB_Key_Func() )
-                                {
-                                    CddMtr_Percent_Req(0, MOTOR_HARD_POS_MAX);   /* Hard point */
-                                }
-                            }
-                            // SCM_DrvSeatMotoPos_SeatBack = CddMtr_Get_Mtr_PosPercent(0);  /* Normal status */
-                            // Get_Current_SeatBackMotor_Dir = CddMtr_Get_Mtr_Run_Direction(0); /* Get SeatBack Direction */
-                        }
-                    }
-                }
-                else
-                {
-                    SeatBackB_HallFault_Count = 0;
-                    if( GetSeatBack_LearnSts == CDDMTR_MNG_LEARNDATA_INVALID )
-                    {
-                        if( 2 == Scm_GetSeatBackB_Key_Func() )
-                        {
-                            CddMtr_Direction_Req(0,CDDMTR_MNG_DIRECTION_STOP );
-                        }
-                    }
-                    else
-                    {
-                        if((CddMtr_Get_Hall_Fault_Status(0) == CDDMTR_MNG_HALL_SHORTGND) || (CddMtr_Get_Hall_Fault_Status(0) == CDDMTR_MNG_HALL_SHORTBAT_OPEN))
-                        {
-                            if( 2 == Scm_GetSeatBackB_Key_Func() )
-                            {
-                                CddMtr_Direction_Req(0,CDDMTR_MNG_DIRECTION_STOP );
-                            }
-                        }
-                        else
-                        {
-                            if( 2 == Scm_GetSeatBackB_Key_Func() )
-                            {
-                                CddMtr_Percent_Req(0,(CddMtr_Get_Mtr_PosPercent(0)*100));
-                            }
-                        }
-                    }
-                }
-            }
-            else
-            {
-                /* Reset Mode */
-                if( (CDDMTR_MNG_LEARN_VALID == CddMtr_Get_LearnData_Status(0)) && (PreSeat_Back_TargetPos != Seat_Back_TargetPos) && (CddMtr_Get_Hall_Fault_Status(0) == CDDMTR_MNG_HALL_NORMAL) )
-                {
-                    Seat_Back_Rest = 1;
-                    CddMtr_Percent_Req(0, Set_SeatBack_TargetPos());
-                }
-
-                if( (CDDMTR_MNG_LEARN_VALID == CddMtr_Get_LearnData_Status(1)) && (PreForword_Back_TargetPos != Forword_Back_TargetPos) && (CddMtr_Get_Hall_Fault_Status(1) == CDDMTR_MNG_HALL_NORMAL) )
-                {
-                    Forword_Back_Rest = 1;
-                    CddMtr_Percent_Req(1, Set_ForwardBack_TargetPos());
-                }          
-            }
-        }
-        else
-        {
-            Seat_Manual_Mode = 0;
-            Seat_Back_Rest = 0;
-            Forword_Back_Rest = 0;
-            CddMtr_Percent_Req(0, (CddMtr_Get_Mtr_PosPercent(0)*100));
-            CddMtr_Percent_Req(1, (CddMtr_Get_Mtr_PosPercent(1)*100));
-        }
-    }
-
-    if( (GetForwardBack_LearnSts == CDDMTR_MNG_LEARN_VALID) && ( CddMtr_Get_Hall_Fault_Status(1) == CDDMTR_MNG_HALL_NORMAL ) )
-    {
-        SCM_DrvSeatMotoPos_ForwardBack = CddMtr_Get_Mtr_PosPercent(1);  /* Normal status */
-        Get_Current_ForwardBackMotor_Dir = CddMtr_Get_Mtr_Run_Direction(1); /* Get Forward back Direction */
-    }
-		
-	if( (GetSeatBack_LearnSts == CDDMTR_MNG_LEARN_VALID) && ( CddMtr_Get_Hall_Fault_Status(0) == CDDMTR_MNG_HALL_NORMAL ) )
-    {
-        SCM_DrvSeatMotoPos_SeatBack = CddMtr_Get_Mtr_PosPercent(0);  /* Normal status */
-        Get_Current_SeatBackMotor_Dir = CddMtr_Get_Mtr_Run_Direction(0); /* Get SeatBack Direction */
-    }
-
-    PreForword_Back_TargetPos = Forword_Back_TargetPos;
-    PreSeat_Back_TargetPos = Seat_Back_TargetPos;
-
-}
-#endif
 
 /*******************************************************************************
 * Function Name: Get_ForwardBack_Current_Pos
