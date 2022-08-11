@@ -6,7 +6,7 @@
 /* Variant configuration */
 #define SCM_L_VARIANT 0
 #define SCM_R_VARIANT 1
-#define SCM_SEATCONTROL_VARIANT SCM_R_VARIANT
+#define SCM_SEATCONTROL_VARIANT SCM_L_VARIANT
 
 /* ===========================================================================
 //  P U B L I C   M A C R O S
@@ -119,7 +119,7 @@ typedef struct {
 	UINT8                       unused1: 8;
 	
 	UINT8                       unused1_2: 3;
-	UINT8                       Scene_mode: 2;
+	UINT8                       Scene_mode: 3;
 	UINT8                       unused1_3: 2;
 	
 	UINT8                       fatigue: 3;               /*byte3*/

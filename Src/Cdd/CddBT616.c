@@ -52,21 +52,21 @@ const uint8_t BT_cmd_to_Button_ID[][3] =
 	0xA2, BTN_ID_CTRL_MODE_DRIVERIESS_CAR_e  , 0,
 	0xA3, BTN_ID_CTRL_MODE_MEETING_e  , 0,
 	0xA4, BTN_ID_CTRL_MODE_LEISURE_e  , 0,
-	0xA5, BTN_ID_CTRL_LED_e  , 0,
-	0xA6, BTN_ID_CTRL_LED_e  , 1,
+	0xA5, BTN_ID_CTRL_LED_e  , DIRECTION_FRONT,
+	0xA6, BTN_ID_CTRL_LED_e  , DIRECTION_FRONT,
 
 	0xB0, 0  , 0,
 	0xB1, BTN_ID_CTRL_POS_FRONT_REAR_e  , DIRECTION_FRONT,
 	0xB2, BTN_ID_CTRL_BACK_ANGLE_e      , DIRECTION_FRONT,
 	0xB3, BTN_ID_CTRL_ROTATE_e          , DIRECTION_FRONT,
-	0xB4, 0  , 0,
+	0xB4, BTN_ID_CTRL_LEG_e  , DIRECTION_FRONT,
 	0xB5, BTN_ID_CTRL_HEAD_e  , DIRECTION_FRONT,
 
 	0xC0, 0  , 0,
 	0xC1, BTN_ID_CTRL_POS_FRONT_REAR_e  , DIRECTION_REAR,
 	0xC2, BTN_ID_CTRL_BACK_ANGLE_e  , DIRECTION_REAR,
 	0xC3, BTN_ID_CTRL_ROTATE_e  , DIRECTION_REAR,
-	0xC4, 0  , 0,
+	0xC4, BTN_ID_CTRL_LEG_e  , DIRECTION_REAR,
 	0xC5, BTN_ID_CTRL_HEAD_e  , DIRECTION_REAR,
 
 	0xE0, BTN_ID_CTRL_VENTILITION_e  , 0,
@@ -211,7 +211,7 @@ void CddBT616_init(void)
 
 	Ioif_SetPinLevel(GPIO_NUMBER_E3_BLE_RESET,TRUE);
 	memset(&CddBT616_Main_Ctrl,0,sizeof(CddBT616_Main_Ctrl)); 
-	CddBT616_Main_Ctrl.txst.DLC = 18;
+	CddBT616_Main_Ctrl.txst.DLC = 15;
 	CddBT616_Main_Ctrl.txst.Data[index++] = 0x75;
 	CddBT616_Main_Ctrl.txst.Data[index++] = 0x78;
 	
@@ -219,10 +219,6 @@ void CddBT616_init(void)
 	CddBT616_Main_Ctrl.txst.Data[index++] = 0x00;
 	CddBT616_Main_Ctrl.txst.Data[index++] = 0x09;
 	
-	CddBT616_Main_Ctrl.txst.Data[index++] = 0xFF;
-	CddBT616_Main_Ctrl.txst.Data[index++] = 0xFF;
-	CddBT616_Main_Ctrl.txst.Data[index++] = 0xFF;
-
 	CddBT616_Main_Ctrl.txst.Data[index++] = 0xFF;
 	CddBT616_Main_Ctrl.txst.Data[index++] = 0xFF;
 	CddBT616_Main_Ctrl.txst.Data[index++] = 0xFF;
@@ -269,28 +265,39 @@ void CddBT616_Update_Signal(void)
 	index = 5;
 	if(CDDMTR_MNG_LEARN_VALID == CddMtr_Get_LearnData_Status(0))
 	{
-		CddBT616_Main_Ctrl.txst.Data[index++] = CddMtr_Get_Mtr_PosPercent(0);
+		CddBT616_Main_Ctrl.txst.Data[index] = CddMtr_Get_Mtr_PosPercent(0);
 	}
+	index++;
 	if(CDDMTR_MNG_LEARN_VALID == CddMtr_Get_LearnData_Status(1))
 	{
-		CddBT616_Main_Ctrl.txst.Data[index++] = CddMtr_Get_Mtr_PosPercent(1);
+		CddBT616_Main_Ctrl.txst.Data[index] = CddMtr_Get_Mtr_PosPercent(1);
 	}
+	
+	index++;
 	if(CDDMTR_MNG_LEARN_VALID == CddMtr_Get_LearnData_Status(4))
 	{
-		CddBT616_Main_Ctrl.txst.Data[index++] = CddMtr_Get_Mtr_PosPercent(4);
+		CddBT616_Main_Ctrl.txst.Data[index] = CddMtr_Get_Mtr_PosPercent(4);
 	}
+	
+	index++;
 	if(CDDMTR_MNG_LEARN_VALID == CddMtr_Get_LearnData_Status(5))
 	{
-		CddBT616_Main_Ctrl.txst.Data[index++] = CddMtr_Get_Mtr_PosPercent(5);
+		CddBT616_Main_Ctrl.txst.Data[index] = CddMtr_Get_Mtr_PosPercent(5);
 	}
+	
+	index++;
 	if(CDDMTR_MNG_LEARN_VALID == CddMtr_Get_LearnData_Status(2))
 	{
-		CddBT616_Main_Ctrl.txst.Data[index++] = CddMtr_Get_Mtr_PosPercent(2);
+		CddBT616_Main_Ctrl.txst.Data[index] = CddMtr_Get_Mtr_PosPercent(2);
 	}
+	
+	index++;
 	if(CDDMTR_MNG_LEARN_VALID == CddMtr_Get_LearnData_Status(3))
 	{
-		CddBT616_Main_Ctrl.txst.Data[index++] = CddMtr_Get_Mtr_PosPercent(3);
+		CddBT616_Main_Ctrl.txst.Data[index] = CddMtr_Get_Mtr_PosPercent(3);
 	}
+	
+	index++;
 #if(SCM_SEATCONTROL_VARIANT == SCM_R_VARIANT)
 	if(LIN_CMD6_Data.SCM_Fan_SCM_msg.Fan_Pwm > 50 )
 	{
@@ -318,6 +325,7 @@ void CddBT616_Update_Signal(void)
 		case BTN_ID_CTRL_BACK_ANGLE_e:
 		case BTN_ID_CTRL_ROTATE_e:
 		case BTN_ID_CTRL_HEAD_e:
+		case BTN_ID_CTRL_LEG_e:
 		case BTN_ID_CTRL_VENTILITION_e:	
 		case BTN_ID_CTRL_LED_e:
 		case BTN_ID_CTRL_MASSAGE_e:
@@ -375,6 +383,7 @@ void CddBT616_Update_Signal(void)
 		case BTN_ID_CTRL_BACK_ANGLE_e:
 		case BTN_ID_CTRL_ROTATE_e:
 		case BTN_ID_CTRL_HEAD_e:
+		case BTN_ID_CTRL_LEG_e:
 		case BTN_ID_CTRL_VENTILITION_e:	
 		case BTN_ID_CTRL_LED_e:
 		case BTN_ID_CTRL_MASSAGE_e:

@@ -166,9 +166,9 @@ static void process_MSG45A(void)
 	fl_str_e.ExtId = 0x19FF2A36;
 	fl_str_e.DLC = 8;
 
-	for(i=0; i<fl_str_e.DLC; i++)
+	for(temp=0; temp<fl_str_e.DLC; temp++)
     {
-        fl_str_e.Data[i] = il_tx_SCM_L_45A_msg.byte[i];        
+        fl_str_e.Data[temp] = il_tx_SCM_L_45A_msg.byte[temp];        
     }
 
 	Canif_tx_queue_push_e(fl_str_e);
@@ -189,14 +189,14 @@ void update_can_signal(void)
 		update_sucess = FALSE;
 		btn.ButtonId = BTN_ID_CTRL_POS_FRONT_REAR_e;
 		temp = Btn_Signal_Group[index];
-		temp  = temp  * 5 / 2;
+		temp  = temp  * 2 / 5;
 		if(temp >100)
 		{
 			btn.ButtonVal = 100;
 		}
 		else
 		{
-			btn.ButtonVal = Btn_Signal_Group[index];
+			btn.ButtonVal = temp;
 		}
 		ButtonCtrl_queue_push_e(btn);
 	}
@@ -206,8 +206,8 @@ void update_can_signal(void)
 		Btn_Signal_Group[index+BT_SIGNAL_GROUP_NUM] = Btn_Signal_Group[index];
 		update_sucess = FALSE;
 		btn.ButtonId = BTN_ID_CTRL_BACK_ANGLE_e;
-		btn.ButtonVal = Btn_Signal_Group[index]*3;
-		if(Btn_Signal_Group[index] < 0x1F)
+		btn.ButtonVal = Btn_Signal_Group[index]*33/10;
+		if(Btn_Signal_Group[index] <= 0x1F)
 		{
 			ButtonCtrl_queue_push_e(btn);
 		}
@@ -220,7 +220,7 @@ void update_can_signal(void)
 		temp = TRUE;
 		switch(Btn_Signal_Group[index])
 		{
-#if(SCM_SEATCONTROL_VARIANT == SCM_L_VARIANT)
+#if(SCM_SEATCONTROL_VARIANT == SCM_R_VARIANT)
 			case 0:   btn.ButtonId = BTN_ID_CTRL_OFF_e; break;
 			case 1:   btn.ButtonId = BTN_ID_CTRL_PREPARE_MEAL_e; break;
 #endif			
@@ -291,7 +291,7 @@ void update_can_signal(void)
 		temp = TRUE;
 		switch(Btn_Signal_Group[index])
 		{
-			case 0:   btn.ButtonVal = 0; break;
+			case 0:   temp = FALSE; break;
 			case 1:   btn.ButtonVal = 1; break;
 			default: temp = FALSE;break;
 		}

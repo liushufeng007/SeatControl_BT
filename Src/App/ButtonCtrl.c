@@ -17,7 +17,7 @@ ButtonCtrl_Queue_str ButtonCtrl_queue;
 
 ButtonCtrl_Req_Str ButtonCtrl_Req;
 
-uint8_t StopBtn_Cnt[4];
+uint8_t StopBtn_Cnt[5];
 uint16_t Button_Mode[MODE_E2_LEN] = {0};
 
 
@@ -331,9 +331,13 @@ void ButtonCtrl_Motor_EventProcess(void)
 		{
 			CddLed_Req(TRUE);
 		}
-		else
+		else if(ButtonCtrl_Req.LED.ButtonVal == BTNVAL_OFF)
 		{
 			CddLed_Req(FALSE);
+		}
+		else if(ButtonCtrl_Req.LED.ButtonVal == DIRECTION_FRONT)
+		{
+			CddLed_Covert();
 		}
 	}
 	if(ButtonCtrl_Req.Ventilation.ReqActive == BTNVAL_ON)
@@ -425,7 +429,11 @@ ButtonCtrl_Req_Str ButtonCtrl_Convert_Pos_EventProcess(ButtonCtrl_Str fl_str_e)
 			ButtonCtrl_Req.ButtonCtrl_Mode.Head_Motor.ReqActive = BTNVAL_ON;
 			ButtonCtrl_Req.ButtonCtrl_Mode.Head_Motor.ButtonVal = fl_str_e.ButtonVal;
 		break;
-		
+
+		case BTN_ID_CTRL_LEG_e:
+			ButtonCtrl_Req.ButtonCtrl_Mode.Leg_Motor.ReqActive = BTNVAL_ON;
+			ButtonCtrl_Req.ButtonCtrl_Mode.Leg_Motor.ButtonVal = fl_str_e.ButtonVal;
+		break;
 		
 		case BTN_ID_CTRL_VENTILITION_e:
 			ButtonCtrl_Req.Ventilation.ReqActive = BTNVAL_ON;
@@ -480,7 +488,7 @@ void ButtonCtrl_Update_StopBtn_Ticks(ButtonCtrl_Str fl_str_e)
 	StopBtn_Cnt[1] ++;
 	StopBtn_Cnt[2] ++;
 	StopBtn_Cnt[3] ++;
-	
+	StopBtn_Cnt[4] ++;
 	
 	switch(fl_str_e.ButtonId)
 	{
@@ -498,6 +506,10 @@ void ButtonCtrl_Update_StopBtn_Ticks(ButtonCtrl_Str fl_str_e)
 		
 		case BTN_ID_CTRL_HEAD_e:
 			StopBtn_Cnt[3] = 0;
+		break;
+
+		case BTN_ID_CTRL_LEG_e:
+			StopBtn_Cnt[4] = 0;
 		break;
 		
 		default:
@@ -541,6 +553,15 @@ void ButtonCtrl_Update_StopBtn_Ticks(ButtonCtrl_Str fl_str_e)
 				StopBtn_Cnt[3] = STOP_BTN_TIMEOUT;
 			}
 			
+			if(StopBtn_Cnt[4] == STOP_BTN_TIMEOUT)
+			{
+				ButtonCtrl_Req.ButtonCtrl_Mode.Leg_Motor.ReqActive = BTNVAL_ON;
+				ButtonCtrl_Req.ButtonCtrl_Mode.Leg_Motor.ButtonVal = DIRECTION_STOP;
+			}
+			else if(StopBtn_Cnt[4] > STOP_BTN_TIMEOUT)
+			{
+				StopBtn_Cnt[4] = STOP_BTN_TIMEOUT;
+			}
 		break;
 		
 	}
@@ -575,6 +596,7 @@ void ButtonCtrl_Update_Mode(ButtonCtrl_Str fl_str_e)
 		case BTN_ID_CTRL_BACK_ANGLE_e:
 		case BTN_ID_CTRL_ROTATE_e:
 		case BTN_ID_CTRL_HEAD_e:
+		case BTN_ID_CTRL_LEG_e:
 		case BTN_ID_CTRL_VENTILITION_e:	
 		case BTN_ID_CTRL_LED_e:
 		case BTN_ID_CTRL_MASSAGE_e:
