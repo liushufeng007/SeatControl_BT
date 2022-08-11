@@ -175,6 +175,11 @@
           <WinNumber>1</WinNumber>
           <ItemText>index</ItemText>
         </Ww>
+        <Ww>
+          <count>4</count>
+          <WinNumber>1</WinNumber>
+          <ItemText>StopBtn_Cnt,0x0A</ItemText>
+        </Ww>
       </WatchWindow1>
       <WatchWindow2>
         <Ww>

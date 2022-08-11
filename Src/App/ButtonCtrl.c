@@ -32,7 +32,7 @@ static ButtonCtrl_Req_Str ButtonCtrl_Convert_Pos_EventProcess(ButtonCtrl_Str fl_
 static ButtonCtrl_Mode_Req_Str ButtonCtrl_Convert_Mode_EventProcess(ButtonCtrl_Str fl_str_e);
 static void ButtonCtrl_Motor_ActionProcess(ButtonCtrlReq_Str req,uint8_t mtr_index);
 static void ButtonCtrl_Motor_EventProcess(void);
-static void ButtonCtrl_Update_StopBtn_Ticks(ButtonCtrl_Str fl_str_e);
+static uint8_t ButtonCtrl_Update_StopBtn_Ticks(ButtonCtrl_Str fl_str_e);
 static void ButtonCtrl_Update_Mode(ButtonCtrl_Str fl_str_e);
 static void ButtonCtrl_Update_Check(void);
 
@@ -158,11 +158,16 @@ void ButtonCtrl_50ms_Task(void)
 	{
 		ButtonCtrl_Update_Mode(fl_str_e);
 		ButtonCtrl_Update_Req(fl_str_e);
-		ButtonCtrl_Update_StopBtn_Ticks(fl_str_e);
+	}
+	if(TRUE == ButtonCtrl_Update_StopBtn_Ticks(fl_str_e))
+	{
+		ret_val = TRUE;
+	}
+	if(ret_val == TRUE)
+	{
 		ButtonCtrl_Motor_EventProcess();
 		memset(&ButtonCtrl_Req,0,sizeof(ButtonCtrl_Req));
 	}
-
 	ButtonCtrl_Update_Check();
 }
 
@@ -482,8 +487,9 @@ void ButtonCtrl_Update_Req(ButtonCtrl_Str fl_str_e)
 /************************************
 update stop btn ticks
 ************************************/
-void ButtonCtrl_Update_StopBtn_Ticks(ButtonCtrl_Str fl_str_e)
+uint8_t ButtonCtrl_Update_StopBtn_Ticks(ButtonCtrl_Str fl_str_e)
 {
+	uint8_t retval = FALSE;
 	StopBtn_Cnt[0] ++;
 	StopBtn_Cnt[1] ++;
 	StopBtn_Cnt[2] ++;
@@ -517,6 +523,7 @@ void ButtonCtrl_Update_StopBtn_Ticks(ButtonCtrl_Str fl_str_e)
 			{
 				ButtonCtrl_Req.ButtonCtrl_Mode.Front_Rear_Motor.ReqActive = BTNVAL_ON;
 				ButtonCtrl_Req.ButtonCtrl_Mode.Front_Rear_Motor.ButtonVal = DIRECTION_STOP;
+				retval = TRUE;
 			}
 			else if(StopBtn_Cnt[0] > STOP_BTN_TIMEOUT)
 			{
@@ -527,6 +534,7 @@ void ButtonCtrl_Update_StopBtn_Ticks(ButtonCtrl_Str fl_str_e)
 			{
 				ButtonCtrl_Req.ButtonCtrl_Mode.Back_Angle_Motor.ReqActive = BTNVAL_ON;
 				ButtonCtrl_Req.ButtonCtrl_Mode.Back_Angle_Motor.ButtonVal = DIRECTION_STOP;
+				retval = TRUE;
 			}
 			else if(StopBtn_Cnt[1] > STOP_BTN_TIMEOUT)
 			{
@@ -537,6 +545,7 @@ void ButtonCtrl_Update_StopBtn_Ticks(ButtonCtrl_Str fl_str_e)
 			{
 				ButtonCtrl_Req.ButtonCtrl_Mode.Rotate_Motor.ReqActive = BTNVAL_ON;
 				ButtonCtrl_Req.ButtonCtrl_Mode.Rotate_Motor.ButtonVal = DIRECTION_STOP;
+				retval = TRUE;
 			}
 			else if(StopBtn_Cnt[2] > STOP_BTN_TIMEOUT)
 			{
@@ -547,6 +556,7 @@ void ButtonCtrl_Update_StopBtn_Ticks(ButtonCtrl_Str fl_str_e)
 			{
 				ButtonCtrl_Req.ButtonCtrl_Mode.Head_Motor.ReqActive = BTNVAL_ON;
 				ButtonCtrl_Req.ButtonCtrl_Mode.Head_Motor.ButtonVal = DIRECTION_STOP;
+				retval = TRUE;
 			}
 			else if(StopBtn_Cnt[3] > STOP_BTN_TIMEOUT)
 			{
@@ -557,6 +567,7 @@ void ButtonCtrl_Update_StopBtn_Ticks(ButtonCtrl_Str fl_str_e)
 			{
 				ButtonCtrl_Req.ButtonCtrl_Mode.Leg_Motor.ReqActive = BTNVAL_ON;
 				ButtonCtrl_Req.ButtonCtrl_Mode.Leg_Motor.ButtonVal = DIRECTION_STOP;
+				retval = TRUE;
 			}
 			else if(StopBtn_Cnt[4] > STOP_BTN_TIMEOUT)
 			{
@@ -566,7 +577,7 @@ void ButtonCtrl_Update_StopBtn_Ticks(ButtonCtrl_Str fl_str_e)
 		
 	}
 
-	
+	return retval;
 }
 
 /************************************
