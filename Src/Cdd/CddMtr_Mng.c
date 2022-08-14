@@ -1971,5 +1971,22 @@ uint16_t CddMtr_Get_Mtr_PosPercent(uint8_t fl_Mtr_Id)
 }
 
 
+uint8_t CddMtr_Get_Mtr_Learning_Status(uint8_t fl_Mtr_Id)
+{
+	uint8_t learning = FALSE;
+	
+	if(fl_Mtr_Id < CDDMTR_HFKF_MAX_NUM)
+	{
+		if(CddMtr_Mng_Main_St[fl_Mtr_Id].Main_Ctrl_Status <= CDDMTR_MNG_STATUS_LEARN_8_FAIL  )
+		{
+			if(CddMtr_Mng_Main_St[fl_Mtr_Id].Main_Ctrl_Status >= CDDMTR_MNG_STATUS_STOP)
+			{
+				learning = TRUE;
+			}
+		}
+	}
+	
+	return learning;
+}
 
 /*EOF*/

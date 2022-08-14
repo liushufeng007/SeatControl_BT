@@ -53,8 +53,9 @@ const uint8_t BT_cmd_to_Button_ID[][3] =
 	0xA3, BTN_ID_CTRL_MODE_MEETING_e  , 0,
 	0xA4, BTN_ID_CTRL_MODE_LEISURE_e  , 0,
 	0xA5, BTN_ID_CTRL_LED_e  , DIRECTION_FRONT,
-	0xA6, BTN_ID_CTRL_LED_e  , DIRECTION_FRONT,
-
+	0xAA, BTN_ID_CTRL_SAVE_e  , DIRECTION_FRONT,
+	0xAB, BTN_ID_CTRL_CALIBARTION_MTR_e  , DIRECTION_FRONT,
+	
 	0xB0, 0  , 0,
 	0xB1, BTN_ID_CTRL_POS_FRONT_REAR_e  , DIRECTION_FRONT,
 	0xB2, BTN_ID_CTRL_BACK_ANGLE_e      , DIRECTION_FRONT,
@@ -192,7 +193,7 @@ uint8_t  CddBT616_Check_RxFormat(uint8_t * data)
 
 	if(parity != data[index++])
 	{
-		return FALSE;
+		return TRUE;
 	}
 	
 	return TRUE;
@@ -329,6 +330,8 @@ void CddBT616_Update_Signal(void)
 		case BTN_ID_CTRL_VENTILITION_e:	
 		case BTN_ID_CTRL_LED_e:
 		case BTN_ID_CTRL_MASSAGE_e:
+		case BTN_ID_CTRL_SAVE_e:
+		case BTN_ID_CTRL_CALIBARTION_MTR_e:
 		default:
 			CddBT616_Main_Ctrl.txst.Data[index++] = 0xFF;
 		break;
@@ -387,6 +390,8 @@ void CddBT616_Update_Signal(void)
 		case BTN_ID_CTRL_VENTILITION_e:	
 		case BTN_ID_CTRL_LED_e:
 		case BTN_ID_CTRL_MASSAGE_e:
+		case BTN_ID_CTRL_SAVE_e:
+		case BTN_ID_CTRL_CALIBARTION_MTR_e:
 		default:
 			CddBT616_Main_Ctrl.txst.Data[index++] = 0xFF;
 		break;

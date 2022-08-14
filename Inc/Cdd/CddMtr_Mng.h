@@ -193,6 +193,7 @@ extern CddMtr_Ctrl_Req_e CddMtr_Get_Mtr_Run_Direction(uint8_t fl_Mtr_Id);
 extern uint16_t CddMtr_Get_Mtr_PosPercent(uint8_t fl_Mtr_Id);
 
 extern uint8_t CddMtr_Get_SleepCondition(void);
+extern 	uint8_t CddMtr_Get_Mtr_Learning_Status(uint8_t fl_Mtr_Id);
 #endif
 
 /*EOF*/

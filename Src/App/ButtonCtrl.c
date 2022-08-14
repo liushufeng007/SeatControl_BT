@@ -23,6 +23,10 @@ uint16_t Button_Mode[MODE_E2_LEN] = {0};
 
 uint8_t Button_Update_Flag = TRUE;
 
+ButtonCtrl_Id_MtrCal_e ButtonCtrl_Mtr_Calbration_State = BTN_ID_CTRL_CAL_IDLE;
+uint8_t  ButtonCtrl_Mtr_DelayTicks = 0;
+
+
 static uint8_t ButtonCtrl_queue_is_empty(void);
 static uint8_t ButtonCtrl_queue_is_full(void);
 //static uint8_t ButtonCtrl_queue_push_e(ButtonCtrl_Str fl_str_e);
@@ -100,6 +104,18 @@ BTNVAL_ON, 90,    BTNVAL_OFF, 75,	BTNVAL_ON,  0,   BTNVAL_OFF,  0,	 BTNVAL_OFF, 
 #endif
 
 
+const uint8_t ButtonCtrl_Mtr_Calibration_Sequence[CDDMTR_HFKF_MAX_NUM][CDDMTR_HFKF_MAX_NUM] = 
+{
+	0  ,  1,  0xFF, 0xFF,  0xFF,  0xFF,
+	2  ,  3,  0xFF, 0xFF,  0xFF,  0xFF,
+	4  ,  5,  0xFF, 0xFF,  0xFF,  0xFF,
+	0xFF,  0xFF,  0xFF, 0xFF,  0xFF,  0xFF,
+	0xFF,  0xFF,  0xFF, 0xFF,  0xFF,  0xFF,
+	0xFF,  0xFF,  0xFF, 0xFF,  0xFF,  0xFF,
+};
+
+const uint8_t ButtonCtrl_Mtr_Calibration_MaxCh = 2;
+const uint8_t ButtonCtrl_Mtr_Calibration_DelayTicks = 20;
 
 /*******************************************************************************
 * Function Name: ButtonCtrlInit
@@ -130,6 +146,91 @@ void ButtonCtrlInit(void)
 	LIN_CMD2_Data.SCM_L_SCM_msg.L_mode = Button_Mode[2];
 	LIN_CMD2_Data.SCM_L_SCM_msg.L_mode = Button_Mode[3];
 	LIN_CMD2_Data.SCM_L_SCM_msg.L_Func = Button_Mode[4];
+
+	ButtonCtrl_Mtr_Calbration_State = BTN_ID_CTRL_CAL_IDLE;
+    ButtonCtrl_Mtr_DelayTicks = 0;
+}
+
+
+/*******************************************************************************
+* Function Name: ButtonCtrlFastSample_5ms
+********************************************************************************
+*
+* Summary:
+*  This API is called from Main loop to handle Button Control state transition
+*
+* Parameters:
+*  None
+*
+* Return:
+*  None
+*
+*******************************************************************************/
+void ButtonCtrl_Calibration_Process(void)
+{
+	uint8_t index = 0;
+	uint8_t learning = FALSE;
+	
+	if(ButtonCtrl_Mtr_Calbration_State == BTN_ID_CTRL_CAL_IDLE)
+	{
+		if(ButtonCtrl_Req.Clibration.ReqActive == BTNVAL_ON && ButtonCtrl_Req.Clibration.ButtonVal == DIRECTION_FRONT)
+		{
+			ButtonCtrl_Mtr_Calbration_State++;
+			ButtonCtrl_Mtr_DelayTicks = 0;
+		}
+
+	}
+	else if((ButtonCtrl_Mtr_Calbration_State % 2) == 1)
+	{
+		while(index < CDDMTR_HFKF_MAX_NUM)
+		{
+			if(ButtonCtrl_Mtr_Calibration_Sequence[ButtonCtrl_Mtr_Calbration_State/2][index] != 0xFF)
+			{
+				CddMtr_Learn_Req(ButtonCtrl_Mtr_Calibration_Sequence[ButtonCtrl_Mtr_Calbration_State/2][index],CDDMTR_MNG_LEARN_ENABLE);
+			}
+			index ++;
+		}
+
+		if((ButtonCtrl_Mtr_Calbration_State / 2) < CDDMTR_HFKF_MAX_NUM)
+		{
+			ButtonCtrl_Mtr_Calbration_State++;
+		}
+		else
+		{
+			ButtonCtrl_Mtr_Calbration_State = BTN_ID_CTRL_CAL_IDLE;
+		}
+		
+		ButtonCtrl_Mtr_DelayTicks = 0;
+	}
+	else if((ButtonCtrl_Mtr_Calbration_State % 2) == 0)
+	{
+		if(ButtonCtrl_Mtr_DelayTicks <= ButtonCtrl_Mtr_Calibration_DelayTicks)
+		{
+			ButtonCtrl_Mtr_DelayTicks ++;
+		}
+		else
+		{
+
+			while(index < CDDMTR_HFKF_MAX_NUM)
+			{
+				if(ButtonCtrl_Mtr_Calibration_Sequence[(ButtonCtrl_Mtr_Calbration_State-1)/2][index] != 0xFF)
+				{
+					if(TRUE == CddMtr_Get_Mtr_Learning_Status(index))
+					{
+						learning = TRUE;
+					}
+				}
+				index ++;
+			}
+
+			if(learning == FALSE)
+			{
+				ButtonCtrl_Mtr_Calbration_State++;
+			}
+		}
+	}
+
+
 }
 
 
@@ -163,6 +264,9 @@ void ButtonCtrl_50ms_Task(void)
 	{
 		ret_val = TRUE;
 	}
+	
+	ButtonCtrl_Calibration_Process();
+	
 	if(ret_val == TRUE)
 	{
 		ButtonCtrl_Motor_EventProcess();
@@ -454,6 +558,17 @@ ButtonCtrl_Req_Str ButtonCtrl_Convert_Pos_EventProcess(ButtonCtrl_Str fl_str_e)
 			ButtonCtrl_Req.Massage.ReqActive = BTNVAL_ON;
 			ButtonCtrl_Req.Massage.ButtonVal = fl_str_e.ButtonVal;
 		break;
+
+		case BTN_ID_CTRL_SAVE_e:
+			ButtonCtrl_Req.Save.ReqActive = BTNVAL_ON;
+			ButtonCtrl_Req.Save.ButtonVal = fl_str_e.ButtonVal;
+		break;
+
+		case BTN_ID_CTRL_CALIBARTION_MTR_e:
+			ButtonCtrl_Req.Clibration.ReqActive = BTNVAL_ON;
+			ButtonCtrl_Req.Clibration.ButtonVal = fl_str_e.ButtonVal;
+		break;
+
 		
 	}
 
@@ -610,7 +725,9 @@ void ButtonCtrl_Update_Mode(ButtonCtrl_Str fl_str_e)
 		case BTN_ID_CTRL_LEG_e:
 		case BTN_ID_CTRL_VENTILITION_e:	
 		case BTN_ID_CTRL_LED_e:
-		case BTN_ID_CTRL_MASSAGE_e:
+		case BTN_ID_CTRL_MASSAGE_e:			
+		case BTN_ID_CTRL_SAVE_e:
+		case BTN_ID_CTRL_CALIBARTION_MTR_e:
 		default:
 
 		break;

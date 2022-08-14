@@ -26,7 +26,22 @@ typedef enum
 	BTN_ID_CTRL_VENTILITION_e,	
 	BTN_ID_CTRL_LED_e,
 	BTN_ID_CTRL_MASSAGE_e,
+	BTN_ID_CTRL_SAVE_e,
+	BTN_ID_CTRL_CALIBARTION_MTR_e	
 }ButtonCtrl_Id_e;
+
+
+typedef enum
+{
+	BTN_ID_CTRL_CAL_IDLE,
+	BTN_ID_CTRL_CAL_STEP0,
+	BTN_ID_CTRL_CAL_STEP1,
+	BTN_ID_CTRL_CAL_STEP2,
+	BTN_ID_CTRL_CAL_STEP3,
+	BTN_ID_CTRL_CAL_STEP4,
+	BTN_ID_CTRL_CAL_STEP5,
+	BTN_ID_CTRL_CAL_MAX_NUM,
+}ButtonCtrl_Id_MtrCal_e;
 
 
 
@@ -86,6 +101,8 @@ typedef struct
 	ButtonCtrlReq_Str LED;
 	ButtonCtrlReq_Str Ventilation;
 	ButtonCtrlReq_Str Massage;
+	ButtonCtrlReq_Str Save;	
+	ButtonCtrlReq_Str Clibration;
 }ButtonCtrl_Req_Str;
 
 
