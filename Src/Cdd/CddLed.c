@@ -14,7 +14,6 @@
 uint16_t CddLed_Req_State = FALSE;
 uint16_t CddLed_Req_State_Mirror = 0;
 uint8_t  CddLed_update_Flag = TRUE;
-#define  CDDLED_E2_ADDR   200
 /*******************************************************************************
 ID				: 1
 Name			: Init_CddLed

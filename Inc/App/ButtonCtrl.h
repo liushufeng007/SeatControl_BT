@@ -43,6 +43,13 @@ typedef enum
 	BTN_ID_CTRL_CAL_MAX_NUM,
 }ButtonCtrl_Id_MtrCal_e;
 
+typedef enum
+{
+	BTN_CTRL_IDLE,
+	BTN_CTRL_EXIT_ACT,
+	BTN_CTRL_PRE_ACT,
+	BTN_CTRL_LAST_ACT,
+}ButtonCtrl_Action_Step;
 
 
 #define BTNVAL_OFF   ((uint8_t)0)
@@ -59,6 +66,11 @@ typedef enum
 #define DIRECTION_STOP   ((uint8_t)0xAF)
 
 #define STOP_BTN_TIMEOUT 30
+
+
+#define MAX_SAVE_NUMBER 8
+
+#define MOTOR_ACTION_MAX_TICKS   600   /*30 second*/
 
 typedef struct
 {

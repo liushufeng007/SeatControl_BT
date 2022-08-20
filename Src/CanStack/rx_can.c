@@ -75,8 +75,8 @@ void Message_variable_init(void)
  
 
 	
-	CddEeprom_Req_Read(EEPROM_BANK_APP,0,BT_SIGNAL_GROUP_NUM,Btn_Signal_Group);
-	CddEeprom_Req_Read(EEPROM_BANK_APP,0,BT_SIGNAL_GROUP_NUM,&Btn_Signal_Group[BT_SIGNAL_GROUP_NUM]);
+	CddEeprom_Req_Read(EEPROM_BANK_APP,APP_E2_START_ADDR,BT_SIGNAL_GROUP_NUM,Btn_Signal_Group);
+	CddEeprom_Req_Read(EEPROM_BANK_APP,APP_E2_START_ADDR,BT_SIGNAL_GROUP_NUM,&Btn_Signal_Group[BT_SIGNAL_GROUP_NUM]);
 	
 	VCU_VehSpd = 0;
 	VCU_VehSpd_VD = 0x01;
@@ -304,7 +304,7 @@ void update_can_signal(void)
 #endif
 	if(FALSE == update_sucess)
 	{
-		update_sucess = CddEeprom_Req_Write(EEPROM_BANK_APP,0,BT_SIGNAL_GROUP_NUM,0,Btn_Signal_Group);
+		update_sucess = CddEeprom_Req_Write(EEPROM_BANK_APP,APP_E2_START_ADDR,BT_SIGNAL_GROUP_NUM,0,Btn_Signal_Group);
 	}
 
 }
