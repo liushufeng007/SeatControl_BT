@@ -50,7 +50,7 @@ static void ButtonCtrl_Update_Mode(ButtonCtrl_Str fl_str_e);
 static void ButtonCtrl_Update_Check(void);
 static void Buttonctrl_ModePos_Check(void);
 static void ButtonCtrl_SavePosReq_Process(void);
-static void ButtonCtrl_Req_Process(void);
+static void ButtonCtrl_Req_Process(ButtonCtrl_Str fl_str_e);
 static uint8_t ButtonCtrl_Motor_IsOk(void);
 static 	void ButtonCtrl_NoMtr_EventProcess(void);
 static 	uint8_t ButtonCtrl_CheckReq_IsDone(ButtonCtrl_Mode_Req_Str BtnReq[]);
@@ -139,7 +139,7 @@ const uint8_t ButtonCtrl_PreReq_Val_Convert_Table[MAX_SAVE_NUMBER][6] =
 
 50,	   50,	 0,     0,  0 ,	    0,	
 50,    50,	 0,     0,	0 ,	    0,	   
-50,	   0,	 0,     0,	0	,    0,	
+50,	   0,	 0,     0,	0	,   0,	
 
 50,    50,	 0,     0,  0  ,	0,	
 50,    50,	 0,     0,	0  ,	0,	
@@ -166,33 +166,34 @@ BTNVAL_ON,    BTNVAL_OFF,  	BTNVAL_ON,    BTNVAL_OFF, 	 BTNVAL_OFF,	 BTNVAL_ON,
 const uint8_t ButtonCtrl_Req_Val_Convert_Table[MAX_SAVE_NUMBER][6] = 
 {
 /*frontrear      |    Back_Angle  |  Rotate         |  Head            | Leg              |   Total Angle    */  
-50,    50,   0,     0,  0 ,     0,    
-50,	   50,	 0,     0,	0 ,	    0,	
+	50,    50,   0,     0,  0 ,     0,    
+	50,	   50,	 0,     0,	0 ,	    0,	
 
-50,	   50,	 0,     0,	0 ,	    0,	
+	50,	   50,	 0,     0,	0 ,	    0,	
 
-50,	   50,	 0,     0,  0 ,	    0,	
-50,    50,	 0,     0,	0 ,	    0,	   
-50,	   50,	 0,     0,	0	,   0,	
+	50,	   50,	 0,     0,  0 ,	    0,	
+	50,    50,	 0,     0,	0 ,	    0,	   
+	50,	   50,	 0,     0,	0	,   0,	
 
-50,    50,	 0,     0,  0  ,	0,	
-50,    50,	 0,     0,	0  ,	0,	
+	50,    50,	 0,     0,  0  ,	0,	
+	50,    50,	 0,     0,	0  ,	0,	
 };
 
 
 uint16_t ButtonCtrl_ModePos[MAX_SAVE_NUMBER][7] = 
 {
-	0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,
-	0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,
-	
-	0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,
-	0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,
+	50,    50,	 0, 	0,	0 , 	0,	  0,
+	50,    50,	 0, 	0,	0 , 	0,	  0,
 
-	0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,
-	0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,
-	
-	0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,
-	0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF
+	50,    50,	 0, 	0,	0 , 	0,	  0,
+
+	50,    50,	 0, 	0,	0 , 	0,	  0,
+	50,    50,	 0, 	0,	0 , 	0,	  0,
+	50,    50,	 0, 	0,	0 , 	0,	  0,
+
+	50,    50,	 0, 	0,	0 , 	0,	  0,
+	50,    50,	 0, 	0,	0 , 	0,	  0,
+
 };
 
 
@@ -455,16 +456,18 @@ void ButtonCtrl_50ms_Task(void)
 	
 	if(ret_val == TRUE)
 	{
-		if((ButtonCtrl_Mtr_Calbration_State == BTN_ID_CTRL_CAL_IDLE) && (MotorState))
+		//if((ButtonCtrl_Mtr_Calbration_State == BTN_ID_CTRL_CAL_IDLE) && (MotorState))
+		if(ButtonCtrl_Mtr_Calbration_State == BTN_ID_CTRL_CAL_IDLE)
 		{
-			ButtonCtrl_Req_Process();
+			ButtonCtrl_Req_Process(fl_str_e);
 		}
 
 		ButtonCtrl_NoMtr_EventProcess();
 		memset(&ButtonCtrl_Req,0,sizeof(ButtonCtrl_Req));
 	}
 
-	if((ButtonCtrl_Mtr_Calbration_State == BTN_ID_CTRL_CAL_IDLE) && (MotorState))
+	//if((ButtonCtrl_Mtr_Calbration_State == BTN_ID_CTRL_CAL_IDLE) && (MotorState))
+	if(ButtonCtrl_Mtr_Calbration_State == BTN_ID_CTRL_CAL_IDLE)
 	{
 		ButtonCtrl_ActionStep_Process();
 	}
@@ -589,7 +592,7 @@ void ButtonCtrl_Motor_ActionProcess(ButtonCtrlReq_Str req,uint8_t mtr_index)
 			if(req.ButtonVal == DIRECTION_STOP)
 			{
 				mtr_current_pos = CddMtr_Get_Mtr_PosPercent(mtr_index);	
-				CddMtr_Percent_Req(mtr_index,((uint32_t)mtr_current_pos)*10);
+				CddMtr_Percent_Req(mtr_index,((uint32_t)mtr_current_pos)*100);
 			}
 			else if(req.ButtonVal == DIRECTION_REAR)
 			{
@@ -758,27 +761,37 @@ Motor Button Convert
 ButtonCtrl_Mode_Req_Str ButtonCtrl_Convert_Mode_EventProcess(ButtonCtrl_Str fl_str_e)
 {
 	ButtonCtrl_Mode_Req_Str ButtonCtrl_Mode_Req;
+	uint8_t index;
 
 	if(fl_str_e.ButtonId< ((sizeof(ButtonCtrl_Req_Active_Convert_Table))/(sizeof(ButtonCtrl_Req_Active_Convert_Table[0]))))
 	{
-		ButtonCtrl_Mode_Req.Front_Rear_Motor.ReqActive = ButtonCtrl_Req_Active_Convert_Table[fl_str_e.ButtonId][0];
-		ButtonCtrl_Mode_Req.Front_Rear_Motor.ButtonVal = ButtonCtrl_Req_Val_Convert_Table[fl_str_e.ButtonId][0];
-
-		ButtonCtrl_Mode_Req.Back_Angle_Motor.ReqActive = ButtonCtrl_Req_Active_Convert_Table[fl_str_e.ButtonId][1];
-		ButtonCtrl_Mode_Req.Back_Angle_Motor.ButtonVal = ButtonCtrl_Req_Val_Convert_Table[fl_str_e.ButtonId][1];
-
-		ButtonCtrl_Mode_Req.Rotate_Motor.ReqActive = ButtonCtrl_Req_Active_Convert_Table[fl_str_e.ButtonId][2];
-		ButtonCtrl_Mode_Req.Rotate_Motor.ButtonVal = ButtonCtrl_Req_Val_Convert_Table[fl_str_e.ButtonId][2];
-
-		ButtonCtrl_Mode_Req.Head_Motor.ReqActive = ButtonCtrl_Req_Active_Convert_Table[fl_str_e.ButtonId][3];
-		ButtonCtrl_Mode_Req.Head_Motor.ButtonVal = ButtonCtrl_Req_Val_Convert_Table[fl_str_e.ButtonId][3];
-
-		ButtonCtrl_Mode_Req.Leg_Motor.ReqActive = ButtonCtrl_Req_Active_Convert_Table[fl_str_e.ButtonId][4];
-		ButtonCtrl_Mode_Req.Leg_Motor.ButtonVal = ButtonCtrl_Req_Val_Convert_Table[fl_str_e.ButtonId][4];
-
-		ButtonCtrl_Mode_Req.Total_Angle_Motor.ReqActive = ButtonCtrl_Req_Active_Convert_Table[fl_str_e.ButtonId][5];
-		ButtonCtrl_Mode_Req.Total_Angle_Motor.ButtonVal = ButtonCtrl_Req_Val_Convert_Table[fl_str_e.ButtonId][5];
-
+	    index = fl_str_e.ButtonId;
+		
+		ButtonCtrl_Mode_Req.Front_Rear_Motor.ReqActive = ButtonCtrl_Req_Active_Convert_Table[index][0];
+		ButtonCtrl_Mode_Req.Back_Angle_Motor.ReqActive = ButtonCtrl_Req_Active_Convert_Table[index][1];
+		ButtonCtrl_Mode_Req.Rotate_Motor.ReqActive = ButtonCtrl_Req_Active_Convert_Table[index][2];
+		ButtonCtrl_Mode_Req.Head_Motor.ReqActive = ButtonCtrl_Req_Active_Convert_Table[index][3];
+		ButtonCtrl_Mode_Req.Leg_Motor.ReqActive = ButtonCtrl_Req_Active_Convert_Table[index][4];
+		ButtonCtrl_Mode_Req.Total_Angle_Motor.ReqActive = ButtonCtrl_Req_Active_Convert_Table[index][5];
+		
+		if(ButtonCtrl_ModePos[index][6] != usMBCRC16((uint8_t*)ButtonCtrl_ModePos[index][0],6))
+		{
+			ButtonCtrl_Mode_Req.Front_Rear_Motor.ButtonVal = ButtonCtrl_Req_Val_Convert_Table[index][0];
+			ButtonCtrl_Mode_Req.Back_Angle_Motor.ButtonVal = ButtonCtrl_Req_Val_Convert_Table[index][1];
+			ButtonCtrl_Mode_Req.Rotate_Motor.ButtonVal = ButtonCtrl_Req_Val_Convert_Table[index][2];
+			ButtonCtrl_Mode_Req.Head_Motor.ButtonVal = ButtonCtrl_Req_Val_Convert_Table[index][3];
+			ButtonCtrl_Mode_Req.Leg_Motor.ButtonVal = ButtonCtrl_Req_Val_Convert_Table[index][4];
+			ButtonCtrl_Mode_Req.Total_Angle_Motor.ButtonVal = ButtonCtrl_Req_Val_Convert_Table[index][5];
+		}
+		else
+		{
+			ButtonCtrl_Mode_Req.Front_Rear_Motor.ButtonVal = ButtonCtrl_ModePos[index][0];
+			ButtonCtrl_Mode_Req.Back_Angle_Motor.ButtonVal = ButtonCtrl_ModePos[index][1];
+			ButtonCtrl_Mode_Req.Rotate_Motor.ButtonVal = ButtonCtrl_ModePos[index][2];
+			ButtonCtrl_Mode_Req.Head_Motor.ButtonVal = ButtonCtrl_ModePos[index][3];
+			ButtonCtrl_Mode_Req.Leg_Motor.ButtonVal = ButtonCtrl_ModePos[index][4];
+			ButtonCtrl_Mode_Req.Total_Angle_Motor.ButtonVal = ButtonCtrl_ModePos[index][5];
+		}
 	}
 	else
 	{
@@ -1091,7 +1104,7 @@ void ButtonCtrl_SavePosReq_Process(void)
 /************************************
 Active
 ************************************/
-void ButtonCtrl_Req_Process(void)
+void ButtonCtrl_Req_Process(ButtonCtrl_Str fl_str_e)
 {
 	uint8_t index,lastindex;
 	uint8_t temp ;
@@ -1198,8 +1211,51 @@ void ButtonCtrl_Req_Process(void)
 			}
 			else
 			{
-				PreAction_Expire_Ticks = 0;
+				ExitAction_Expire_Ticks = 0;
 			}
+		}
+	}
+	else
+	{
+		switch(fl_str_e.ButtonId)
+		{
+			case BTN_ID_CTRL_MODE_ZERO_GRAVITY_e:break;
+			case BTN_ID_CTRL_MODE_DRIVERIESS_CAR_e:break;
+			case BTN_ID_CTRL_MODE_MEETING_e:break;
+			case BTN_ID_CTRL_MODE_LEISURE_e:break;
+			case BTN_ID_CTRL_OFF_e:break;
+			case BTN_ID_CTRL_MOVIE_e:break;
+			case BTN_ID_CTRL_SLEEP_e:break;
+			case BTN_ID_CTRL_PREPARE_MEAL_e:break;
+			
+			case BTN_ID_CTRL_POS_FRONT_REAR_e:
+			case BTN_ID_CTRL_BACK_ANGLE_e:
+			case BTN_ID_CTRL_ROTATE_e:
+			case BTN_ID_CTRL_HEAD_e:
+			case BTN_ID_CTRL_LEG_e:
+				PreAction_Expire_Ticks = 0;
+				ExitAction_Expire_Ticks = 0;
+				ButtonCtrl_Action_State = BTN_CTRL_EXIT_ACT;
+			break;
+			
+			case BTN_ID_CTRL_VENTILITION_e:
+
+			break;	
+			case BTN_ID_CTRL_LED_e:
+
+			break;
+			case BTN_ID_CTRL_MASSAGE_e:
+
+			break;
+			case BTN_ID_CTRL_SAVE_e:
+
+			break;
+			case BTN_ID_CTRL_CALIBARTION_MTR_e:
+
+			break;
+			default:
+
+			break;
 		}
 	}
 	
@@ -1264,17 +1320,17 @@ void ButtonCtrl_ActionStep_Process(void)
 		case BTN_CTRL_LAST_ACT:
 			if(LastAction_Expire_Ticks > 0)
 			{
-				if(MOTOR_ACTION_MAX_TICKS == PreAction_Expire_Ticks)
+				if(MOTOR_ACTION_MAX_TICKS == LastAction_Expire_Ticks)
 				{
 					ButtonCtrl_Req_EventProcess(&ButtonCtrl_LastReq);
 				}
 				if(ButtonCtrl_CheckReq_IsDone(&ButtonCtrl_LastReq))
 				{
-					PreAction_Expire_Ticks = 0;
+					LastAction_Expire_Ticks = 0;
 				}
 				else
 				{
-					PreAction_Expire_Ticks --;
+					LastAction_Expire_Ticks --;
 				}
 			}
 			else
