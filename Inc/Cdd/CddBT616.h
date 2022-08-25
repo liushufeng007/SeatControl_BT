@@ -85,6 +85,7 @@ void CddBT616_Task(void);
 
 void CddBT616_Set_Signal(CddBT616_Signal_Id_e Id,uint8_t val);
 
+void CddBT616_Trigger_Signal(void);
 
 #endif
 

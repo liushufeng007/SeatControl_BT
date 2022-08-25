@@ -133,12 +133,13 @@ void UART1_IRQHandler(void)
     {
         /* 发送中断标志可通过写txreg寄存器清除或txif写1清除 */
         /* 发送指定长度的数据 */
+		#if 0
         if(UARTxOp.TxOpc < UARTxOp.TxLen)
         {
             FL_UART_WriteTXBuff(UART1, UARTxOp.TxBuf[UARTxOp.TxOpc]); /* 发送一个数据 */
             UARTxOp.TxOpc++;
         }
-
+		#endif
         FL_UART_ClearFlag_TXShiftBuffEmpty(UART1);  /* 清除发送中断标志 */
     }
 }
@@ -407,6 +408,7 @@ void Uartx_Init(UART_Type *UARTx)
             GPIO_InitStruct.outputType   = FL_GPIO_OUTPUT_PUSHPULL;
             GPIO_InitStruct.pull         = FL_ENABLE;
             GPIO_InitStruct.remapPin     = FL_DISABLE;
+			GPIO_InitStruct.analogSwitch   = FL_DISABLE;
             FL_GPIO_Init(GPIOB, &GPIO_InitStruct);
         
             /* PB3:UART4-TX */
@@ -415,6 +417,7 @@ void Uartx_Init(UART_Type *UARTx)
             GPIO_InitStruct.outputType   = FL_GPIO_OUTPUT_PUSHPULL;
             GPIO_InitStruct.pull         = FL_DISABLE;
             GPIO_InitStruct.remapPin     = FL_DISABLE;
+			GPIO_InitStruct.analogSwitch   = FL_DISABLE;
             FL_GPIO_Init(GPIOB, &GPIO_InitStruct);
 
             /* PA0:UART4-RX */
@@ -507,7 +510,30 @@ void Uartx_Init(UART_Type *UARTx)
   */
 void Uart_Init(void)
 {
+    FL_DMA_InitTypeDef dmaInitStruct = {0};
+	
     Uartx_Init(UARTIF_USE_CHANNEL);
+	
+	/* TX配置 */
+	dmaInitStruct.circMode = FL_DISABLE;
+	dmaInitStruct.dataSize = FL_DMA_BANDWIDTH_8B;
+	dmaInitStruct.direction = FL_DMA_DIR_RAM_TO_PERIPHERAL;
+	dmaInitStruct.memoryAddressIncMode = FL_DMA_MEMORY_INC_MODE_INCREASE;
+	dmaInitStruct.priority = FL_DMA_PRIORITY_HIGH ;
+	dmaInitStruct.periphAddress = FL_DMA_PERIPHERAL_FUNCTION3;
+	FL_DMA_Init(DMA, &dmaInitStruct, FL_DMA_CHANNEL_6);
+
+	    /* RX配置 */
+	/*
+    dmaInitStruct.circMode = FL_DISABLE;
+    dmaInitStruct.dataSize = FL_DMA_BANDWIDTH_8B;
+    dmaInitStruct.direction = FL_DMA_DIR_PERIPHERAL_TO_RAM;
+    dmaInitStruct.memoryAddressIncMode = FL_DMA_MEMORY_INC_MODE_INCREASE;
+    dmaInitStruct.priority = FL_DMA_PRIORITY_HIGH ;
+    dmaInitStruct.periphAddress = FL_DMA_PERIPHERAL_FUNCTION3;
+    FL_DMA_Init(DMA, &dmaInitStruct, FL_DMA_CHANNEL_5);*/
+	
+    FL_DMA_Enable(DMA);
 
     /* 中断发送数组 */
     //UARTxOp.TxBuf = UARTxOp.TxBuf;
@@ -515,6 +541,38 @@ void Uart_Init(void)
     UARTxOp.TxOpc = 0;
     FL_UART_ClearFlag_TXShiftBuffEmpty(UARTIF_USE_CHANNEL);
     FL_UART_EnableIT_TXShiftBuffEmpty(UARTIF_USE_CHANNEL);
+
+	
+}
+
+
+void UartWriteDataDMA(uint32_t dataAddr, uint16_t length)
+{
+    FL_DMA_WriteTransmissionSize(DMA, length - 1, FL_DMA_CHANNEL_6);
+    FL_DMA_WriteMemoryAddress(DMA, dataAddr, FL_DMA_CHANNEL_6);
+    FL_DMA_ClearFlag_TransferComplete(DMA, FL_DMA_CHANNEL_6);
+    FL_DMA_EnableChannel(DMA, FL_DMA_CHANNEL_6);
+
+
+    //while(!FL_DMA_IsActiveFlag_TransferComplete(DMA, FL_DMA_CHANNEL_6));
+
+}
+
+
+/**
+  * @brief  SPI DMA读数据
+  * @param  dataAddr: 数据地址
+  *         length:   数据长度
+  * @retval void
+  */
+void SpiReadDataDMA(uint32_t dataAddr, uint16_t length)
+{
+    FL_DMA_WriteTransmissionSize(DMA, length - 1, FL_DMA_CHANNEL_5);
+    FL_DMA_WriteMemoryAddress(DMA, dataAddr, FL_DMA_CHANNEL_5);
+    FL_DMA_ClearFlag_TransferComplete(DMA, FL_DMA_CHANNEL_5);
+    FL_DMA_EnableChannel(DMA, FL_DMA_CHANNEL_5);
+
+    //while(!FL_DMA_IsActiveFlag_TransferComplete(DMA, FL_DMA_CHANNEL_5));
 }
 
 
@@ -527,11 +585,12 @@ void Uartxif_Tx(UART_Type *UARTx,Uartif_Msg_Str Uart_Date_e)
 {
 	  memcpy(UARTxOp.TxBuf,Uart_Date_e.Data,Uart_Date_e.DLC);
     UARTxOp.TxLen = Uart_Date_e.DLC;
-    UARTxOp.TxOpc = 1;
+    UARTxOp.TxOpc = UARTxOp.TxLen;
 
     FL_UART_ClearFlag_TXShiftBuffEmpty(UARTx);
     FL_UART_EnableIT_TXShiftBuffEmpty(UARTx);
-    FL_UART_WriteTXBuff(UARTx, UARTxOp.TxBuf[0]);
+    //FL_UART_WriteTXBuff(UARTx, UARTxOp.TxBuf[0]);
+    UartWriteDataDMA((uint32_t)UARTxOp.TxBuf,UARTxOp.TxLen);
 }
 
 
@@ -726,6 +785,7 @@ void Uartif_Init(void)
 	memset(&Uartif_rx_queue,0,sizeof(Uartif_rx_queue));
 	memset(&Uartif_tx_queue,0,sizeof(Uartif_tx_queue));
 	Uart_Init();
+	
 }
 
 /************************************
@@ -736,17 +796,33 @@ void Uarif_Task(void)
 	static Uartif_Msg_Str  fl_str_e;
 
 	/*all byte tx done*/
-	if(UARTxOp.TxOpc == UARTxOp.TxLen)
+	if(FL_DMA_IsActiveFlag_TransferComplete(DMA, FL_DMA_CHANNEL_6) || UARTxOp.TxOpc == 0)
 	{
 		/*Software Queue is Not empty*/
 		if(TRUE == Uartif_tx_queue_pull_e(&fl_str_e))
 		{
+			UARTxOp.TxOpc = 0xAA;
 			FL_UART_DisableIT_TXShiftBuffEmpty(UARTIF_USE_CHANNEL);
 			FL_UART_EnableIT_RXBuffFull(UARTIF_USE_CHANNEL);
 			Uartxif_Tx(UARTIF_USE_CHANNEL,fl_str_e);
 		}
 	}
 
+/*
+	if(FL_DMA_IsActiveFlag_TransferComplete(DMA, FL_DMA_CHANNEL_5) || UARTxOp.RxOpc == 0)
+	{
+		UARTxOp.RxLen = 9;
+		SpiReadDataDMA((uint32_t)UARTxOp.RxPool,UARTxOp.RxLen);
+		if(UARTxOp.RxOpc==0)
+		{UARTxOp.RxOpc=0xAA;}
+		else
+		{
+			fl_str_e.DLC = UARTxOp.RxLen;
+			memcpy(fl_str_e.Data,UARTxOp.RxPool,fl_str_e.DLC);
+			(void)Uartif_rx_queue_push_e(fl_str_e);
+		}
+	}
+*/
 	Uartx_RxFrameComplete_Detect();
 
 }

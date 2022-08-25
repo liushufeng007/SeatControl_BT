@@ -1,0 +1,117 @@
+VERSION ""
+
+
+NS_ : 
+	NS_DESC_
+	CM_
+	BA_DEF_
+	BA_
+	VAL_
+	CAT_DEF_
+	CAT_
+	FILTER
+	BA_DEF_DEF_
+	EV_DATA_
+	ENVVAR_DATA_
+	SGTYPE_
+	SGTYPE_VAL_
+	BA_DEF_SGTYPE_
+	BA_SGTYPE_
+	SIG_TYPE_REF_
+	VAL_TABLE_
+	SIG_GROUP_
+	SIG_VALTYPE_
+	SIGTYPE_VALTYPE_
+	BO_TX_BU_
+	BA_DEF_REL_
+	BA_REL_
+	BA_DEF_DEF_REL_
+	BU_SG_REL_
+	BU_EV_REL_
+	BU_BO_REL_
+	SG_MUL_VAL_
+
+BS_:
+
+BU_: VIST DDSS SCM_1
+VAL_TABLE_ welcome 3 "Description for the value '0x3'" 2 "Description for the value '0x2'" 1 "on" 0 "off" ;
+VAL_TABLE_ conference_Mode 3 "Description for the value '0x3'" 2 "Description for the value '0x2'" 1 "on" 0 "off" ;
+VAL_TABLE_ fatigue 7 "Description for the value '0x7'" 6 "Description for the value '0x6'" 5 "Description for the value '0x5'" 4 "Description for the value '0x4'" 3 "severe" 2 "Moderate" 1 "mild" 0 "normal" ;
+VAL_TABLE_ autopilot 3 "Description for the value '0x3'" 2 "Description for the value '0x2'" 1 "ON" 0 "OFF" ;
+VAL_TABLE_ Scene_Mode 7 "res" 6 "res" 5 "Sleep" 4 "OFF" 3 "Movie" 2 "OFF" 1 "Pre_meal" 0 "OFF" ;
+
+
+BO_ 2583634241 VIST: 6 Vector__XXX
+ SG_ Scene_Mode : 19|3@1+ (1,0) [0|7] "" Vector__XXX
+ SG_ angle_back : 40|5@1+ (1,0) [0|31] "" Vector__XXX
+ SG_ Position : 32|8@1+ (1,0) [0|255] "" Vector__XXX
+ SG_ fatigue : 24|3@1+ (1,0) [0|7] ""  SCM_1
+
+BO_ 2583635362 DDSS: 8 Vector__XXX
+ SG_ welcome_state1 : 0|2@1+ (1,0) [0|3] ""  SCM_1
+
+BO_ 2583636534 SCM_1: 8 SCM_1
+ SG_ autopilot_mode : 16|2@1+ (1,0) [0|3] "" Vector__XXX
+ SG_ angle_back : 8|5@1+ (1,0) [0|31] "" Vector__XXX
+ SG_ conference : 13|2@1+ (1,0) [0|3] "" Vector__XXX
+ SG_ Position : 0|8@1+ (1,0) [0|255] "" Vector__XXX
+
+
+
+CM_ " ";
+BA_DEF_ BO_  "NmMessage" ENUM  "No","Yes";
+BA_DEF_ BO_  "DiagState" ENUM  "No","Yes";
+BA_DEF_ BO_  "DiagRequest" ENUM  "No","Yes";
+BA_DEF_ BO_  "DiagResponse" ENUM  "No","Yes";
+BA_DEF_ BO_  "GenMsgSendType" ENUM  "cyclic","Event","IfActive","CE","CA","NoMsgSendType";
+BA_DEF_ BO_  "GenMsgCycleTime" INT 0 0;
+BA_DEF_ SG_  "GenSigSendType" ENUM  "cyclic","OnChange","OnWrite","IfActive","OnChangeWithRepetition","OnWriteWithRepetition","IfActiveWithRepetition","NoSigSendType","OnChangeAndIfActive","OnChangeAndIfActiveWithRepetition","CA","CE","Event";
+BA_DEF_ SG_  "GenSigStartValue" INT 0 0;
+BA_DEF_ SG_  "GenSigInactiveValue" INT 0 0;
+BA_DEF_ BO_  "GenMsgCycleTimeFast" INT 0 0;
+BA_DEF_ BO_  "GenMsgNrOfRepetition" INT 0 0;
+BA_DEF_ BO_  "GenMsgDelayTime" INT 0 0;
+BA_DEF_  "DBName" STRING ;
+BA_DEF_ SG_  "NWMWakeupAllowed" ENUM  "no","yes";
+BA_DEF_ BO_  "NmStationAddress" INT 0 63;
+BA_DEF_ BU_  "NmNode" ENUM  "no","yes";
+BA_DEF_  "NmBaseAddress" HEX 1024 1087;
+BA_DEF_ SG_  "GenSigISendType" ENUM  "Cycle";
+BA_DEF_ BO_  "GenMsgStartDelayTime" INT 0 65535;
+BA_DEF_ BO_  "GenMsgNrOfRepetion" INT 0 999999;
+BA_DEF_ BO_  "GenMsgILSupport" ENUM  "no","yes";
+BA_DEF_  "BusType" STRING ;
+BA_DEF_ BU_  "NodeLayerModules" STRING ;
+BA_DEF_ BU_  "ECU" STRING ;
+BA_DEF_DEF_  "NmMessage" "No";
+BA_DEF_DEF_  "DiagState" "No";
+BA_DEF_DEF_  "DiagRequest" "No";
+BA_DEF_DEF_  "DiagResponse" "No";
+BA_DEF_DEF_  "GenMsgSendType" "cyclic";
+BA_DEF_DEF_  "GenMsgCycleTime" 0;
+BA_DEF_DEF_  "GenSigSendType" "cyclic";
+BA_DEF_DEF_  "GenSigStartValue" 0;
+BA_DEF_DEF_  "GenSigInactiveValue" 0;
+BA_DEF_DEF_  "GenMsgCycleTimeFast" 0;
+BA_DEF_DEF_  "GenMsgNrOfRepetition" 0;
+BA_DEF_DEF_  "GenMsgDelayTime" 0;
+BA_DEF_DEF_  "DBName" "";
+BA_DEF_DEF_  "NWMWakeupAllowed" "no";
+BA_DEF_DEF_  "NmStationAddress" 0;
+BA_DEF_DEF_  "NmNode" "no";
+BA_DEF_DEF_  "NmBaseAddress" 1087;
+BA_DEF_DEF_  "GenSigISendType" "Cycle";
+BA_DEF_DEF_  "GenMsgStartDelayTime" 0;
+BA_DEF_DEF_  "GenMsgNrOfRepetion" 0;
+BA_DEF_DEF_  "GenMsgILSupport" "yes";
+BA_DEF_DEF_  "BusType" "";
+BA_DEF_DEF_  "NodeLayerModules" "CANoeILNLV";
+BA_DEF_DEF_  "ECU" "";
+BA_ "BusType" "CAN";
+BA_ "DBName" "X95CAN3";
+VAL_ 2583634241 Scene_Mode 7 "res" 6 "res" 5 "Sleep" 4 "OFF" 3 "Movie" 2 "OFF" 1 "Pre_meal" 0 "OFF" ;
+VAL_ 2583634241 fatigue 7 "Description for the value '0x7'" 6 "Description for the value '0x6'" 5 "Description for the value '0x5'" 4 "Description for the value '0x4'" 3 "severe" 2 "Moderate" 1 "mild" 0 "normal" ;
+VAL_ 2583635362 welcome_state1 3 "Description for the value '0x3'" 2 "Description for the value '0x2'" 1 "on" 0 "off" ;
+VAL_ 2583636534 autopilot_mode 3 "Description for the value '0x3'" 2 "Description for the value '0x2'" 1 "on" 0 "off" ;
+VAL_ 2583636534 conference 3 "Description for the value '0x3'" 2 "Description for the value '0x2'" 1 "on" 0 "off" ;
+

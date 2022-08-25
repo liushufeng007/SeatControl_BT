@@ -38,7 +38,7 @@
 |    Static local variables Declaration
 |******************************************************************************/
 CddBT616_Main_Ctrl_Str CddBT616_Main_Ctrl;
-
+uint8_t  CddBT616_Trgger_Flag = FALSE;
 
 
 /*******************************************************************************
@@ -193,7 +193,7 @@ uint8_t  CddBT616_Check_RxFormat(uint8_t * data)
 
 	if(parity != data[index++])
 	{
-		return TRUE;
+		return FALSE;
 	}
 	
 	return TRUE;
@@ -234,6 +234,7 @@ void CddBT616_init(void)
 
 	CddBT616_Main_Ctrl.txst.Data[index] = CddBT616_Cal_Parity(CddBT616_Main_Ctrl.txst.Data,index);
 	
+	CddBT616_Trgger_Flag = FALSE;
 	Uart_Init();
 }
 
@@ -339,19 +340,19 @@ void CddBT616_Update_Signal(void)
 
 	if(LIN_CMD4_Data.SCM_R_SCM_msg.R_mode_State ==0 )
 	{
-		CddBT616_Main_Ctrl.txst.Data[index++] = 0xE0;
+		CddBT616_Main_Ctrl.txst.Data[index++] = 0xD0;
 	}
 	else if(LIN_CMD4_Data.SCM_R_SCM_msg.R_mode_State ==1 )
 	{
-		CddBT616_Main_Ctrl.txst.Data[index++] = 0xE1;
+		CddBT616_Main_Ctrl.txst.Data[index++] = 0xD1;
 	}
 	else if(LIN_CMD4_Data.SCM_R_SCM_msg.R_mode_State ==2 )
 	{
-		CddBT616_Main_Ctrl.txst.Data[index++] = 0xE2;
+		CddBT616_Main_Ctrl.txst.Data[index++] = 0xD2;
 	}
 	else if(LIN_CMD4_Data.SCM_R_SCM_msg.R_mode_State ==3 )
 	{
-		CddBT616_Main_Ctrl.txst.Data[index++] = 0xE3;
+		CddBT616_Main_Ctrl.txst.Data[index++] = 0xD3;
 	}
 	else
 	{
@@ -401,19 +402,19 @@ void CddBT616_Update_Signal(void)
 
 	if(LIN_CMD3_Data.SCM_L_SCM_msg.L_mode_State ==0 )
 	{
-		CddBT616_Main_Ctrl.txst.Data[index++] = 0xE0;
+		CddBT616_Main_Ctrl.txst.Data[index++] = 0xD0;
 	}
 	else if(LIN_CMD3_Data.SCM_L_SCM_msg.L_mode_State ==1 )
 	{
-		CddBT616_Main_Ctrl.txst.Data[index++] = 0xE1;
+		CddBT616_Main_Ctrl.txst.Data[index++] = 0xD1;
 	}
 	else if(LIN_CMD3_Data.SCM_L_SCM_msg.L_mode_State ==2 )
 	{
-		CddBT616_Main_Ctrl.txst.Data[index++] = 0xE2;
+		CddBT616_Main_Ctrl.txst.Data[index++] = 0xD2;
 	}
 	else if(LIN_CMD3_Data.SCM_L_SCM_msg.L_mode_State ==3 )
 	{
-		CddBT616_Main_Ctrl.txst.Data[index++] = 0xE3;
+		CddBT616_Main_Ctrl.txst.Data[index++] = 0xD3;
 	}
 	else
 	{
@@ -579,13 +580,14 @@ void CddBT616_Task(void)
 			}
 			else
 			{
-				if(CddBT616_Main_Ctrl.Txticks++ > CDDBT616_TX_PERIOD)
+				if((CddBT616_Main_Ctrl.Txticks++ > CDDBT616_TX_PERIOD) || (CddBT616_Trgger_Flag))
 				{					
 					CddBT616_Main_Ctrl.Txticks = 0;
+					CddBT616_Trgger_Flag = FALSE;
 					
 					CddBT616_Update_Signal();
 					memcpy(&fl_str_e,&CddBT616_Main_Ctrl.txst,sizeof(fl_str_e));
-					fl_str_e.Data[17] = CddBT616_Cal_Parity(fl_str_e.Data,17);
+					fl_str_e.Data[14] = CddBT616_Cal_Parity(fl_str_e.Data,14);
 					Uartif_tx_queue_push_e(fl_str_e);
 				}
 				
@@ -596,6 +598,7 @@ void CddBT616_Task(void)
 						ret = CddBT616_Check_RxFormat(fl_str_e.Data);
 						if(ret == TRUE)
 						{
+							
 							btn = CddBT616_Search_Btn(fl_str_e.Data[2]);
 #if(SCM_SEATCONTROL_VARIANT == SCM_L_VARIANT)
 							switch (btn.ButtonId)
@@ -633,6 +636,13 @@ void CddBT616_Set_Signal(CddBT616_Signal_Id_e Id,uint8_t val)
 		CddBT616_Main_Ctrl.txst.Data[Id+ID_OFFSET]  = val;
 	}
 }
+
+void CddBT616_Trigger_Signal(void)
+{
+	CddBT616_Trgger_Flag = TRUE;
+
+}
+
 
 
 /**********************************************************************************************************************

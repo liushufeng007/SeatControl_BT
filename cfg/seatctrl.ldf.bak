@@ -1,0 +1,154 @@
+/*---------GLOBAL DEFINITIONS-----------*/
+
+LIN_description_file;
+LIN_protocol_version = "2.1";
+LIN_language_version = "2.1";
+LIN_speed = 19.6 kbps;
+
+Nodes {
+  Master: SeatECU, 10 ms, 0.1 ms ;
+  Slaves: Motor1, Motor2 ;
+}
+
+Signals {
+  R_Mode_Statue: 3, 0, Motor2, SeatECU ;
+  R_Func_ON: 1, 1, Motor2, SeatECU ;
+  L_Mode: 3, 0, SeatECU, Motor1 ;
+  L_Mode_Statue: 3, 0, Motor1, SeatECU ;
+  FanPwm_L: 7, 2, Motor1, SeatECU ;
+  SeatFan_Ctrl_L: 7, 0, SeatECU, Motor2 ;
+  SeatFanCtrl_R: 7, 0, Motor2, SeatECU ;
+  FanPwm_R: 7, 0, Motor1, Motor2 ;
+  L_Func_ON: 1, 0, Motor1, SeatECU ;
+  L_Func: 1, 0, SeatECU, Motor1 ;
+  R_Mode: 3, 0, SeatECU, Motor1 ;
+  R_Func: 1, 0, SeatECU, Motor1 ;
+}
+
+Diagnostic_signals {
+  MasterReqB0: 8, 0 ;
+  MasterReqB1: 8, 0 ;
+  MasterReqB2: 8, 0 ;
+  MasterReqB3: 8, 0 ;
+  MasterReqB4: 8, 0 ;
+  MasterReqB5: 8, 0 ;
+  MasterReqB6: 8, 0 ;
+  MasterReqB7: 8, 0 ;
+  SlaveRespB0: 8, 0 ;
+  SlaveRespB1: 8, 0 ;
+  SlaveRespB2: 8, 0 ;
+  SlaveRespB3: 8, 0 ;
+  SlaveRespB4: 8, 0 ;
+  SlaveRespB5: 8, 0 ;
+  SlaveRespB6: 8, 0 ;
+  SlaveRespB7: 8, 0 ;
+}
+
+
+
+Frames {
+  SeatMessageCtrl: 1A, SeatECU, 8 {
+    L_Mode, 0 ;
+    L_Func, 6 ;
+    R_Mode, 8 ;
+    R_Func, 14 ;
+  }
+  L_MassageStatus: 1B, Motor1, 8 {
+    L_Mode_Statue, 0 ;
+    L_Func_ON, 6 ;
+  }
+  R_MassageStatus: 1C, Motor2, 8 {
+    R_Mode_Statue, 0 ;
+    R_Func_ON, 6 ;
+  }
+  SeatFanCtrl_L: B, SeatECU, 8 {
+    SeatFan_Ctrl_L, 0 ;
+  }
+  SeatFanCtrl_R: C, Motor2, 8 {
+    SeatFanCtrl_R, 0 ;
+  }
+  L_FAN_Status: 2B, Motor1, 8 {
+    FanPwm_L, 8 ;
+  }
+  R_FAN_Status: 2C, Motor1, 8 {
+    FanPwm_R, 0 ;
+  }
+}
+
+Sporadic_frames {
+  SporadicControlFrame: SeatMessageCtrl, SeatFanCtrl_L, SeatFanCtrl_R, L_MassageStatus, R_MassageStatus, L_FAN_Status, R_FAN_Status ;
+}
+
+
+Diagnostic_frames {
+  MasterReq: 0x3c {
+    MasterReqB0, 0 ;
+    MasterReqB1, 8 ;
+    MasterReqB2, 16 ;
+    MasterReqB3, 24 ;
+    MasterReqB4, 32 ;
+    MasterReqB5, 40 ;
+    MasterReqB6, 48 ;
+    MasterReqB7, 56 ;
+  }
+  SlaveResp: 0x3d {
+    SlaveRespB0, 0 ;
+    SlaveRespB1, 8 ;
+    SlaveRespB2, 16 ;
+    SlaveRespB3, 24 ;
+    SlaveRespB4, 32 ;
+    SlaveRespB5, 40 ;
+    SlaveRespB6, 48 ;
+    SlaveRespB7, 56 ;
+  }
+}
+
+Node_attributes {
+  Motor1{
+    LIN_protocol = "2.1" ;
+    configured_NAD = 0x2 ;
+    initial_NAD = 0xA ;
+    product_id = 0x1E, 0x1, 0 ;
+    P2_min = 100 ms ;
+    ST_min = 20 ms ;
+    N_As_timeout = 1000 ms ;
+    N_Cr_timeout = 1000 ms ;
+    configurable_frames {
+      SeatMessageCtrl ;
+      L_MassageStatus ;
+      R_FAN_Status ;
+      L_FAN_Status ;
+    }
+  }
+  Motor2{
+    LIN_protocol = "2.1" ;
+    configured_NAD = 0x3 ;
+    initial_NAD = 0xC ;
+    product_id = 0x2E, 0xB, 1 ;
+    P2_min = 50 ms ;
+    ST_min = 0 ms ;
+    N_As_timeout = 1000 ms ;
+    N_Cr_timeout = 1000 ms ;
+    configurable_frames {
+      SeatFanCtrl_L ;
+      SeatFanCtrl_R ;
+      R_FAN_Status ;
+      R_MassageStatus ;
+    }
+  }
+}
+
+Schedule_tables {
+ NormalTable {
+    SeatMessageCtrl delay 10 ms ;
+    L_MassageStatus delay 10 ms ;
+    R_MassageStatus delay 30 ms ;
+    SeatFanCtrl_L delay 10 ms ;
+    SeatFanCtrl_R delay 10 ms ;
+    L_FAN_Status delay 20 ms ;
+    R_FAN_Status delay 60 ms ;
+  }
+}
+
+
+

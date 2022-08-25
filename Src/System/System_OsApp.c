@@ -42,10 +42,15 @@
 #include "ButtonCtrl.h"
 #include "CddLed.h"
 
+#include "fm33lg0xx_fl_atim.h"
+
+
 #define CHECK_OS_EVENT(event)               (event) == u16Event
 #define CHECK_OS_MSG(msg)                   (msg) == u16Msg
 
 
+volatile uint32_t cpuload_Current_stamp_A  = 0;
+volatile uint32_t cpuload_Last_stamp_A = 0 ;
 
 
 #ifdef CPU_LOAD_OPEN
@@ -65,9 +70,15 @@ TASK(BSW_COMM)
     {
         if (CHECK_OS_MSG(eSYSTEM_TIMER_EVENT_5MS))
         {
+			__disable_irq();
+            cpuload_Last_stamp_A = cpuload_Current_stamp_A ;
+			cpuload_Current_stamp_A  = ATIM->CNT;
+			__enable_irq();
             IWDT_Clr();
             NW_Task();
 			Uarif_Task();
+			
+
         }
 
 #ifdef CPU_LOAD_OPEN

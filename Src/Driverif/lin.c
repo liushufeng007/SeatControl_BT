@@ -155,27 +155,26 @@ struct UARTOpStruct_LIN UARTxOp_LIN;
   */
 void lin_timeout_init(void)
 {
-    FL_GPTIM_InitTypeDef        timInit;
-
-    timInit.prescaler             = 0;                                      /* 分频系数1 */
-    timInit.counterMode           = FL_GPTIM_COUNTER_DIR_UP;                /* 向上计数 */
-    timInit.autoReload            = TIMER_1US_LOAD * TIME_BASE_PERIOD - 1;  /* 自动重装载值 */
-    timInit.clockDivision         = FL_GPTIM_CLK_DIVISION_DIV1;             /* 死区和滤波分频 */
-    timInit.autoReloadState       = FL_DISABLE;                             /* 预装载preload使能 */
-    FL_GPTIM_Init(GPTIM0, &timInit);
-
-    FL_GPTIM_ClearFlag_Update(GPTIM0);
-
-    /* NVIC中断配置 */
-    NVIC_ClearPendingIRQ(GPTIM01_IRQn);
-    NVIC_DisableIRQ(GPTIM01_IRQn);
-    NVIC_SetPriority(GPTIM01_IRQn, 2);
-    NVIC_EnableIRQ(GPTIM01_IRQn);
+      FL_BSTIM16_InitTypeDef        timInit;
     
-    FL_GPTIM_EnableIT_Update(GPTIM0);
+    timInit.prescaler = 0;                                      /* 分频系数1 */
+    timInit.clockSource = FL_CMU_BSTIM16_CLK_SOURCE_APBCLK;     /* 时钟源 */
+    timInit.autoReload = TIMER_1US_LOAD * TIME_BASE_PERIOD - 1;                  /* 自动重装载值 */
+    timInit.autoReloadState = FL_DISABLE;                       /* 预装载preload禁能 */
+    FL_BSTIM16_Init(BSTIM16, &timInit);
+
+    FL_BSTIM16_ClearFlag_Update(BSTIM16);
+    NVIC_ClearPendingIRQ(BSTIM_IRQn);
+    
+    /* NVIC中断配置 */
+    NVIC_DisableIRQ(BSTIM_IRQn);
+    NVIC_SetPriority(BSTIM_IRQn, 2);
+    NVIC_EnableIRQ(BSTIM_IRQn);
+    
+    FL_BSTIM16_EnableIT_Update(BSTIM16);
 
     /* 使能定时器 */
-    FL_GPTIM_Enable(GPTIM0);    
+    FL_BSTIM16_Enable(BSTIM16);     
 }
 
 /**
@@ -209,7 +208,6 @@ void lin_goto_idle(void)
   */
 void GPTIM0_1_IRQHandler(void)
 {
-		uint16_t fl_ad_val;
     FL_GPTIM_ClearFlag_Update(GPTIM0);
     
     switch (g_lin_task.frame_state)
@@ -249,25 +247,78 @@ void GPTIM0_1_IRQHandler(void)
             break;
     }
 		
-		if(ticks++ >= 3)
-		{
-				ticks = 0;
-				AdcIf_Polling();
-				fl_ad_val = Adcif_Get_AdcVal(ADCIF_CH_Rail_IO_HALL_AD);
-				CddMtr_Mng_Motor_Step(CDDMTR_HFKF_CH_0,fl_ad_val);
-				fl_ad_val = Adcif_Get_AdcVal(ADCIF_CH_Back_IN_IO_HALL_AD);
-				CddMtr_Mng_Motor_Step(CDDMTR_HFKF_CH_1,fl_ad_val);	
-				fl_ad_val = Adcif_Get_AdcVal(ADCIF_CH_Head_IN_IO_HALL_AD);
-				CddMtr_Mng_Motor_Step(CDDMTR_HFKF_CH_2,fl_ad_val);
-				fl_ad_val = Adcif_Get_AdcVal(ADCIF_CH_Angle_IO_HALL_AD);
-				CddMtr_Mng_Motor_Step(CDDMTR_HFKF_CH_3,fl_ad_val);
-				fl_ad_val = Adcif_Get_AdcVal(ADCIF_CH_Rotate_IN_IO_HALL_AD);
-				CddMtr_Mng_Motor_Step(CDDMTR_HFKF_CH_4,fl_ad_val);
-				fl_ad_val = Adcif_Get_AdcVal(ADCIF_CH_Leg_IN_IO_HALL_AD);
-				CddMtr_Mng_Motor_Step(CDDMTR_HFKF_CH_5,fl_ad_val);
-		}
+
 
 }
+
+/**
+  * @brief  定时，用于判断字节间超时
+  * @note   12位波特率，如1200-10ms 19.2KHz-625us
+  * @param  void
+  * @retval void
+  */
+void BSTIM_IRQHandler(void)
+{
+	uint16_t fl_ad_val;
+    if (FL_BSTIM16_IsActiveFlag_Update(BSTIM16))
+    {
+        FL_BSTIM16_ClearFlag_Update(BSTIM16);
+    
+      switch (g_lin_task.frame_state)
+      {
+          case FRAME_STATE_IDLE:
+              /* 之后增加休眠超时判定 */
+              break;
+          case FRAME_STATE_SEND_SYN:
+              break;
+          case FRAME_STATE_SEND:
+              if (0 == g_lin_task.frame_timeout_cnt)
+              {
+                  lin_goto_idle();
+              }
+              else
+              {
+                  g_lin_task.frame_timeout_cnt--;
+              }
+              break;
+          case FRAME_STATE_RECV_DATA:
+              if (0 == g_lin_task.res_frame_timeout_cnt)
+              {
+                  if (UARTxOp_LIN.RxLen)
+                  {
+                      UARTxOp_LIN.RxLen = 0;
+                  }
+                  lin_goto_idle();
+              }
+              else
+              {
+                  
+                  g_lin_task.res_frame_timeout_cnt--;
+              }            
+              break;
+          default:
+              break;
+      }
+	  if(ticks++ >= 3)
+	  {
+			  ticks = 0;
+			  AdcIf_Polling();
+			  fl_ad_val = Adcif_Get_AdcVal(ADCIF_CH_Rail_IO_HALL_AD);
+			  CddMtr_Mng_Motor_Step(CDDMTR_HFKF_CH_0,fl_ad_val);
+			  fl_ad_val = Adcif_Get_AdcVal(ADCIF_CH_Back_IN_IO_HALL_AD);
+			  CddMtr_Mng_Motor_Step(CDDMTR_HFKF_CH_1,fl_ad_val);  
+			  fl_ad_val = Adcif_Get_AdcVal(ADCIF_CH_Head_IN_IO_HALL_AD);
+			  CddMtr_Mng_Motor_Step(CDDMTR_HFKF_CH_2,fl_ad_val);
+			  fl_ad_val = Adcif_Get_AdcVal(ADCIF_CH_Angle_IO_HALL_AD);
+			  CddMtr_Mng_Motor_Step(CDDMTR_HFKF_CH_3,fl_ad_val);
+			  fl_ad_val = Adcif_Get_AdcVal(ADCIF_CH_Rotate_IN_IO_HALL_AD);
+			  CddMtr_Mng_Motor_Step(CDDMTR_HFKF_CH_4,fl_ad_val);
+			  fl_ad_val = Adcif_Get_AdcVal(ADCIF_CH_Leg_IN_IO_HALL_AD);
+			  CddMtr_Mng_Motor_Step(CDDMTR_HFKF_CH_5,fl_ad_val);
+	  }
+  }
+}
+
 
 /**
   * @brief  LIN主机发送同步段
@@ -280,24 +331,24 @@ void lin_send_syn(lin_schedule_data_type *plin_shcedule_data)
     
     g_lin_task.frame_state = FRAME_STATE_SEND_SYN;
     
-    /* 使用延时发送间隔段 */
-    /* 拉低发送引脚 */
-    LIN_UART_TX_GPIO->DRST |= LIN_UART_TX_PIN;
-    LIN_UART_TX_GPIO->FCR &= ~LIN_UART_TX_PIN_FCR_MASK;
- 
-    /* 切换为输出引脚 */
-    LIN_UART_TX_GPIO->FCR |= LIN_UART_TX_PIN_FCR_OUTPUT;
-    //FL_DelayUs(LIN_BREAK_BIT * 1000000 / LIN_BAUDRATE);
-    ticks_delay = 106 * LIN_BREAK_BIT; /*50us * LIN_BREAK_BIT*/
-	while(ticks_delay -- );
-    LIN_UART_TX_GPIO->FCR &= ~LIN_UART_TX_PIN_FCR_MASK;
+     /* 修改为UART发送 */
+    /* 关闭TXEN和RXEN，清除BGR计数，否则BGR会在计数完再修改 */
+    LIN_UART->CSR &= ~(0x03);
 
-    /* 切换为数字引脚 */
-    LIN_UART_TX_GPIO->FCR |= LIN_UART_TX_PIN_FCR_DIGIT;
+    /* 修改LIN发送的Break段波特率 */
+    LIN_UART->BGR = LIN_BREAK_BIT_TIMER_LOAD-1;
 
-    /* 重置发送定时器 */
-    LIN_UART->CSR &= ~UART_CSR_TXEN_Msk;
-    LIN_UART->CSR |= UART_CSR_TXEN_Msk;    
+    /* 使能TXEN和RXEN */
+    LIN_UART->CSR |= 0x03;
+
+    /* 清除TXSE标志位 */
+    LIN_UART->ISR = 0x01;
+
+    /* 使能TXSE中断 */
+    LIN_UART->IER |= 0x01;
+
+    /* 写LIN_UART发送的TXBUF */
+    LIN_UART->TXBUF = 0x80;   
 }
 
 /**
@@ -364,146 +415,160 @@ void LPTIM_IRQHandler(void)
   */
 void LIN_UART_IRQHandler(void)
 {
-    uint8_t tmp08;
-    uint32_t timeout;
-    lin_schedule_data_type *plin_shcedule_data;
-    
-    plin_shcedule_data = &g_lin_task.lin_schedule.lin_schedule_data[g_lin_task.frame_index];    
-    
-   // LED0_TOG();
-   
-    /* 接收中断处理 */
-    if (LIN_UART->ISR & UART_ISR_RXBF_Msk)
-    {
-        switch (g_lin_task.frame_state)
-        {
-            /* 接收数据阶段，直到接收完成才处理 */
-            case FRAME_STATE_RECV_DATA:
-                /* 接收数据 */
-                /* 接收中断标志可通过读取rxreg寄存器清除 */
-                tmp08 = LIN_UART->RXBUF;
-                
-                UARTxOp_LIN.RxBuf[UARTxOp_LIN.RxLen] = tmp08;
-                UARTxOp_LIN.RxLen++;
-            
-                if (UARTxOp_LIN.RxLen == scheduleTable[g_lin_task.frame_index].length + 1)
-                {
-                    /* 接收完整数据 */
-                    memcpy(&plin_shcedule_data->data[2], UARTxOp_LIN.RxBuf, UARTxOp_LIN.RxLen);
-    
-                    #if (CHECKSUM_TYPE == CHECKSUM_TYPE_ENHANCED)
-                        if (calculateChecksum(&plin_shcedule_data->data[1], UARTxOp_LIN.RxLen) == UARTxOp_LIN.RxBuf[UARTxOp_LIN.RxLen - 1])
-                        {
-                            plin_shcedule_data->rx_len = UARTxOp_LIN.RxLen;
-                            memcpy(scheduleTable[g_lin_task.frame_index].data, UARTxOp_LIN.RxBuf, scheduleTable[g_lin_task.frame_index].length);
-                        }
-                        else
-                        {
-                            plin_shcedule_data->rx_len = 0;                    
-                        }
-                    #else
-                        if (calculateChecksum(&plin_shcedule_data->data[2], UARTxOp_LIN.RxLen - 1) == UARTxOp_LIN.RxBuf[UARTxOp_LIN.RxLen - 1])
-                        {
-                            plin_shcedule_data->rx_len = UARTxOp_LIN.RxLen;
-                            memcpy(scheduleTable[g_lin_task.frame_index].data, UARTxOp_LIN.RxBuf, scheduleTable[g_lin_task.frame_index].length);
-                        }
-                        else
-                        {
-                            plin_shcedule_data->rx_len = 0;
-                        }
-                    #endif
-                    lin_goto_idle();
-                }
-                
-                break;
-            case FRAME_STATE_SEND:
-                /* 接收数据 */
-                /* 接收中断标志可通过读取rxreg寄存器清除 */
-                tmp08 = LIN_UART->RXBUF;
-            
-                /* 发送指定长度的数据 */
-                if (UARTxOp_LIN.TxOpc < UARTxOp_LIN.TxLen)
-                {
-                    LIN_UART->TXBUF = UARTxOp_LIN.TxBuf[UARTxOp_LIN.TxOpc]; 
-                    UARTxOp_LIN.TxOpc++;
-                }
-                else
-                {
-                    /* 发送完毕 */
-                    if (plin_shcedule_data->frame_type == FRAME_TYPE_NO_RESPONSE)
-                    {
-                        /* 帧类型为无需回应 */                
-                        lin_goto_idle();
-                    }
-                    else
-                    {
-                        /* 需等待回应 */
-                        g_lin_task.frame_state = FRAME_STATE_RECV_DATA;
-                        
-                        /* 开启应答间隔判断 */
-                        /* 加入余量控制的超时，单位ms */
-                        if (plin_shcedule_data->timeout == 0)
-                        {
-                            timeout =  plin_shcedule_data->frame_left_slot;
-                        }
-                        else
-                        {
-                            timeout = Min(plin_shcedule_data->timeout, plin_shcedule_data->frame_left_slot);
-                        }
-                        
-                        timeout = timeout * 1000 / TIME_BASE_PERIOD;
-                        
-                        g_lin_task.res_frame_timeout_cnt = Min(timeout, g_lin_task.res_frame_timeout_cnt);
-                    }
-                }
-                break;
-            default:
-                /* 接收数据 */
-                /* 接收中断标志可通过读取rxreg寄存器清除 */
-                tmp08 = LIN_UART->RXBUF;
-            
-                break;
-        }
-    }
-    
-    /* 接收错误中断处理 需要注意帧类型错误会同时有RXBF标志，用于判定同步段 */
-    if (LIN_UART->ISR & UART_ISR_FERR_Msk)
-    {
-        tmp08 = LIN_UART->RXBUF;
-        if (g_lin_task.frame_state != FRAME_STATE_SEND_SYN)
-        {
-            /* 当前状态不正确，直接结束任务 */
-            lin_goto_idle();
-        }
-        else if (tmp08 == LIN_BREAK_BYTE)
-        {
-            /* 第一时间发送第一个字节 0x55 */
-            LIN_UART->TXBUF = plin_shcedule_data->data[0];
-            
-            /* 实时更新buffer */                
-            memcpy(&plin_shcedule_data->data[2], scheduleTable[g_lin_task.frame_index].data, scheduleTable[g_lin_task.frame_index].length);
+	  uint8_t tmp08;
+		uint32_t timeout;
+		lin_schedule_data_type *plin_shcedule_data;
+		
+		plin_shcedule_data = &g_lin_task.lin_schedule.lin_schedule_data[g_lin_task.frame_index];	
+	
+		/* 接收错误中断处理 需要注意帧类型错误会同时有RXBF标志，用于判定同步段 */
+		if ((FL_UART_IsEnabledIT_TXShiftBuffEmpty(LIN_UART)) && (FL_UART_IsActiveFlag_TXShiftBuffEmpty(LIN_UART)))
+		{
+			/* 读取RXBUF，清标志位 */
+			tmp08 = LIN_UART->RXBUF;
+	
+			/* 关闭TXEN和RXEN，清除BGR计数，否则BGR会在计数完再修改 */
+			LIN_UART->CSR &= ~(0x03);
+	
+			/* 切换波特率为19200 */
+			LIN_UART->BGR = LIN_BIT_TIMER_LOAD-1;;
+	
+			/* 使能TXEN和RXEN */
+			LIN_UART->CSR |= 0x03;
+	
+			/* 清除TXSE标志 */
+			LIN_UART->ISR = 0x01;
+	
+			/* 关闭TXSE中断 */
+			LIN_UART->IER &= ~(0x01);
+	 
+			if ((g_lin_task.frame_state != FRAME_STATE_SEND_SYN) || (tmp08 != LIN_BREAK_BYTE))
+			{
+				/* 当前状态不正确，直接结束任务 */
+				lin_goto_idle();
+			}
+			else if ((g_lin_task.frame_state == FRAME_STATE_SEND_SYN) && (tmp08 == LIN_BREAK_BYTE))
+			{
+				/* 第一时间发送第一个字节 0x55 */
+				LIN_UART->TXBUF = plin_shcedule_data->data[0];
+				
+				/* 实时更新buffer */				
+				memcpy(&plin_shcedule_data->data[2], scheduleTable[g_lin_task.frame_index].data, scheduleTable[g_lin_task.frame_index].length);
             #if (CHECKSUM_TYPE == CHECKSUM_TYPE_ENHANCED)
-                plin_shcedule_data->data[scheduleTable[g_lin_task.frame_index].length + 2] = calculateChecksum(&plin_shcedule_data->data[1], scheduleTable[g_lin_task.frame_index].length + 1);
+					plin_shcedule_data->data[scheduleTable[g_lin_task.frame_index].length + 2] = calculateChecksum(&plin_shcedule_data->data[1], scheduleTable[g_lin_task.frame_index].length + 1);
             #else
-                plin_shcedule_data->data[scheduleTable[g_lin_task.frame_index].length + 2] = calculateChecksum(&plin_shcedule_data->data[2], scheduleTable[g_lin_task.frame_index].length);
+					plin_shcedule_data->data[scheduleTable[g_lin_task.frame_index].length + 2] = calculateChecksum(&plin_shcedule_data->data[2], scheduleTable[g_lin_task.frame_index].length);
             #endif
-                            
-            /* 设置发送长度和数据 */
-            UARTxOp_LIN.TxOpc = 1;
-            UARTxOp_LIN.TxLen = plin_shcedule_data->tx_len;
-            UARTxOp_LIN.TxBuf = plin_shcedule_data->data;
-            
-            /* 主发送数据阶段 */
-            g_lin_task.frame_state = FRAME_STATE_SEND;
-            
-            /* 收到间隔段之后置起超时，等待在超时内处理后续流程 */
-            g_lin_task.frame_timeout_cnt = lin_calc_max_res_timeout_cnt(LIN_BIT_TIMER_LOAD, 8);
-            g_lin_task.res_frame_timeout_cnt = lin_calc_max_res_timeout_cnt(LIN_BIT_TIMER_LOAD, scheduleTable[g_lin_task.frame_index].length + 1);
-        }
-        LIN_UART->ISR = UART_ISR_FERR_Msk;
-    }
-    
-   // LED0_TOG();
+								
+				/* 设置发送长度和数据 */
+				UARTxOp_LIN.TxOpc = 1;
+				UARTxOp_LIN.TxLen = plin_shcedule_data->tx_len;
+				UARTxOp_LIN.TxBuf = plin_shcedule_data->data;
+				
+				/* 主发送数据阶段 */
+				g_lin_task.frame_state = FRAME_STATE_SEND;
+				
+				/* 收到间隔段之后置起超时，等待在超时内处理后续流程 */
+				g_lin_task.frame_timeout_cnt = lin_calc_max_res_timeout_cnt(LIN_BIT_TIMER_LOAD, 8);
+	
+				g_lin_task.res_frame_timeout_cnt = lin_calc_max_res_timeout_cnt(LIN_BIT_TIMER_LOAD, scheduleTable[g_lin_task.frame_index].length + 1);
+			}
+	//		  LIN_UART->ISR = UART_ISR_TXSE_Msk;
+		}
+		/* 接收中断处理 */
+		else if ((LIN_UART->ISR & UART_ISR_RXBF_Msk) && (LIN_UART->IER & UART_IER_RXBFIE_Msk))
+		{
+			switch (g_lin_task.frame_state)
+			{
+				/* 接收数据阶段，直到接收完成才处理 */
+				case FRAME_STATE_RECV_DATA:
+					/* 接收数据 */
+					/* 接收中断标志可通过读取rxreg寄存器清除 */
+					tmp08 = LIN_UART->RXBUF;
+	
+					UARTxOp_LIN.RxBuf[UARTxOp_LIN.RxLen] = tmp08;
+					UARTxOp_LIN.RxLen++;
+				
+					if (UARTxOp_LIN.RxLen == scheduleTable[g_lin_task.frame_index].length + 1)
+					{
+						/* 接收完整数据 */
+						memcpy(&plin_shcedule_data->data[2], UARTxOp_LIN.RxBuf, UARTxOp_LIN.RxLen);
+		
+                    #if (CHECKSUM_TYPE == CHECKSUM_TYPE_ENHANCED)
+							if (calculateChecksum(&plin_shcedule_data->data[1], UARTxOp_LIN.RxLen) == UARTxOp_LIN.RxBuf[UARTxOp_LIN.RxLen - 1])
+							{
+								plin_shcedule_data->rx_len = UARTxOp_LIN.RxLen;
+								memcpy(scheduleTable[g_lin_task.frame_index].data, UARTxOp_LIN.RxBuf, scheduleTable[g_lin_task.frame_index].length);
+							}
+							else
+							{
+								plin_shcedule_data->rx_len = 0; 				   
+							}
+                    #else
+							if (calculateChecksum(&plin_shcedule_data->data[2], UARTxOp.RxLen - 1) == UARTxOp.RxBuf[UARTxOp.RxLen - 1])
+							{
+								plin_shcedule_data->rx_len = UARTxOp.RxLen;
+								memcpy(scheduleTable[g_lin_task.frame_index].data, UARTxOp.RxBuf, scheduleTable[g_lin_task.frame_index].length);
+							}
+							else
+							{
+								plin_shcedule_data->rx_len = 0;
+							}
+                    #endif
+						lin_goto_idle();
+					}
+					
+					break;
+				case FRAME_STATE_SEND:
+					/* 接收数据 */
+					/* 接收中断标志可通过读取rxreg寄存器清除 */
+					tmp08 = LIN_UART->RXBUF;
+		
+					/* 发送指定长度的数据 */
+					if (UARTxOp_LIN.TxOpc < UARTxOp_LIN.TxLen)
+					{
+						LIN_UART->TXBUF = UARTxOp_LIN.TxBuf[UARTxOp_LIN.TxOpc]; 
+						UARTxOp_LIN.TxOpc++;
+						
+					}
+					else
+					{
+						/* 发送完毕 */
+						if (plin_shcedule_data->frame_type == FRAME_TYPE_NO_RESPONSE)
+						{
+							/* 帧类型为无需回应 */
+				   
+							lin_goto_idle();
+						}
+						else
+						{
+							/* 需等待回应 */
+							g_lin_task.frame_state = FRAME_STATE_RECV_DATA;
+							
+							/* 开启应答间隔判断 */
+							/* 加入余量控制的超时，单位ms */
+							if (plin_shcedule_data->timeout == 0)
+							{
+								timeout =  plin_shcedule_data->frame_left_slot;
+							}
+							else
+							{
+								timeout = Min(plin_shcedule_data->timeout, plin_shcedule_data->frame_left_slot);
+							}
+							
+							timeout = timeout * 1000 / TIME_BASE_PERIOD;
+							
+							g_lin_task.res_frame_timeout_cnt = Min(timeout, g_lin_task.res_frame_timeout_cnt);
+						}
+					}
+					break;
+	//				  default:
+	//					  tmp08 = LIN_UART->RXBUF;
+	//				  break;
+	
+	
+			}
+		}
 }
 
 /**
@@ -518,7 +583,7 @@ void lin_uart_init(void)
     Uartx_Init(LIN_UART);
 
     /* 接收错误中断使能，用于同步判断 */
-    FL_UART_EnableIT_RXError(LIN_UART);
+   // FL_UART_EnableIT_RXError(LIN_UART);
     FL_UART_EnableIT_RXBuffFull(LIN_UART);
     
     FL_UART_EnableTX(LIN_UART);

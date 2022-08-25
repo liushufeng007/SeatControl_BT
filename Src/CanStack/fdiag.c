@@ -172,7 +172,7 @@ UINT8 * fl_msgptr;
 
 //extern UINT32 FBL_REQ_FLAG;
 
-uint32_t FBL_REQ_FLAG __attribute__((section(".ARM.__at_0x20007FFC"))) = 0x00000000;
+uint32_t FBL_REQ_FLAG ;//__attribute__((section(".ARM.__at_0x20007FFC"))) = 0x00000000;
 
 #ifndef DEBUG_ENABLE
 const uint32_t APP_VALID_1 __attribute__((section(".ARM.__at_0x00008400"))) = 0xAAAAAAAA;

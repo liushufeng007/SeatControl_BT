@@ -9,6 +9,8 @@
 #include "System_OsTask.h"
 #include "System_OsMessageQueue.h"
 
+#include "fm33lg0xx_fl_atim.h"
+
 
 
 extern void *pvTimerGetTimerID( const TimerHandle_t xTimer );
@@ -31,11 +33,100 @@ extern const System_TimerConfig_t cSystem_TimerConfig[eSYSTEM_TIMER_ID_NUMBER];
 static System_TimerInfo_t tSystem_TimerInfo[eSYSTEM_TIMER_ID_NUMBER];
 static System_TaskMsg_t u16System_TaskMessage[OsTask_ID_NUMBER];
 
+uint32_t cpuload_total = 0 ;
+uint32_t cpuload_Current_stamp  = 0;
+uint32_t cpuload_Last_stamp = 0 ;
+uint32_t cpuload_reset_counter = 0;
+uint32_t cpuload_percent = 0;
+uint32_t cpuload_min_percent = 0xFFFFFFFF;
+uint32_t cpuload_max_percent = 0;
+uint32_t cpuload_min_stamp = 0xffffffff;
+
+const uint32_t cpuload_threshold = 7;//3.5us
+const uint32_t cpuload_ResetThreshold = 33;//1s
+
+void ATIM_Init(void)
+{
+    FL_ATIM_InitTypeDef        InitStructer;
+
+    InitStructer.clockSource           = FL_CMU_ATIM_CLK_SOURCE_APBCLK;  /* 时钟源选择APB2 */
+    InitStructer.prescaler             = 31;                              /* 分频系数8 */
+    InitStructer.counterMode           = FL_ATIM_COUNTER_DIR_DOWN;         /* 向上计数 */
+    InitStructer.autoReload            = 0xFFFF;                            /* 自动重装载值1000 */
+    InitStructer.clockDivision         = FL_ATIM_CLK_DIVISION_DIV1;      /* 死区和滤波设置 */
+    InitStructer.repetitionCounter     = 0;                              /* 重复计数 */
+    InitStructer.autoReloadState       = FL_ENABLE;                     /* 自动重装载禁止preload */
+    FL_ATIM_Init(ATIM, &InitStructer);
+
+    //NVIC_DisableIRQ(ATIM_IRQn);
+   // NVIC_SetPriority(ATIM_IRQn, 2); /* 中断优先级配置 */
+   // NVIC_EnableIRQ(ATIM_IRQn);
+
+    //FL_ATIM_ClearFlag_Update(ATIM); /* 清除计数器中断标志位 */
+   // FL_ATIM_EnableIT_Update(ATIM);  /* 开启计数器中断 */
+
+    FL_ATIM_Enable(ATIM);           /* 使能定时器 */
+
+}
+
+
+void CpuLoad_Task( void *pvParameters )
+{
+    ATIM_Init();
+	for( ;; )
+	{
+		__disable_irq();
+		cpuload_Current_stamp = ATIM->CNT;//SysTick->VAL;
+		if(cpuload_Current_stamp<=cpuload_Last_stamp)
+		{
+			if(cpuload_Last_stamp - cpuload_Current_stamp > cpuload_threshold)//3.5us
+			//64000=1ms
+			{
+				cpuload_total =( cpuload_total - cpuload_Current_stamp +cpuload_Last_stamp)/1;
+			}
+			if(cpuload_min_stamp > cpuload_Last_stamp - cpuload_Current_stamp )
+				cpuload_min_stamp= cpuload_Last_stamp - cpuload_Current_stamp;
+		}
+		else
+		{
+			if(0xFFFF - cpuload_Current_stamp + cpuload_Last_stamp > cpuload_threshold)//10us
+			//64000=1ms
+			{
+				cpuload_total = (cpuload_total + 0xFFFF - cpuload_Current_stamp + cpuload_Last_stamp)/1;
+			}
+			if(cpuload_min_stamp > ( 0xFFFF - cpuload_Current_stamp +cpuload_Last_stamp))
+			cpuload_min_stamp= 0xFFFF - cpuload_Current_stamp + cpuload_Last_stamp;
+			
+			if(cpuload_reset_counter > cpuload_ResetThreshold)
+			{
+				cpuload_reset_counter = 0;
+				cpuload_percent = cpuload_total  / 21626;
+				cpuload_total = 0;
+				if(cpuload_max_percent < cpuload_percent)
+				{
+					cpuload_max_percent = cpuload_percent;
+				}
+				if(cpuload_min_percent > cpuload_percent)
+				{
+					cpuload_min_percent = cpuload_percent;
+				}
+			}
+			else
+			{
+				cpuload_reset_counter++;
+			}
+		}
+		cpuload_Last_stamp =cpuload_Current_stamp;
+		__enable_irq();
+
+	}
+} 
 
 
 void System_StarOsTask(void)
 {
     INT32 i;
+	
 
     System_TimerCreate();
 
@@ -48,6 +139,8 @@ void System_StarOsTask(void)
             cOsTaskAttribute_t[i]->uxPriority, 
             NULL);
     }
+	
+    xTaskCreate(CpuLoad_Task,"cpuload",100,(void *)i,0,NULL);
  
     vTaskStartScheduler();
 }

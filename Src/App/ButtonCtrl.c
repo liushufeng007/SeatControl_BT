@@ -464,6 +464,7 @@ void ButtonCtrl_50ms_Task(void)
 
 		ButtonCtrl_NoMtr_EventProcess();
 		memset(&ButtonCtrl_Req,0,sizeof(ButtonCtrl_Req));
+		CddBT616_Trigger_Signal();
 	}
 
 	//if((ButtonCtrl_Mtr_Calbration_State == BTN_ID_CTRL_CAL_IDLE) && (MotorState))

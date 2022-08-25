@@ -56,15 +56,17 @@ typedef struct {
 }lin_cmd_packet_t;
 
 #define LIN_BREAK_BIT       13                                          /* 同步间隔, 13bit显性电平 */
-#define LIN_BREAK_BYTE      0x00
+#define LIN_BREAK_BYTE      0x80
 #define LIN_SYN_BYTE        0x55
 
 /* lin波特率和字节间间隔 */
 #define LIN_BAUDRATE                    19200                           /* 波特率, 上限20K */
+#define LIN_BREAK_BAUDRATE              11800                           /* break段发送的波特率 */
 #define LIN_RECV_BYTE_TIME_SPACE        12                              /* 接收字节间间隔, 最大支持255bit */
 
 #define LIN_SYN_BYTE_TIME_SPACE         50                              /* 收到间隔段之后 */
 #define LIN_BIT_TIMER_LOAD  (MAIN_CLOCK / LIN_BAUDRATE)                 /* 比特定时器Load值, TIME时钟源24MHz */
+#define LIN_BREAK_BIT_TIMER_LOAD        (MAIN_CLOCK / LIN_BREAK_BAUDRATE)
 #define RESPONSE_SPACE      (50 * LIN_BIT_TIMER_LOAD)                   /* 应答间隔, 5字节长度, 每字节10bit */
 
 #define LIN_BREAK_DELIMITER_TIMES       2                               /* (1<<2)间隔段和间隔符长度倍数关系，不足则判定为错误 */
