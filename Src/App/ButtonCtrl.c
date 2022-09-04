@@ -609,7 +609,8 @@ void ButtonCtrl_50ms_Task(void)
 		ret_val = FALSE;
 	}
 	
-	if(((fl_str_e.ButtonId >= BTN_ID_CTRL_POS_FRONT_REAR_e)&&(fl_str_e.ButtonId <= BTN_ID_CTRL_LEG_e)) && (BTN_CTRL_IDLE != ButtonCtrl_Action_State))
+	if(((fl_str_e.ButtonId >= BTN_ID_CTRL_POS_FRONT_REAR_e)&&(fl_str_e.ButtonId <= BTN_ID_CTRL_LEG_e)) && \
+		((BTN_CTRL_EXIT_ACT == ButtonCtrl_Action_State) || (BTN_CTRL_PRE_ACT == ButtonCtrl_Action_State)))
 	{
 		ret_val = FALSE;
 	}

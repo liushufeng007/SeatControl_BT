@@ -6,7 +6,7 @@
 /* Variant configuration */
 #define SCM_L_VARIANT 0
 #define SCM_R_VARIANT 1
-#define SCM_SEATCONTROL_VARIANT SCM_L_VARIANT
+#define SCM_SEATCONTROL_VARIANT SCM_R_VARIANT
 
 /* ===========================================================================
 //  P U B L I C   M A C R O S
