@@ -213,6 +213,7 @@ void update_can_signal(void)
 		{
 			btn.ButtonVal = temp;
 		}
+		ButtonCtrl_Set_BtnSrc(BTN_ID_SrcID_FRONT_REAR_e,BTN_ID_Src_CAN_e);
 		ButtonCtrl_queue_push_e(btn);
 	}
 	index++;
@@ -224,6 +225,7 @@ void update_can_signal(void)
 		btn.ButtonVal = Btn_Signal_Group[index]*33/10;
 		if(Btn_Signal_Group[index] <= 0x1F)
 		{
+			ButtonCtrl_Set_BtnSrc(BTN_ID_SrcID_BACK_ANGLE_e,BTN_ID_Src_CAN_e);
 			ButtonCtrl_queue_push_e(btn);
 		}
 	}

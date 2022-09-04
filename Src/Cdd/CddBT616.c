@@ -62,13 +62,15 @@ const uint8_t BT_cmd_to_Button_ID[][3] =
 	0xB3, BTN_ID_CTRL_ROTATE_e          , DIRECTION_FRONT,
 	0xB4, BTN_ID_CTRL_LEG_e  , DIRECTION_REAR,
 	0xB5, BTN_ID_CTRL_HEAD_e  , DIRECTION_FRONT,
-
+	0xB6, BTN_ID_CTRL_TOTAL_ANGLE_e  , DIRECTION_FRONT,
+	
 	0xC0, 0  , 0,
 	0xC1, BTN_ID_CTRL_POS_FRONT_REAR_e  , DIRECTION_REAR,
 	0xC2, BTN_ID_CTRL_BACK_ANGLE_e  , DIRECTION_REAR,
 	0xC3, BTN_ID_CTRL_ROTATE_e  , DIRECTION_REAR,
 	0xC4, BTN_ID_CTRL_LEG_e  , DIRECTION_FRONT,
 	0xC5, BTN_ID_CTRL_HEAD_e  , DIRECTION_REAR,
+	0xC6, BTN_ID_CTRL_TOTAL_ANGLE_e  , DIRECTION_REAR,
 
 	0xE0, BTN_ID_CTRL_VENTILITION_e  , 0,
 	0xE1, BTN_ID_CTRL_VENTILITION_e  , 1,
@@ -609,6 +611,15 @@ void CddBT616_Task(void)
 						{
 							
 							btn = CddBT616_Search_Btn(fl_str_e.Data[2]);
+							switch (btn.ButtonId)
+							{
+								case BTN_ID_CTRL_POS_FRONT_REAR_e:  
+									ButtonCtrl_Set_BtnSrc(BTN_ID_SrcID_FRONT_REAR_e,BTN_ID_Src_BT_e);
+								break;
+								case BTN_ID_CTRL_BACK_ANGLE_e:  
+									ButtonCtrl_Set_BtnSrc(BTN_ID_SrcID_BACK_ANGLE_e,BTN_ID_Src_BT_e);
+								break;
+							}
 #if(SCM_SEATCONTROL_VARIANT == SCM_L_VARIANT)
 							switch (btn.ButtonId)
 							{

@@ -4,6 +4,22 @@
 #include "public.h"
 #include "user_init.h"
 
+typedef enum
+{
+	BTN_ID_Src_BT_e,
+	BTN_ID_Src_CAN_e,	
+}ButtonCtrl_SrcId_e;
+
+
+typedef enum
+{
+	BTN_ID_SrcID_FRONT_REAR_e,
+	BTN_ID_SrcID_BACK_ANGLE_e,
+	BTN_ID_SrcID_ROTATE_e,
+	BTN_ID_SrcID_HEAD_e,
+	BTN_ID_SrcID_LEG_e,
+	BTN_ID_SrcID_TOTAL_ANGLE_e	
+}ButtonCtrl_BtnId_e;
 
 
 typedef enum
@@ -21,6 +37,7 @@ typedef enum
 	BTN_ID_CTRL_BACK_ANGLE_e,
 	BTN_ID_CTRL_ROTATE_e,
 	BTN_ID_CTRL_HEAD_e,
+	BTN_ID_CTRL_TOTAL_ANGLE_e,
 	BTN_ID_CTRL_LEG_e,
 	
 	BTN_ID_CTRL_VENTILITION_e,	
@@ -135,4 +152,7 @@ extern void ButtonCtrl_50ms_Task(void);
 extern uint8_t ButtonCtrl_queue_push_e(ButtonCtrl_Str fl_str_e);
 
 extern 	ButtonCtrl_Id_e ButtonCtrl_Get_CtrlMode(void);
+
+extern 	void ButtonCtrl_Set_BtnSrc(ButtonCtrl_BtnId_e id, ButtonCtrl_SrcId_e src);
+
 #endif

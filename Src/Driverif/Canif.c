@@ -290,6 +290,8 @@ void FL_CAN_HPBUF_Write(uint32_t id, uint32_t len, uint32_t data1, uint32_t data
     FL_CAN_WriteHighPriorMessageWord2(CAN, data2);
 }
 
+
+
 /**
   * @brief  ¶ÁRX FIFOÊý¾Ý
   * @param  CANx
@@ -594,7 +596,7 @@ void Canif_task(void)
 	/* CAN Bus Off */
 	if( TRUE == FL_CAN_IsActiveFlag_BusOff(CAN) )
 	{
-		Appl_CAN_busoff_start();
+		//Appl_CAN_busoff_start();
 	}
 }
 
