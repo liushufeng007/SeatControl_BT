@@ -8,6 +8,8 @@
 #include "CddMtr_HFKF.h"
 #include "Adcif.h"
 
+#include "il_par.h"
+
 
 #define FRAME_DATA_MAX_LEN          11  /* 帧最大数据长度 */
 #define SCHEDULE_FRAME_MAX_NUM      25 /* 进度表最大帧数量 */
@@ -137,8 +139,8 @@ uint32_t ticks_delay ;
 uint8_t data[10];
 
 uint8_t ticks = 0;
+
 lin_cmd_packet_t scheduleTable[] = {
-  /* 用户命令码 */
   {LIN_CMD2, TRANSMIT, LIN_CMD2_LENGTH, LIN_CMD2_TIMEOUT, LIN_DELAY_10ms, LIN_CMD2_Data.byte},
   {LIN_CMD3, RECEIVE,  LIN_CMD2_LENGTH, LIN_CMD0_TIMEOUT, LIN_DELAY_10ms, LIN_CMD3_Data.byte},
   {LIN_CMD4, RECEIVE,  LIN_CMD2_LENGTH, LIN_CMD1_TIMEOUT, LIN_DELAY_30ms, LIN_CMD4_Data.byte},
@@ -147,6 +149,29 @@ lin_cmd_packet_t scheduleTable[] = {
   {LIN_CMD5, RECEIVE,  LIN_CMD2_LENGTH, LIN_CMD2_TIMEOUT, LIN_DELAY_20ms, LIN_CMD5_Data.byte},
   {LIN_CMD6, RECEIVE,  LIN_CMD2_LENGTH, LIN_CMD2_TIMEOUT, LIN_DELAY_30ms, LIN_CMD6_Data.byte},
 };
+
+#if 0
+#if(SCM_SEATCONTROL_VARIANT == SCM_L_VARIANT)
+lin_cmd_packet_t scheduleTable[] = {
+  {LIN_CMD2, TRANSMIT, LIN_CMD2_LENGTH, LIN_CMD2_TIMEOUT, LIN_DELAY_10ms, LIN_CMD2_Data.byte},
+  {LIN_CMD3, RECEIVE,  LIN_CMD2_LENGTH, LIN_CMD0_TIMEOUT, LIN_DELAY_10ms, LIN_CMD3_Data.byte},
+  {LIN_CMD0, TRANSMIT, LIN_CMD0_LENGTH, LIN_CMD0_TIMEOUT, LIN_DELAY_30ms, LIN_CMD0_Data.byte},
+  {LIN_CMD1, TRANSMIT, LIN_CMD1_LENGTH, LIN_CMD1_TIMEOUT, LIN_DELAY_10ms, LIN_CMD1_Data.byte},
+  {LIN_CMD5, RECEIVE,  LIN_CMD2_LENGTH, LIN_CMD2_TIMEOUT, LIN_DELAY_20ms, LIN_CMD5_Data.byte},
+  {LIN_CMD6, RECEIVE,  LIN_CMD2_LENGTH, LIN_CMD2_TIMEOUT, LIN_DELAY_30ms, LIN_CMD6_Data.byte},
+};
+#else
+lin_cmd_packet_t scheduleTable[] = {
+  {LIN_CMD2, TRANSMIT, LIN_CMD2_LENGTH, LIN_CMD2_TIMEOUT, LIN_DELAY_10ms, LIN_CMD2_Data.byte},
+  {LIN_CMD4, RECEIVE,  LIN_CMD2_LENGTH, LIN_CMD1_TIMEOUT, LIN_DELAY_30ms, LIN_CMD4_Data.byte},
+  {LIN_CMD0, TRANSMIT, LIN_CMD0_LENGTH, LIN_CMD0_TIMEOUT, LIN_DELAY_30ms, LIN_CMD0_Data.byte},
+  {LIN_CMD1, TRANSMIT, LIN_CMD1_LENGTH, LIN_CMD1_TIMEOUT, LIN_DELAY_10ms, LIN_CMD1_Data.byte},
+  {LIN_CMD5, RECEIVE,  LIN_CMD2_LENGTH, LIN_CMD2_TIMEOUT, LIN_DELAY_20ms, LIN_CMD5_Data.byte},
+  {LIN_CMD6, RECEIVE,  LIN_CMD2_LENGTH, LIN_CMD2_TIMEOUT, LIN_DELAY_30ms, LIN_CMD6_Data.byte},
+};
+#endif
+#endif
+
 struct UARTOpStruct_LIN UARTxOp_LIN;
 /**
   * @brief  接收超时定时器初始化
@@ -299,7 +324,9 @@ void BSTIM_IRQHandler(void)
           default:
               break;
       }
-	  if(ticks++ >= 3)
+			
+		ticks++;
+	  if(ticks >= 2)
 	  {
 			  ticks = 0;
 			  AdcIf_Polling();

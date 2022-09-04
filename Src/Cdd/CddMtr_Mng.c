@@ -1375,6 +1375,7 @@ CddMtr_Mng_Main_Status_e  CddMtr_Mng_handle_LEARN_7_FORWARD(uint8_t fl_Mtr_Id)
 		else
 		{
 			CddMtr_Mng_Main_St[fl_Mtr_Id].LearnData_Status = CDDMTR_MNG_LEARN_VALID;
+			CddMtr_Mng_Main_St[fl_Mtr_Id].Target_Step = CddMtr_Learn_End_Pos[fl_Mtr_Id];
 			CddMtr_Mng_Main_St[fl_Mtr_Id].Cal_Max_Step = CddMtr_Mng_Main_St[fl_Mtr_Id].Current_Step;
 			CddMtr_Update_Mtr_E2_Ckc(fl_Mtr_Id);
 			return CDDMTR_MNG_STATUS_STOP;
@@ -1760,9 +1761,9 @@ uint16_t CddMtr_Get_Mtr_Current_Val(uint8_t fl_Mtr_Id)
 	uint8_t fl_ad_ch;
 	if(fl_Mtr_Id < CDDMTR_HFKF_MAX_NUM)
 	{
-			fl_ad_ch = CddMtr_Mng_Ad_Ch_Map[fl_Mtr_Id][0];
-			fl_ad_val = Adcif_Get_AdcVal(fl_ad_ch);
-			currentval = UTL_u16Lookup((uint16_t *)CddMtr_Mng_FB_Current_Tbl,fl_ad_val,0);
+		fl_ad_ch = CddMtr_Mng_Ad_Ch_Map[fl_Mtr_Id][0];
+		fl_ad_val = Adcif_Get_AdcVal(fl_ad_ch);
+		currentval = UTL_u16Lookup((uint16_t *)CddMtr_Mng_FB_Current_Tbl,fl_ad_val,0);
 	}
 	
 	return currentval;
@@ -1836,5 +1837,18 @@ uint8_t CddMtr_Get_Mtr_Learning_Status(uint8_t fl_Mtr_Id)
 	
 	return learning;
 }
+
+uint8_t CddMtr_Get_Mtr_Run_Status(uint8_t fl_Mtr_Id)
+{
+	CddMtr_Mng_Main_Status_e Mtr_RunSts =CDDMTR_MNG_STATUS_IDLE;
+	
+	if(fl_Mtr_Id < CDDMTR_HFKF_MAX_NUM)
+	{
+		Mtr_RunSts = CddMtr_Mng_Main_St[fl_Mtr_Id].Main_Ctrl_Status;
+	}
+	
+	return Mtr_RunSts;
+}
+
 
 /*EOF*/

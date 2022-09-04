@@ -45,6 +45,8 @@ extern void CddLed_5ms_Task(void);
 extern void CddLed_Req(uint8_t Req);
 
 extern void CddLed_Covert(void);
+
+extern uint8_t CddLed_Get_Req(void);
 #endif
 
 /*EOF*/

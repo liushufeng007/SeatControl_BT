@@ -12,6 +12,9 @@
 #include "il_par.h"
 #include "crc.h"
 
+#include "CddBT616.h"
+#include "CddMtr_Cal.h"
+
 #define MODE_E2_LEN  4
 
 ButtonCtrl_Queue_str ButtonCtrl_queue;
@@ -29,7 +32,9 @@ uint8_t Button_Update_Flag = TRUE;
 uint8_t ButtonMode_Update_Flag[8] ;
 
 ButtonCtrl_Id_MtrCal_e ButtonCtrl_Mtr_Calbration_State = BTN_ID_CTRL_CAL_IDLE;
-uint8_t  ButtonCtrl_Mtr_DelayTicks = 0;
+uint16_t  ButtonCtrl_Mtr_DelayTicks = 0;
+uint16_t  ButtonCtrl_MtrAbnormal_Cnt = 0;
+uint8_t   ButtonCtrl_InitState = FALSE;
 
 ButtonCtrl_Action_Step ButtonCtrl_Action_State = BTN_CTRL_IDLE;
 uint16_t PreAction_Expire_Ticks = 0;
@@ -55,6 +60,7 @@ static uint8_t ButtonCtrl_Motor_IsOk(void);
 static 	void ButtonCtrl_NoMtr_EventProcess(void);
 static 	uint8_t ButtonCtrl_CheckReq_IsDone(ButtonCtrl_Mode_Req_Str BtnReq[]);
 static 	void ButtonCtrl_ActionStep_Process(void);
+static 	uint8_t ButtonCtrl_MotorRun_IsOk(uint8_t fl_Mtr_Id);
 /*
 
 BTN_ID_CTRL_MODE_ZERO_GRAVITY_e,
@@ -66,6 +72,7 @@ BTN_ID_CTRL_MOVIE_e,
 BTN_ID_CTRL_SLEEP_e,
 BTN_ID_CTRL_PREPARE_MEAL_e,
 */
+
 
 
 
@@ -199,18 +206,25 @@ uint16_t ButtonCtrl_ModePos[MAX_SAVE_NUMBER][7] =
 
 
 
-const uint8_t ButtonCtrl_Mtr_Calibration_Sequence[CDDMTR_HFKF_MAX_NUM][CDDMTR_HFKF_MAX_NUM] = 
+const uint8_t ButtonCtrl_Mtr_Calibration_Sequence[CDDMTR_HFKF_MAX_NUM] = 
 {
-	0  ,  0xFF,  0xFF, 0xFF,  0xFF,  0xFF,
-	1  ,  0xFF,  0xFF, 0xFF,  0xFF,  0xFF,
-	2  ,  0xFF,  0xFF, 0xFF,  0xFF,  0xFF,
-	3  ,  0xFF,  0xFF, 0xFF,  0xFF,  0xFF,
-	4  ,  0xFF,  0xFF, 0xFF,  0xFF,  0xFF,
-	5  ,  0xFF,  0xFF, 0xFF,  0xFF,  0xFF,
+	0  , 
+	1  , 
+	2  , 
+	5  ,
+	3  , 
+	4  , 
+
 };
 
+
+
 const uint8_t ButtonCtrl_Mtr_Calibration_MaxCh = 2;
-const uint8_t ButtonCtrl_Mtr_Calibration_DelayTicks = 20;
+const uint16_t ButtonCtrl_Mtr_Calibration_DelayTicks = 300;
+const uint16_t ButtonCtrl_Mtr_ResetPos_DelayTicks = 4000;
+const uint16_t ButtonCtrl_MtrAbnormal_Threshold = 30;
+
+const uint16_t ButtonCtrl_Mtr_RunMin_CurrentVal = 300;//unit:mA
 
 /*******************************************************************************
 * Function Name: ButtonCtrlInit
@@ -309,69 +323,159 @@ void Buttonctrl_ModePos_Check(void)
 *******************************************************************************/
 void ButtonCtrl_Calibration_Process(void)
 {
-	uint8_t index = 0;
-	uint8_t learning = FALSE;
-	
-	if(ButtonCtrl_Mtr_Calbration_State == BTN_ID_CTRL_CAL_IDLE)
-	{
-		if(ButtonCtrl_Req.Clibration.ReqActive == BTNVAL_ON && ButtonCtrl_Req.Clibration.ButtonVal == DIRECTION_FRONT)
-		{
-			ButtonCtrl_Mtr_Calbration_State++;
-			ButtonCtrl_Mtr_DelayTicks = 0;
-		}
 
-	}
-	else if((ButtonCtrl_Mtr_Calbration_State % 2) == 1)
+	uint8_t tempval = TRUE;
+
+
+	switch(ButtonCtrl_Mtr_Calbration_State)
 	{
-		while(index < CDDMTR_HFKF_MAX_NUM)
-		{
-			if(ButtonCtrl_Mtr_Calibration_Sequence[ButtonCtrl_Mtr_Calbration_State/2][index] != 0xFF)
+		case BTN_ID_CTRL_CAL_IDLE:
+			if(ButtonCtrl_Mtr_Calbration_State == BTN_ID_CTRL_CAL_IDLE)
 			{
-				CddMtr_Learn_Req(ButtonCtrl_Mtr_Calibration_Sequence[ButtonCtrl_Mtr_Calbration_State/2][index],CDDMTR_MNG_LEARN_ENABLE);
-			}
-			index ++;
-		}
-
-		if((ButtonCtrl_Mtr_Calbration_State / 2) < CDDMTR_HFKF_MAX_NUM)
-		{
-			ButtonCtrl_Mtr_Calbration_State++;
-		}
-		else
-		{
-			ButtonCtrl_Mtr_Calbration_State = BTN_ID_CTRL_CAL_IDLE;
-		}
-		
-		ButtonCtrl_Mtr_DelayTicks = 0;
-	}
-	else if((ButtonCtrl_Mtr_Calbration_State % 2) == 0)
-	{
-		if(ButtonCtrl_Mtr_DelayTicks <= ButtonCtrl_Mtr_Calibration_DelayTicks)
-		{
-			ButtonCtrl_Mtr_DelayTicks ++;
-		}
-		else
-		{
-
-			while(index < CDDMTR_HFKF_MAX_NUM)
-			{
-				if(ButtonCtrl_Mtr_Calibration_Sequence[(ButtonCtrl_Mtr_Calbration_State-1)/2][index] != 0xFF)
+				if(ButtonCtrl_Req.Clibration.ReqActive == BTNVAL_ON && ButtonCtrl_Req.Clibration.ButtonVal == DIRECTION_FRONT)
 				{
-					if(TRUE == CddMtr_Get_Mtr_Learning_Status(index))
+					CddMtr_Direction_Req(ButtonCtrl_Mtr_Calibration_Sequence[ButtonCtrl_Mtr_Calbration_State],CDDMTR_MNG_DIRECTION_FORWARD);
+					ButtonCtrl_Mtr_Calbration_State++;
+					ButtonCtrl_Mtr_DelayTicks = 0;
+					ButtonCtrl_Req.Clibration.ReqActive = BTNVAL_OFF;
+					ButtonCtrl_InitState = FALSE;
+				}
+			}
+		break;
+		
+		case BTN_ID_CTRL_RESET_POS_STEP0:
+		case BTN_ID_CTRL_RESET_POS_STEP1:
+		case BTN_ID_CTRL_RESET_POS_STEP2:
+		case BTN_ID_CTRL_RESET_POS_STEP3:
+		case BTN_ID_CTRL_RESET_POS_STEP4:
+		case BTN_ID_CTRL_RESET_POS_STEP5:
+			if(FALSE == ButtonCtrl_MotorRun_IsOk(ButtonCtrl_Mtr_Calibration_Sequence[ButtonCtrl_Mtr_Calbration_State-1]))
+			{
+				if(ButtonCtrl_MtrAbnormal_Cnt < ButtonCtrl_MtrAbnormal_Threshold)
+				{
+					ButtonCtrl_MtrAbnormal_Cnt ++;
+				}
+			}
+			else
+			{
+				if(ButtonCtrl_MtrAbnormal_Cnt > 0)
+				{
+					ButtonCtrl_MtrAbnormal_Cnt --;
+				}
+			}
+
+			if(ButtonCtrl_MtrAbnormal_Cnt >= ButtonCtrl_MtrAbnormal_Threshold)
+			{
+				tempval = FALSE;
+			}
+
+			if((CddMtr_Get_Mtr_Run_Status(ButtonCtrl_Mtr_Calibration_Sequence[ButtonCtrl_Mtr_Calbration_State-1]) == CDDMTR_MNG_STATUS_IDLE) || \
+				(ButtonCtrl_Mtr_DelayTicks> ButtonCtrl_Mtr_ResetPos_DelayTicks))
+			{
+				tempval = FALSE;
+			}
+				
+			if(FALSE == tempval)
+			{
+				if(ButtonCtrl_Mtr_Calbration_State <BTN_ID_CTRL_RESET_POS_STEP5)
+				{
+					CddMtr_Direction_Req(ButtonCtrl_Mtr_Calibration_Sequence[ButtonCtrl_Mtr_Calbration_State-1],CDDMTR_MNG_DIRECTION_STOP);
+					CddMtr_Direction_Req(ButtonCtrl_Mtr_Calibration_Sequence[ButtonCtrl_Mtr_Calbration_State],CDDMTR_MNG_DIRECTION_FORWARD);
+				}
+				else
+				{
+					CddMtr_Learn_Req(ButtonCtrl_Mtr_Calibration_Sequence[ButtonCtrl_Mtr_Calbration_State-BTN_ID_CTRL_RESET_POS_STEP5],CDDMTR_MNG_LEARN_ENABLE);
+				}
+				ButtonCtrl_Mtr_Calbration_State++;
+				ButtonCtrl_Mtr_DelayTicks = 0;
+				ButtonCtrl_MtrAbnormal_Cnt = 0;
+			}
+			else
+			{
+				ButtonCtrl_Mtr_DelayTicks++;
+			}
+		
+		break;
+
+	
+		
+		case BTN_ID_CTRL_CAL_STEP0:
+		case BTN_ID_CTRL_CAL_STEP1:
+		case BTN_ID_CTRL_CAL_STEP2:
+		case BTN_ID_CTRL_CAL_STEP3:
+		case BTN_ID_CTRL_CAL_STEP4:
+		case BTN_ID_CTRL_CAL_STEP5:
+			if(FALSE == ButtonCtrl_MotorRun_IsOk(ButtonCtrl_Mtr_Calibration_Sequence[ButtonCtrl_Mtr_Calbration_State-BTN_ID_CTRL_RESET_POS_STEP5-1]))
+			{
+				if(ButtonCtrl_MtrAbnormal_Cnt < ButtonCtrl_MtrAbnormal_Threshold)
+				{
+					ButtonCtrl_MtrAbnormal_Cnt ++;
+				}
+			}
+			else
+			{
+				if(ButtonCtrl_MtrAbnormal_Cnt > 0)
+				{
+					ButtonCtrl_MtrAbnormal_Cnt --;
+				}
+			}
+
+			if(ButtonCtrl_MtrAbnormal_Cnt >= ButtonCtrl_MtrAbnormal_Threshold)
+			{
+				tempval = FALSE;
+			}
+			if(	ButtonCtrl_Mtr_DelayTicks> ButtonCtrl_Mtr_ResetPos_DelayTicks)
+			{
+				tempval = FALSE;
+			}
+
+			if(CddMtr_Get_Mtr_Run_Status(ButtonCtrl_Mtr_Calibration_Sequence[ButtonCtrl_Mtr_Calbration_State-BTN_ID_CTRL_RESET_POS_STEP5-1]) == CDDMTR_MNG_STATUS_IDLE)
+			{
+				if(FALSE == ButtonCtrl_InitState) 
+				{
+					if(CDDMTR_MNG_LEARN_VALID== CddMtr_Get_LearnData_Status(ButtonCtrl_Mtr_Calibration_Sequence[ButtonCtrl_Mtr_Calbration_State-BTN_ID_CTRL_RESET_POS_STEP5-1]))
 					{
-						learning = TRUE;
+						CddMtr_Percent_Req(ButtonCtrl_Mtr_Calibration_Sequence[ButtonCtrl_Mtr_Calbration_State-BTN_ID_CTRL_RESET_POS_STEP5-1],CddMtr_Learn_End_Pos[ButtonCtrl_Mtr_Calbration_State-BTN_ID_CTRL_RESET_POS_STEP5-1]);
+						ButtonCtrl_InitState = TRUE;
+					}
+					else
+					{
+						tempval = FALSE;
 					}
 				}
-				index ++;
+				else
+				{
+					tempval = FALSE;
+				}
 			}
-
-			if(learning == FALSE)
+	
+			if(FALSE == tempval)
 			{
-				ButtonCtrl_Mtr_Calbration_State++;
+				if(ButtonCtrl_Mtr_Calbration_State <BTN_ID_CTRL_CAL_STEP5)
+				{
+					CddMtr_Learn_Req(ButtonCtrl_Mtr_Calibration_Sequence[ButtonCtrl_Mtr_Calbration_State-BTN_ID_CTRL_RESET_POS_STEP5],CDDMTR_MNG_LEARN_ENABLE);
+					CddMtr_Learn_Req(ButtonCtrl_Mtr_Calibration_Sequence[ButtonCtrl_Mtr_Calbration_State-BTN_ID_CTRL_RESET_POS_STEP5-1],CDDMTR_MNG_LEARN_DISABLE);
+					ButtonCtrl_Mtr_Calbration_State++;
+				}
+				else
+				{
+					ButtonCtrl_Mtr_Calbration_State = BTN_ID_CTRL_CAL_IDLE;
+				}
+				ButtonCtrl_Mtr_DelayTicks = 0;
+				ButtonCtrl_InitState = FALSE;
+				ButtonCtrl_MtrAbnormal_Cnt = 0;
 			}
-		}
+			else
+			{
+				ButtonCtrl_Mtr_DelayTicks++;
+			}
+		break;
+			
+		default:
+			ButtonCtrl_Mtr_Calbration_State = BTN_ID_CTRL_CAL_IDLE;
+		break;
 	}
-
-
+	
 }
 /*******************************************************************************
 * Function Name: ButtonCtrlFastSample_5ms
@@ -410,6 +514,39 @@ uint8_t ButtonCtrl_Motor_IsOk(void)
 
 	return MotorState;
 }
+/*******************************************************************************
+* Function Name: ButtonCtrlFastSample_5ms
+********************************************************************************
+*
+* Summary:
+*  This API is called from Main loop to handle Button Control state transition
+*
+* Parameters:
+*  None
+*
+* Return:
+*  None
+*
+*******************************************************************************/
+uint8_t ButtonCtrl_MotorRun_IsOk(uint8_t fl_Mtr_Id)
+{
+	uint8_t MotorState = TRUE;
+
+	if(CDDMTR_MNG_HALL_NORMAL != CddMtr_Get_Hall_Fault_Status(fl_Mtr_Id))
+	{
+		MotorState = FALSE;
+	}
+
+	if(ButtonCtrl_Mtr_RunMin_CurrentVal >= CddMtr_Get_Mtr_Current_Val(fl_Mtr_Id))
+	{
+		MotorState = FALSE;
+	}
+
+	return MotorState;
+}
+
+
+
 
 /*******************************************************************************
 * Function Name: ButtonCtrlFastSample_5ms
@@ -734,13 +871,13 @@ void ButtonCtrl_NoMtr_EventProcess(void)
 	}
 	if(ButtonCtrl_Req.Massage.ReqActive == BTNVAL_ON)
 	{
-		if(ButtonCtrl_Req.Ventilation.ButtonVal <= 3)
+		if(ButtonCtrl_Req.Massage.ButtonVal <= 3)
 		{
-			LIN_CMD2_Data.SCM_L_SCM_msg.L_mode = ButtonCtrl_Req.Ventilation.ButtonVal;
-			Button_Mode[2] = ButtonCtrl_Req.Ventilation.ButtonVal;
+			LIN_CMD2_Data.SCM_L_SCM_msg.L_mode = ButtonCtrl_Req.Massage.ButtonVal;
+			Button_Mode[2] = ButtonCtrl_Req.Massage.ButtonVal;
 		}
 
-		if(ButtonCtrl_Req.Ventilation.ButtonVal != 0)
+		if(ButtonCtrl_Req.Massage.ButtonVal != 3)
 		{
 			LIN_CMD2_Data.SCM_L_SCM_msg.L_Func = TRUE;
 			Button_Mode[3] = TRUE;

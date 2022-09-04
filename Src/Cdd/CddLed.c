@@ -116,6 +116,23 @@ void CddLed_Covert(void)
 	}
 }
 
+uint8_t CddLed_Get_Req(void)
+{
+	uint8_t Req;
+
+	if(CddLed_Req_State == 0xAA55)
+	{
+		Req= TRUE;
+	}
+	else
+	{
+		Req= FALSE;
+	}
+
+	return Req;
+}
+
+
 
 /**********************************************************************************************************************
  *  END OF FILE: CddLed.c

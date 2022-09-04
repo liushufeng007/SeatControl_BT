@@ -42,15 +42,15 @@ uint32_t cpuload_min_percent = 0xFFFFFFFF;
 uint32_t cpuload_max_percent = 0;
 uint32_t cpuload_min_stamp = 0xffffffff;
 
-const uint32_t cpuload_threshold = 7;//3.5us
-const uint32_t cpuload_ResetThreshold = 33;//1s
+const uint32_t cpuload_threshold = 28;//3.5us
+const uint32_t cpuload_ResetThreshold = 9;//81ms
 
 void ATIM_Init(void)
 {
     FL_ATIM_InitTypeDef        InitStructer;
 
     InitStructer.clockSource           = FL_CMU_ATIM_CLK_SOURCE_APBCLK;  /* 时钟源选择APB2 */
-    InitStructer.prescaler             = 31;                              /* 分频系数8 */
+    InitStructer.prescaler             = 7;                              /* 分频系数8 */
     InitStructer.counterMode           = FL_ATIM_COUNTER_DIR_DOWN;         /* 向上计数 */
     InitStructer.autoReload            = 0xFFFF;                            /* 自动重装载值1000 */
     InitStructer.clockDivision         = FL_ATIM_CLK_DIVISION_DIV1;      /* 死区和滤波设置 */
@@ -100,7 +100,7 @@ void CpuLoad_Task( void *pvParameters )
 			if(cpuload_reset_counter > cpuload_ResetThreshold)
 			{
 				cpuload_reset_counter = 0;
-				cpuload_percent = cpuload_total  / 21626;
+				cpuload_percent = cpuload_total  / 6553;
 				cpuload_total = 0;
 				if(cpuload_max_percent < cpuload_percent)
 				{
@@ -140,7 +140,7 @@ void System_StarOsTask(void)
             NULL);
     }
 	
-    xTaskCreate(CpuLoad_Task,"cpuload",100,(void *)i,0,NULL);
+    //xTaskCreate(CpuLoad_Task,"cpuload",100,(void *)i,0,NULL);
  
     vTaskStartScheduler();
 }

@@ -149,8 +149,8 @@ void CddTest_Task(void)
 		Ioif_SetPinLevel(GPIO_NUMBER_32_Seat3_F_SW_IO,1);
 	}*/
 
-	fl_current_val = CddMtr_Get_Mtr_Current_Val(0);
-	fl_current_val = CddMtr_Get_Mtr_Current_Val(1);
+	//fl_current_val = CddMtr_Get_Mtr_Current_Val(0);
+	//fl_current_val = CddMtr_Get_Mtr_Current_Val(1);
 	//g_Temp_U32 = 1;
 	switch(g_Temp_U32)
 	{

@@ -22,7 +22,7 @@
 #define CDDMTR_MNG_DELAY_300MS          (300/CDDMTR_MNG_TASK_PERIOD)
 #define CDDMTR_MNG_DELAY_1000MS         (1000/CDDMTR_MNG_TASK_PERIOD)
 #define CDDMTR_MNG_DELAY_1500MS         (1500/CDDMTR_MNG_TASK_PERIOD)
-#define CDDMTR_MNG_DELAY_30S            (30000/CDDMTR_MNG_TASK_PERIOD)
+#define CDDMTR_MNG_DELAY_30S            (90000/CDDMTR_MNG_TASK_PERIOD)
 
 
 #define CDDMTR_MNG_MAX_PERCENT          (10000)
@@ -42,9 +42,9 @@
 
 #define CDDMTR_MNG_MAIN_E2_ADDR         (0)
 
-#define CDDMTR_MNG_7V_AD_VAL            (800)
-#define CDDMTR_MNG_8V_AD_VAL            (1000)
-#define CDDMTR_MNG_9V_AD_VAL            (1293)
+#define CDDMTR_MNG_7V_AD_VAL            (550)
+#define CDDMTR_MNG_8V_AD_VAL            (616)
+#define CDDMTR_MNG_9V_AD_VAL            (732)
 #define CDDMTR_MNG_STOP_VOL             (7000)
 #define CDDMTR_MNG_START_VOL             (8000)
 #define CDDMTR_MNG_VOL_LVI_FILTER            (20)
@@ -194,6 +194,8 @@ extern uint16_t CddMtr_Get_Mtr_PosPercent(uint8_t fl_Mtr_Id);
 
 extern uint8_t CddMtr_Get_SleepCondition(void);
 extern 	uint8_t CddMtr_Get_Mtr_Learning_Status(uint8_t fl_Mtr_Id);
+extern 	uint8_t CddMtr_Get_Mtr_Run_Status(uint8_t fl_Mtr_Id);
+
 #endif
 
 /*EOF*/

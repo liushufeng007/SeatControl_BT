@@ -19,7 +19,7 @@
 #define CDDBT616_TASK_PERIOD          10  /*unit:ms*/
 
 #define CDDBT616_TX_PERIOD            (500/UARTIF_TASK_PERIOD)
-
+#define CDDBT616_CONNECT_DELAY            (2000/UARTIF_TASK_PERIOD)
 
 #define  BT_Connected()   (Ioif_GetPinLevel(GPIO_NUMBER_E1_BEL_STATUS)== TRUE)
 
@@ -27,6 +27,8 @@
 #define CDDBT616_STATE_DELAY   500
 
 #define ID_OFFSET  7
+
+#define MSG_SIZE  15
 /*******************************************************************************
 |    Enum Definition
 |******************************************************************************/
@@ -67,6 +69,7 @@ typedef struct
 	Uartif_Msg_Str        txst;
 	uint16_t              Txticks;
 	uint16_t              delayticks;
+	uint16_t              Connectdelayticks;
 	uint16_t              statedelayticks;
 }CddBT616_Main_Ctrl_Str;
 

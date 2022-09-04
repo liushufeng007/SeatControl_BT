@@ -47,7 +47,7 @@ uint8_t  CddBT616_Trgger_Flag = FALSE;
 
 const uint8_t BT_cmd_to_Button_ID[][3] = 
 {
-	0xA0, 0  , 0,
+	0xA0, BTN_ID_CTRL_OFF_e  , 0,
 	0xA1, BTN_ID_CTRL_MODE_ZERO_GRAVITY_e  , 0,
 	0xA2, BTN_ID_CTRL_MODE_DRIVERIESS_CAR_e  , 0,
 	0xA3, BTN_ID_CTRL_MODE_MEETING_e  , 0,
@@ -75,10 +75,10 @@ const uint8_t BT_cmd_to_Button_ID[][3] =
 	0xE2, BTN_ID_CTRL_VENTILITION_e  , 2,
 	0xE3, BTN_ID_CTRL_VENTILITION_e  , 3,
 
-	0xD0, BTN_ID_CTRL_MASSAGE_e  , 0,
-	0xD1, BTN_ID_CTRL_MASSAGE_e  , 1,
-	0xD2, BTN_ID_CTRL_MASSAGE_e  , 2,
-	0xD3, BTN_ID_CTRL_MASSAGE_e  , 3,
+	0xD0, BTN_ID_CTRL_MASSAGE_e  , 3,
+	0xD1, BTN_ID_CTRL_MASSAGE_e  , 0,
+	0xD2, BTN_ID_CTRL_MASSAGE_e  , 1,
+	0xD3, BTN_ID_CTRL_MASSAGE_e  , 2,
 	
 };
 
@@ -212,7 +212,7 @@ void CddBT616_init(void)
 
 	Ioif_SetPinLevel(GPIO_NUMBER_E3_BLE_RESET,TRUE);
 	memset(&CddBT616_Main_Ctrl,0,sizeof(CddBT616_Main_Ctrl)); 
-	CddBT616_Main_Ctrl.txst.DLC = 15;
+	CddBT616_Main_Ctrl.txst.DLC = MSG_SIZE+1;
 	CddBT616_Main_Ctrl.txst.Data[index++] = 0x75;
 	CddBT616_Main_Ctrl.txst.Data[index++] = 0x78;
 	
@@ -231,7 +231,8 @@ void CddBT616_init(void)
 	CddBT616_Main_Ctrl.txst.Data[index++] = 0xFF;
 	CddBT616_Main_Ctrl.txst.Data[index++] = 0xFF;
 	CddBT616_Main_Ctrl.txst.Data[index++] = 0xFF;
-
+	CddBT616_Main_Ctrl.txst.Data[index++] = 0xFF;
+	
 	CddBT616_Main_Ctrl.txst.Data[index] = CddBT616_Cal_Parity(CddBT616_Main_Ctrl.txst.Data,index);
 	
 	CddBT616_Trgger_Flag = FALSE;
@@ -301,7 +302,7 @@ void CddBT616_Update_Signal(void)
 	
 	index++;
 #if(SCM_SEATCONTROL_VARIANT == SCM_R_VARIANT)
-	if(LIN_CMD6_Data.SCM_Fan_SCM_msg.Fan_Pwm > 50 )
+	if(LIN_CMD6_Data.SCM_Fan_SCM_msg.Fan_Pwm > 0 )
 	{
 		CddBT616_Main_Ctrl.txst.Data[index++] = 0xE1;
 	}
@@ -314,12 +315,12 @@ void CddBT616_Update_Signal(void)
 
 	switch (mode)
 	{
-		case BTN_ID_CTRL_MODE_ZERO_GRAVITY_e: CddBT616_Main_Ctrl.txst.Data[index++] = 0xA0;   break;
-		case BTN_ID_CTRL_MODE_DRIVERIESS_CAR_e: CddBT616_Main_Ctrl.txst.Data[index++] = 0xA1;   break;
-		case BTN_ID_CTRL_MODE_MEETING_e:  CddBT616_Main_Ctrl.txst.Data[index++] = 0xA2;  break;
-		case BTN_ID_CTRL_MODE_LEISURE_e:  CddBT616_Main_Ctrl.txst.Data[index++] = 0xA3;  break;
-		case BTN_ID_CTRL_OFF_e:  CddBT616_Main_Ctrl.txst.Data[index++] = 0xA4;  break;
-		case BTN_ID_CTRL_MOVIE_e: CddBT616_Main_Ctrl.txst.Data[index++] = 0xA5;   break;
+		case BTN_ID_CTRL_MODE_ZERO_GRAVITY_e: CddBT616_Main_Ctrl.txst.Data[index++] = 0xA1;   break;
+		case BTN_ID_CTRL_MODE_DRIVERIESS_CAR_e: CddBT616_Main_Ctrl.txst.Data[index++] = 0xA2;   break;
+		case BTN_ID_CTRL_MODE_MEETING_e:  CddBT616_Main_Ctrl.txst.Data[index++] = 0xA3;  break;
+		case BTN_ID_CTRL_MODE_LEISURE_e:  CddBT616_Main_Ctrl.txst.Data[index++] = 0xA4;  break;
+		case BTN_ID_CTRL_OFF_e:  CddBT616_Main_Ctrl.txst.Data[index++] = 0xA0;  break;
+		case BTN_ID_CTRL_MOVIE_e: CddBT616_Main_Ctrl.txst.Data[index++] = 0xA0;   break;
 		case BTN_ID_CTRL_SLEEP_e:  CddBT616_Main_Ctrl.txst.Data[index++] = 0xA0;  break;
 		case BTN_ID_CTRL_PREPARE_MEAL_e:  CddBT616_Main_Ctrl.txst.Data[index++] = 0xA0;  break;
 
@@ -340,28 +341,30 @@ void CddBT616_Update_Signal(void)
 
 	if(LIN_CMD4_Data.SCM_R_SCM_msg.R_mode_State ==0 )
 	{
-		CddBT616_Main_Ctrl.txst.Data[index++] = 0xD0;
+		CddBT616_Main_Ctrl.txst.Data[index++] = 0xD1;
 	}
 	else if(LIN_CMD4_Data.SCM_R_SCM_msg.R_mode_State ==1 )
 	{
-		CddBT616_Main_Ctrl.txst.Data[index++] = 0xD1;
+		CddBT616_Main_Ctrl.txst.Data[index++] = 0xD2;
 	}
 	else if(LIN_CMD4_Data.SCM_R_SCM_msg.R_mode_State ==2 )
 	{
-		CddBT616_Main_Ctrl.txst.Data[index++] = 0xD2;
+		CddBT616_Main_Ctrl.txst.Data[index++] = 0xD3;
 	}
 	else if(LIN_CMD4_Data.SCM_R_SCM_msg.R_mode_State ==3 )
 	{
-		CddBT616_Main_Ctrl.txst.Data[index++] = 0xD3;
+		CddBT616_Main_Ctrl.txst.Data[index++] = 0xD0;
 	}
 	else
 	{
 		CddBT616_Main_Ctrl.txst.Data[index++] = 0xFF;
 	}
+
 	
+	CddBT616_Main_Ctrl.txst.Data[index++] = CddLed_Get_Req();
 
 #else
-	if(LIN_CMD5_Data.SCM_Fan_SCM_msg.Fan_Pwm > 50 )
+	if(LIN_CMD5_Data.SCM_Fan_SCM_msg.Fan_Pwm > 0 )
 	{
 		CddBT616_Main_Ctrl.txst.Data[index++] = 0xE1;
 	}
@@ -374,12 +377,12 @@ void CddBT616_Update_Signal(void)
 
 	switch (mode)
 	{
-		case BTN_ID_CTRL_MODE_ZERO_GRAVITY_e: CddBT616_Main_Ctrl.txst.Data[index++] = 0xA0;   break;
-		case BTN_ID_CTRL_MODE_DRIVERIESS_CAR_e: CddBT616_Main_Ctrl.txst.Data[index++] = 0xA1;   break;
-		case BTN_ID_CTRL_MODE_MEETING_e:  CddBT616_Main_Ctrl.txst.Data[index++] = 0xA2;  break;
-		case BTN_ID_CTRL_MODE_LEISURE_e:  CddBT616_Main_Ctrl.txst.Data[index++] = 0xA3;  break;
-		case BTN_ID_CTRL_OFF_e:  CddBT616_Main_Ctrl.txst.Data[index++] = 0xA4;  break;
-		case BTN_ID_CTRL_MOVIE_e: CddBT616_Main_Ctrl.txst.Data[index++] = 0xA5;   break;
+		case BTN_ID_CTRL_MODE_ZERO_GRAVITY_e: CddBT616_Main_Ctrl.txst.Data[index++] = 0xA1;   break;
+		case BTN_ID_CTRL_MODE_DRIVERIESS_CAR_e: CddBT616_Main_Ctrl.txst.Data[index++] = 0xA2;   break;
+		case BTN_ID_CTRL_MODE_MEETING_e:  CddBT616_Main_Ctrl.txst.Data[index++] = 0xA3;  break;
+		case BTN_ID_CTRL_MODE_LEISURE_e:  CddBT616_Main_Ctrl.txst.Data[index++] = 0xA4;  break;
+		case BTN_ID_CTRL_OFF_e:  CddBT616_Main_Ctrl.txst.Data[index++] = 0xA0;  break;
+		case BTN_ID_CTRL_MOVIE_e: CddBT616_Main_Ctrl.txst.Data[index++] = 0xA0;   break;
 		case BTN_ID_CTRL_SLEEP_e:  CddBT616_Main_Ctrl.txst.Data[index++] = 0xA0;  break;
 		case BTN_ID_CTRL_PREPARE_MEAL_e:  CddBT616_Main_Ctrl.txst.Data[index++] = 0xA0;  break;
 
@@ -402,26 +405,26 @@ void CddBT616_Update_Signal(void)
 
 	if(LIN_CMD3_Data.SCM_L_SCM_msg.L_mode_State ==0 )
 	{
-		CddBT616_Main_Ctrl.txst.Data[index++] = 0xD0;
+		CddBT616_Main_Ctrl.txst.Data[index++] = 0xD1;
 	}
 	else if(LIN_CMD3_Data.SCM_L_SCM_msg.L_mode_State ==1 )
 	{
-		CddBT616_Main_Ctrl.txst.Data[index++] = 0xD1;
+		CddBT616_Main_Ctrl.txst.Data[index++] = 0xD2;
 	}
 	else if(LIN_CMD3_Data.SCM_L_SCM_msg.L_mode_State ==2 )
 	{
-		CddBT616_Main_Ctrl.txst.Data[index++] = 0xD2;
+		CddBT616_Main_Ctrl.txst.Data[index++] = 0xD3;
 	}
 	else if(LIN_CMD3_Data.SCM_L_SCM_msg.L_mode_State ==3 )
 	{
-		CddBT616_Main_Ctrl.txst.Data[index++] = 0xD3;
+		CddBT616_Main_Ctrl.txst.Data[index++] = 0xD0;
 	}
 	else
 	{
 		CddBT616_Main_Ctrl.txst.Data[index++] = 0xFF;
 	}
 	
-
+	CddBT616_Main_Ctrl.txst.Data[index++] = CddLed_Get_Req();
 #endif	
 
 }
@@ -567,6 +570,7 @@ void CddBT616_Task(void)
 			if(BT_Connected())
 			{
 				CddBT616_Main_Ctrl.State = BT616_WORK_COM;
+				CddBT616_Main_Ctrl.Connectdelayticks = 0;
 			}
 			CddBT616_Main_Ctrl.Txticks = 0;
 		}
@@ -577,17 +581,22 @@ void CddBT616_Task(void)
 			if(!BT_Connected())
 			{
 				CddBT616_Main_Ctrl.State = BT616_WORK_CHECK_CONNECT;
+				CddBT616_Main_Ctrl.Connectdelayticks = 0;
 			}
 			else
 			{
-				if((CddBT616_Main_Ctrl.Txticks++ > CDDBT616_TX_PERIOD) || (CddBT616_Trgger_Flag))
+				if(CddBT616_Main_Ctrl.Connectdelayticks < CDDBT616_CONNECT_DELAY)
+				{
+					CddBT616_Main_Ctrl.Connectdelayticks++;
+				}
+				else if((CddBT616_Main_Ctrl.Txticks++ > CDDBT616_TX_PERIOD) || (CddBT616_Trgger_Flag))
 				{					
 					CddBT616_Main_Ctrl.Txticks = 0;
 					CddBT616_Trgger_Flag = FALSE;
 					
 					CddBT616_Update_Signal();
 					memcpy(&fl_str_e,&CddBT616_Main_Ctrl.txst,sizeof(fl_str_e));
-					fl_str_e.Data[14] = CddBT616_Cal_Parity(fl_str_e.Data,14);
+					fl_str_e.Data[MSG_SIZE] = CddBT616_Cal_Parity(fl_str_e.Data,MSG_SIZE);
 					Uartif_tx_queue_push_e(fl_str_e);
 				}
 				

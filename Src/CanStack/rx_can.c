@@ -221,7 +221,8 @@ void update_can_signal(void)
 		switch(Btn_Signal_Group[index])
 		{
 #if(SCM_SEATCONTROL_VARIANT == SCM_R_VARIANT)
-			case 0:   btn.ButtonId = BTN_ID_CTRL_OFF_e; break;
+            /*cancel prepare off button @20220-9-3 from xuyan*/
+			/*case 0:   btn.ButtonId = BTN_ID_CTRL_OFF_e; break;  */
 			case 1:   btn.ButtonId = BTN_ID_CTRL_PREPARE_MEAL_e; break;
 #endif			
 			case 2:   btn.ButtonId = BTN_ID_CTRL_OFF_e;break;
@@ -270,11 +271,11 @@ void update_can_signal(void)
 		temp = TRUE;
 		switch(Btn_Signal_Group[index])
 		{
-			case 0:   btn.ButtonVal = 0; break;
-			case 1:   btn.ButtonVal = 1; break;
+			case 0:   btn.ButtonVal = DIRECTION_REAR;btn.ButtonId =BTN_ID_CTRL_POS_FRONT_REAR_e;; break;
+			case 1:   btn.ButtonVal = 50            ;btn.ButtonId =BTN_ID_CTRL_POS_FRONT_REAR_e; break;
 			default: temp = FALSE;break;
 		}
-		btn.ButtonId =BTN_ID_CTRL_LED_e;
+
 		if(temp)
 		{
 			ButtonCtrl_queue_push_e(btn);
