@@ -18,6 +18,7 @@ typedef enum{
 	BT_Fatigue_e,
 	BT_Welcome_e,
 	BT_Conference_Mode_e,
+	BT_Crc_e,
 	BT_SIGNAL_GROUP_NUM
 }BT_Signal_type_e;
 

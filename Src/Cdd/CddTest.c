@@ -114,7 +114,7 @@ void CddEeprom_Test(void)
 	}
 	
 
-	tempData = CddEeprom_Req_Write((uint8_t)EEPROM_BANK_MOTOR,(uint16_t)0,(uint16_t)TEST_WORDS,CddEeprom_Callback,g_testA);
+	tempData = CddEeprom_Req_Write((uint8_t)EEPROM_BANK_APP,(uint16_t)0,(uint16_t)TEST_WORDS,CddEeprom_Callback,g_testA);
 	if(!tempData)
 	{
 

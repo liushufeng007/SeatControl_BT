@@ -72,12 +72,12 @@ typedef enum
 #define DIRECTION_REAR   ((uint8_t)0xA5)
 #define DIRECTION_STOP   ((uint8_t)0xAF)
 
-#define STOP_BTN_TIMEOUT 30
+#define STOP_BTN_TIMEOUT 6
 
 
 #define MAX_SAVE_NUMBER 8
 
-#define MOTOR_ACTION_MAX_TICKS   600   /*30 second*/
+#define MOTOR_ACTION_MAX_TICKS   1800   /*30 second*/
 
 typedef struct
 {

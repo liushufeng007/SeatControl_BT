@@ -1241,7 +1241,11 @@ CddMtr_Mng_Main_Status_e  CddMtr_Mng_handle_Stop(uint8_t fl_Mtr_Id)
 		return CDDMTR_MNG_STATUS_IDLE;
 	}
 }
-CddMtr_Mng_Main_Status_e  CddMtr_Mng_handle_exit_Stop(uint8_t fl_Mtr_Id){return CDDMTR_MNG_STATUS_IDLE;}
+CddMtr_Mng_Main_Status_e  CddMtr_Mng_handle_exit_Stop(uint8_t fl_Mtr_Id)
+{
+	CddMtr_Update_Mtr_E2_Ckc(fl_Mtr_Id);
+	return CDDMTR_MNG_STATUS_IDLE;
+}
 
 CddMtr_Mng_Main_Status_e  CddMtr_Mng_handle_en_LEARN_1_DELAY(uint8_t fl_Mtr_Id)
 {
