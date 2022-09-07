@@ -58,7 +58,7 @@ extern uint8_t  	Eeprom_Req_W_Flag_u8[EEPROM_BANK_NUMBER];
 extern uint16_t  	Eeprom_Req_Addr_u16[EEPROM_BANK_NUMBER];
 extern uint16_t  	Eeprom_Req_Len_u16[EEPROM_BANK_NUMBER];
 extern func_ptr     Eeprom_Callback_Arr[EEPROM_BANK_NUMBER];
-extern uint16_t     Ram_Mirror_Chk_u16[SWEEPROM_SIZE_FBL];
+extern uint16_t     Ram_Mirror_Chk_u16[EEPROM_BANK_NUMBER][SWEEPROM_SIZE_FBL];
 
 /*******************************************************************************
 |    Global Function Prototypes

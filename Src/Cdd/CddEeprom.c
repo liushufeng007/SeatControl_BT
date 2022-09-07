@@ -133,7 +133,7 @@ static void CddEeprom_Bank_Handle(uint8_t       BankId)
 		break;
 		
 		case EEPROM_BANK_WRITE_STEP_READ:
-			if(FL_PASS == SWEEPROM_Read(*(Eeprom_Mgn_Ctrl[BankId].Addr) , (uint16_t *)&Ram_Mirror_Chk_u16[*(Eeprom_Mgn_Ctrl[BankId].Addr)], *(Eeprom_Mgn_Ctrl[BankId].Length),BankId))
+			if(FL_PASS == SWEEPROM_Read(*(Eeprom_Mgn_Ctrl[BankId].Addr) , (uint16_t *)&Ram_Mirror_Chk_u16[BankId][*(Eeprom_Mgn_Ctrl[BankId].Addr)], *(Eeprom_Mgn_Ctrl[BankId].Length),BankId))
 			{
 				Eeprom_BanK_Mng_Step[BankId] = EEPROM_BANK_WRITE_STEP_CHECK;
 			}
@@ -145,7 +145,7 @@ static void CddEeprom_Bank_Handle(uint8_t       BankId)
 		break;
 		
 		case EEPROM_BANK_WRITE_STEP_CHECK:
-			if(0 != memcmp(Eeprom_Mgn_Ctrl[BankId].Ram_Mirror_Ptr + *(Eeprom_Mgn_Ctrl[BankId].Addr),&Ram_Mirror_Chk_u16[*Eeprom_Mgn_Ctrl[BankId].Addr],*Eeprom_Mgn_Ctrl[BankId].Length))
+			if(0 != memcmp(Eeprom_Mgn_Ctrl[BankId].Ram_Mirror_Ptr + *(Eeprom_Mgn_Ctrl[BankId].Addr),&Ram_Mirror_Chk_u16[BankId][*Eeprom_Mgn_Ctrl[BankId].Addr],*Eeprom_Mgn_Ctrl[BankId].Length))
 			{
 				CddEeprom_Error_Handle();
 			}

@@ -57,13 +57,15 @@ const uint16_t CddMtr_Mng_Battery_Compensate_Tbl[11][2] =
 const CddMtr_Mng_Threshold_Ad_Str CddMtr_Mng_Ad_Threshold_Tbl[CDDMTR_HFKF_MAX_NUM] = 
 {
 /*cpunt step ,stuck ad   , short to battery */
-	280,  280, 552 , 990,  100 , 
+	//280,  280, 552 , 990,  100 , 
+	280,  280, 798 , 990,  100 , //临时测试数据，滑轨滑丝，
 	280,  280, 798  , 990,  100 , 
 	280,  280, 307 , 990,  100 , 
 	280,  280, 798 , 990,  100 ,
-	280,  280, 798 , 990,  100 , 
+	280,  280, 552 , 990,  100 , 
 	280,  280, 798 , 990,  100 ,
 };
+
 
 
 const uint8_t CddMtr_Mng_Ad_Ch_Map[CDDMTR_HFKF_MAX_NUM][4] = 

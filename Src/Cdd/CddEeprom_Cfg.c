@@ -46,7 +46,7 @@ uint16_t    Ram_Mirror_Motor_u16[SWEEPROM_SIZE_MOTOR];
 uint16_t    Ram_Mirror_App_u16[SWEEPROM_SIZE_APP];
 uint16_t    Ram_Mirror_Diag_u16[SWEEPROM_SIZE_DIAG];
 uint16_t    Ram_Mirror_Fbl_u16[SWEEPROM_SIZE_FBL];
-uint16_t    Ram_Mirror_Chk_u16[SWEEPROM_SIZE_FBL];
+uint16_t    Ram_Mirror_Chk_u16[EEPROM_BANK_NUMBER][SWEEPROM_SIZE_FBL];
 
 
   

@@ -117,15 +117,20 @@ void Message_variable_init(void)
 void Rx_VCU_DDSS_func(void)
 {
 	msg_DDSS_never_recvd = FALSE;
+	
+#if(SCM_SEATCONTROL_VARIANT == SCM_L_VARIANT)
 	Btn_Signal_Group[BT_Welcome_e] = il_rx_VCU_DDSS_msg.VCU_DDSS_msg.welcome_state1;
+#endif
 }
 
 void Rx_ABM_VIST_func(void)
 {
 	msg_VIST_never_recvd = FALSE;
+#if(SCM_SEATCONTROL_VARIANT == SCM_L_VARIANT)
 	Btn_Signal_Group[BT_Angle_e] = il_rx_ABM_VIST_msg.ABM_VIST_msg.angle;
 	Btn_Signal_Group[BT_Fatigue_e] = il_rx_ABM_VIST_msg.ABM_VIST_msg.fatigue;
 	Btn_Signal_Group[BT_Pos_e] = il_rx_ABM_VIST_msg.ABM_VIST_msg.pos;
+#endif
 	Btn_Signal_Group[BT_Scene_Mode_e] = il_rx_ABM_VIST_msg.ABM_VIST_msg.Scene_mode;
 }
 

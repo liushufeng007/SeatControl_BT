@@ -82,33 +82,33 @@ BTN_ID_CTRL_PREPARE_MEAL_e,
 const uint8_t ButtonCtrl_ExitReq_Active_Convert_Table[MAX_SAVE_NUMBER][6] = 
 {
 /*frontrear 	 |	  Back_Angle  |  Rotate 		|  Head 		   | Leg			  |   Total Angle	 */  
-BTNVAL_ON,    BTNVAL_ON,		BTNVAL_OFF,    BTNVAL_ON,	 BTNVAL_ON,	 BTNVAL_ON,
-BTNVAL_ON,	  BTNVAL_ON,		BTNVAL_OFF,    BTNVAL_ON,	 BTNVAL_ON,  BTNVAL_ON,
+BTNVAL_OFF,    BTNVAL_ON,		BTNVAL_OFF,    BTNVAL_ON,	 BTNVAL_ON,	 BTNVAL_ON,
+BTNVAL_OFF,	   BTNVAL_ON,		BTNVAL_OFF,    BTNVAL_ON,	 BTNVAL_ON,  BTNVAL_ON,
 
-BTNVAL_ON,    BTNVAL_ON,		BTNVAL_OFF,    BTNVAL_ON,	 BTNVAL_ON,	 BTNVAL_ON,
+BTNVAL_OFF,    BTNVAL_ON,		BTNVAL_OFF,    BTNVAL_ON,	 BTNVAL_ON,	 BTNVAL_ON,
 
-BTNVAL_ON,    BTNVAL_ON,		BTNVAL_OFF,    BTNVAL_ON,	 BTNVAL_ON,	 BTNVAL_ON,
-BTNVAL_ON,	  BTNVAL_ON,		BTNVAL_OFF,    BTNVAL_ON,	 BTNVAL_ON,  BTNVAL_ON,
-BTNVAL_ON,	  BTNVAL_ON,		BTNVAL_OFF,    BTNVAL_ON,	 BTNVAL_ON,  BTNVAL_ON,
+BTNVAL_OFF,    BTNVAL_ON,		BTNVAL_OFF,    BTNVAL_ON,	 BTNVAL_ON,	 BTNVAL_ON,
+BTNVAL_OFF,	   BTNVAL_ON,		BTNVAL_OFF,    BTNVAL_ON,	 BTNVAL_ON,  BTNVAL_ON,
+BTNVAL_OFF,	   BTNVAL_ON,		BTNVAL_OFF,    BTNVAL_ON,	 BTNVAL_ON,  BTNVAL_ON,
 
-BTNVAL_ON,    BTNVAL_ON,		BTNVAL_OFF,    BTNVAL_ON,	 BTNVAL_ON,	 BTNVAL_ON,
-BTNVAL_ON,	  BTNVAL_ON,		BTNVAL_OFF,    BTNVAL_ON,	 BTNVAL_ON,  BTNVAL_ON,
+BTNVAL_OFF,    BTNVAL_ON,		BTNVAL_OFF,    BTNVAL_ON,	 BTNVAL_ON,	 BTNVAL_ON,
+BTNVAL_OFF,	   BTNVAL_ON,		BTNVAL_OFF,    BTNVAL_ON,	 BTNVAL_ON,  BTNVAL_ON,
 };
 
 const uint8_t ButtonCtrl_ExitReq_Val_Convert_Table[MAX_SAVE_NUMBER][6] = 
 {
 /*frontrear 	 |	  Back_Angle  |  Rotate 		|  Head 		   | Leg			  |   Total Angle	 */  
-100,   100,	 100, 	100,	100 , 	100,	  
-100,   100,  100,	100,	100 ,	100,
+100,   80,	 100, 	100,	100 , 	100,	  
+100,   80,  100,	100,	100 ,	100,
 
-100,   100,	 100, 	100,	100 , 	100,
+100,   80,	 100, 	100,	100 , 	100,
 
-100,   100,	 100, 	100,	100 , 	100,
-100,   100,  100,	100,	100 ,	100,
-100,   100,  100,	100,	100 ,	100,
+100,   80,	 100, 	100,	100 , 	100,
+100,   80,  100,	100,	100 ,	100,
+100,   80,  100,	100,	100 ,	100,
 
-100,   100,	 100, 	100,	100 , 	100,
-100,   100,  100,	100,	100 ,	100,
+100,   80,	 100, 	100,	100 , 	100,
+100,   80,  100,	100,	100 ,	100,
 };
 
 
@@ -195,33 +195,33 @@ BTNVAL_ON,	  BTNVAL_ON,	BTNVAL_ON,	  BTNVAL_ON ,	 BTNVAL_ON, 	 BTNVAL_ON,
 const uint8_t ButtonCtrl_Req_Val_Convert_Table[MAX_SAVE_NUMBER][6] = 
 {
 /*frontrear      |    Back_Angle  |  Rotate         |  Head            | Leg              |   Total Angle    */  
-	100,   100,  100,	100,	100 ,	100,	  
-	100,   100,  100,	100,	100 ,	100,
+	100,   80,  100,	100,	100 ,	100,	  
+	100,   80,  100,	100,	100 ,	100,
 	
-	100,   100,  100,	100,	100 ,	100,
+	100,   80,  100,	100,	100 ,	100,
 	
-	100,   100,  100,	100,	100 ,	100,
-	100,   100,  100,	100,	100 ,	100,
-	100,   100,  100,	100,	100 ,	100,
+	100,   80,  100,	100,	100 ,	100,
+	100,   80,  100,	100,	100 ,	100,
+	100,   80,  100,	100,	100 ,	100,
 	
-	100,   100,  100,	100,	100 ,	100,
-	100,   100,  100,	100,	100 ,	100
+	100,   80,  100,	100,	100 ,	100,
+	100,   80,  100,	100,	100 ,	100
 };
 
 
 uint16_t ButtonCtrl_ModePos[MAX_SAVE_NUMBER][MODE_POS_LEN] = 
 {
-	100,   100,  100,	100,	100 ,	100,	  
-	100,   100,  100,	100,	100 ,	100,
+	100,   80,  100,	100,	100 ,	100,	  
+	100,   80,  100,	100,	100 ,	100,
 	
-	100,   100,  100,	100,	100 ,	100,
+	100,   80,  100,	100,	100 ,	100,
 	
-	100,   100,  100,	100,	100 ,	100,
-	100,   100,  100,	100,	100 ,	100,
-	100,   100,  100,	100,	100 ,	100,
+	100,   80,  100,	100,	100 ,	100,
+	100,   80,  100,	100,	100 ,	100,
+	100,   80,  100,	100,	100 ,	100,
 	
-	100,   100,  100,	100,	100 ,	100,
-	100,   100,  100,	100,	100 ,	100
+	100,   80,  100,	100,	100 ,	100,
+	100,   80,  100,	100,	100 ,	100
 };
 
 

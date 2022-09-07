@@ -304,7 +304,7 @@ void CddBT616_Update_Signal(void)
 	
 	index++;
 #if(SCM_SEATCONTROL_VARIANT == SCM_R_VARIANT)
-	if(LIN_CMD6_Data.SCM_Fan_SCM_msg.Fan_Pwm > 0 )
+	if(LIN_CMD5_Data.SCM_Fan_SCM_msg.Fan_Pwm > 0 )
 	{
 		CddBT616_Main_Ctrl.txst.Data[index++] = 0xE1;
 	}
@@ -312,6 +312,7 @@ void CddBT616_Update_Signal(void)
 	{
 		CddBT616_Main_Ctrl.txst.Data[index++] = 0xE0;
 	}
+
 
 	mode = ButtonCtrl_Get_CtrlMode();
 
@@ -341,19 +342,19 @@ void CddBT616_Update_Signal(void)
 		break;
 	}
 
-	if(LIN_CMD4_Data.SCM_R_SCM_msg.R_mode_State ==0 )
+	if(LIN_CMD3_Data.SCM_L_SCM_msg.L_mode_State ==0 )
 	{
 		CddBT616_Main_Ctrl.txst.Data[index++] = 0xD1;
 	}
-	else if(LIN_CMD4_Data.SCM_R_SCM_msg.R_mode_State ==1 )
+	else if(LIN_CMD3_Data.SCM_L_SCM_msg.L_mode_State ==1 )
 	{
 		CddBT616_Main_Ctrl.txst.Data[index++] = 0xD2;
 	}
-	else if(LIN_CMD4_Data.SCM_R_SCM_msg.R_mode_State ==2 )
+	else if(LIN_CMD3_Data.SCM_L_SCM_msg.L_mode_State ==2 )
 	{
 		CddBT616_Main_Ctrl.txst.Data[index++] = 0xD3;
 	}
-	else if(LIN_CMD4_Data.SCM_R_SCM_msg.R_mode_State ==3 )
+	else if(LIN_CMD3_Data.SCM_L_SCM_msg.L_mode_State ==3 )
 	{
 		CddBT616_Main_Ctrl.txst.Data[index++] = 0xD0;
 	}
@@ -629,7 +630,6 @@ void CddBT616_Task(void)
 #else
 							switch (btn.ButtonId)
 							{
-								case BTN_ID_CTRL_MODE_DRIVERIESS_CAR_e:  ; break;
 								default:ButtonCtrl_queue_push_e(btn);break;
 							}
 #endif

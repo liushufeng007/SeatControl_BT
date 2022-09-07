@@ -1379,8 +1379,8 @@ CddMtr_Mng_Main_Status_e  CddMtr_Mng_handle_LEARN_7_FORWARD(uint8_t fl_Mtr_Id)
 		else
 		{
 			CddMtr_Mng_Main_St[fl_Mtr_Id].LearnData_Status = CDDMTR_MNG_LEARN_VALID;
-			CddMtr_Mng_Main_St[fl_Mtr_Id].Target_Step = CddMtr_Learn_End_Pos[fl_Mtr_Id];
 			CddMtr_Mng_Main_St[fl_Mtr_Id].Cal_Max_Step = CddMtr_Mng_Main_St[fl_Mtr_Id].Current_Step;
+			CddMtr_Mng_Main_St[fl_Mtr_Id].Target_Step = CddMtr_Mng_Main_St[fl_Mtr_Id].Cal_Max_Step;
 			CddMtr_Update_Mtr_E2_Ckc(fl_Mtr_Id);
 			return CDDMTR_MNG_STATUS_STOP;
 		}
