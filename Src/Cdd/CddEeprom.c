@@ -80,7 +80,7 @@ void CddEeprom_Init(void)
 	SWEEPROM_Read(0,Eeprom_Mgn_Ctrl[EEPROM_BANK_MOTOR].Ram_Mirror_Ptr,Eeprom_Mgn_Ctrl[EEPROM_BANK_MOTOR].Max_Length,EEPROM_BANK_MOTOR);
 	SWEEPROM_Read(0,Eeprom_Mgn_Ctrl[EEPROM_BANK_APP].Ram_Mirror_Ptr,Eeprom_Mgn_Ctrl[EEPROM_BANK_APP].Max_Length,EEPROM_BANK_APP);
 	SWEEPROM_Read(0,Eeprom_Mgn_Ctrl[EEPROM_BANK_DIAG].Ram_Mirror_Ptr,Eeprom_Mgn_Ctrl[EEPROM_BANK_DIAG].Max_Length,EEPROM_BANK_DIAG);	
-	SWEEPROM_Read(0,Eeprom_Mgn_Ctrl[EEPROM_BANK_DIAG].Ram_Mirror_Ptr,Eeprom_Mgn_Ctrl[EEPROM_BANK_DIAG].Max_Length,EEPROM_BANK_FBL);
+	SWEEPROM_Read(0,Eeprom_Mgn_Ctrl[EEPROM_BANK_FBL].Ram_Mirror_Ptr,Eeprom_Mgn_Ctrl[EEPROM_BANK_FBL].Max_Length,EEPROM_BANK_FBL);
 
 	
 }

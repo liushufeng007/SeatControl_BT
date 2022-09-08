@@ -120,7 +120,7 @@
         <SetRegEntry>
           <Number>0</Number>
           <Key>JL2CM3</Key>
-          <Name>-U59408996 -O78 -S4 -ZTIFSpeedSel2000 -A0 -C0 -JU1 -JI127.0.0.1 -JP0 -RST2 -N00("ARM CoreSight SW-DP") -D00(0BB11477) -L00(0) -TO18 -TC10000000 -TP21 -TDS8007 -TDT0 -TDC1F -TIEFFFFFFFF -TIP8 -TB1 -TFE0 -FO23 -FD20000000 -FC1000 -FN1 -FF0FM33LG04X_FLASH256.FLM -FS00 -FL03BFFF -FP0($$Device:FM33LG04X$Flash\FM33LG04X_FLASH256.FLM)</Name>
+          <Name>-U59408996 -O78 -S4 -ZTIFSpeedSel2000 -A0 -C0 -JU1 -JI127.0.0.1 -JP0 -RST2 -N00("ARM CoreSight SW-DP") -D00(0BB11477) -L00(0) -TO18 -TC10000000 -TP21 -TDS8007 -TDT0 -TDC1F -TIEFFFFFFFF -TIP8 -TB1 -TFE0 -FO7 -FD20000000 -FC1000 -FN1 -FF0FM33LG04X_FLASH256.FLM -FS00 -FL03BFFF -FP0($$Device:FM33LG04X$Flash\FM33LG04X_FLASH256.FLM)</Name>
         </SetRegEntry>
         <SetRegEntry>
           <Number>0</Number>
@@ -159,7 +159,7 @@
           <Type>0</Type>
           <LineNumber>135</LineNumber>
           <EnabledFlag>0</EnabledFlag>
-          <Address>38210</Address>
+          <Address>38302</Address>
           <ByteObject>0</ByteObject>
           <HtxType>0</HtxType>
           <ManyObjects>0</ManyObjects>
@@ -175,7 +175,7 @@
           <Type>0</Type>
           <LineNumber>128</LineNumber>
           <EnabledFlag>0</EnabledFlag>
-          <Address>38192</Address>
+          <Address>38284</Address>
           <ByteObject>0</ByteObject>
           <HtxType>0</HtxType>
           <ManyObjects>0</ManyObjects>
@@ -191,7 +191,7 @@
           <Type>0</Type>
           <LineNumber>675</LineNumber>
           <EnabledFlag>0</EnabledFlag>
-          <Address>21974</Address>
+          <Address>22038</Address>
           <ByteObject>0</ByteObject>
           <HtxType>0</HtxType>
           <ManyObjects>0</ManyObjects>
@@ -207,7 +207,7 @@
           <Type>0</Type>
           <LineNumber>409</LineNumber>
           <EnabledFlag>0</EnabledFlag>
-          <Address>23852</Address>
+          <Address>23944</Address>
           <ByteObject>0</ByteObject>
           <HtxType>0</HtxType>
           <ManyObjects>0</ManyObjects>
@@ -222,8 +222,8 @@
           <Number>4</Number>
           <Type>0</Type>
           <LineNumber>106</LineNumber>
-          <EnabledFlag>1</EnabledFlag>
-          <Address>35132</Address>
+          <EnabledFlag>0</EnabledFlag>
+          <Address>35224</Address>
           <ByteObject>0</ByteObject>
           <HtxType>0</HtxType>
           <ManyObjects>0</ManyObjects>
@@ -237,9 +237,9 @@
         <Bp>
           <Number>5</Number>
           <Type>0</Type>
-          <LineNumber>77</LineNumber>
-          <EnabledFlag>1</EnabledFlag>
-          <Address>13598</Address>
+          <LineNumber>78</LineNumber>
+          <EnabledFlag>0</EnabledFlag>
+          <Address>13606</Address>
           <ByteObject>0</ByteObject>
           <HtxType>0</HtxType>
           <ManyObjects>0</ManyObjects>
@@ -248,14 +248,14 @@
           <BreakIfRCount>1</BreakIfRCount>
           <Filename>..\Src\Cdd\CddTest.c</Filename>
           <ExecCommand></ExecCommand>
-          <Expression>\\FM33LC0xx_Tester\../Src/Cdd/CddTest.c\77</Expression>
+          <Expression>\\FM33LC0xx_Tester\../Src/Cdd/CddTest.c\78</Expression>
         </Bp>
         <Bp>
           <Number>6</Number>
           <Type>0</Type>
-          <LineNumber>111</LineNumber>
-          <EnabledFlag>1</EnabledFlag>
-          <Address>13718</Address>
+          <LineNumber>187</LineNumber>
+          <EnabledFlag>0</EnabledFlag>
+          <Address>13994</Address>
           <ByteObject>0</ByteObject>
           <HtxType>0</HtxType>
           <ManyObjects>0</ManyObjects>
@@ -264,14 +264,14 @@
           <BreakIfRCount>1</BreakIfRCount>
           <Filename>..\Src\Cdd\CddTest.c</Filename>
           <ExecCommand></ExecCommand>
-          <Expression>\\FM33LC0xx_Tester\../Src/Cdd/CddTest.c\111</Expression>
+          <Expression>\\FM33LC0xx_Tester\../Src/Cdd/CddTest.c\187</Expression>
         </Bp>
         <Bp>
           <Number>7</Number>
           <Type>0</Type>
-          <LineNumber>145</LineNumber>
-          <EnabledFlag>1</EnabledFlag>
-          <Address>13838</Address>
+          <LineNumber>152</LineNumber>
+          <EnabledFlag>0</EnabledFlag>
+          <Address>13874</Address>
           <ByteObject>0</ByteObject>
           <HtxType>0</HtxType>
           <ManyObjects>0</ManyObjects>
@@ -280,7 +280,39 @@
           <BreakIfRCount>1</BreakIfRCount>
           <Filename>..\Src\Cdd\CddTest.c</Filename>
           <ExecCommand></ExecCommand>
-          <Expression>\\FM33LC0xx_Tester\../Src/Cdd/CddTest.c\145</Expression>
+          <Expression>\\FM33LC0xx_Tester\../Src/Cdd/CddTest.c\152</Expression>
+        </Bp>
+        <Bp>
+          <Number>8</Number>
+          <Type>0</Type>
+          <LineNumber>116</LineNumber>
+          <EnabledFlag>0</EnabledFlag>
+          <Address>13744</Address>
+          <ByteObject>0</ByteObject>
+          <HtxType>0</HtxType>
+          <ManyObjects>0</ManyObjects>
+          <SizeOfObject>0</SizeOfObject>
+          <BreakByAccess>0</BreakByAccess>
+          <BreakIfRCount>1</BreakIfRCount>
+          <Filename>..\Src\Cdd\CddTest.c</Filename>
+          <ExecCommand></ExecCommand>
+          <Expression>\\FM33LC0xx_Tester\../Src/Cdd/CddTest.c\116</Expression>
+        </Bp>
+        <Bp>
+          <Number>9</Number>
+          <Type>0</Type>
+          <LineNumber>145</LineNumber>
+          <EnabledFlag>0</EnabledFlag>
+          <Address>0</Address>
+          <ByteObject>0</ByteObject>
+          <HtxType>0</HtxType>
+          <ManyObjects>0</ManyObjects>
+          <SizeOfObject>0</SizeOfObject>
+          <BreakByAccess>0</BreakByAccess>
+          <BreakIfRCount>0</BreakIfRCount>
+          <Filename>..\Src\Cdd\CddTest.c</Filename>
+          <ExecCommand></ExecCommand>
+          <Expression></Expression>
         </Bp>
       </Breakpoint>
       <WatchWindow1>
@@ -294,6 +326,16 @@
           <WinNumber>1</WinNumber>
           <ItemText>Ram_Mirror_Chk_u16</ItemText>
         </Ww>
+        <Ww>
+          <count>2</count>
+          <WinNumber>1</WinNumber>
+          <ItemText>g_testA</ItemText>
+        </Ww>
+        <Ww>
+          <count>3</count>
+          <WinNumber>1</WinNumber>
+          <ItemText>g_testReadA</ItemText>
+        </Ww>
       </WatchWindow1>
       <WatchWindow2>
         <Ww>
@@ -304,14 +346,24 @@
         <Ww>
           <count>1</count>
           <WinNumber>2</WinNumber>
-          <ItemText>g_testA</ItemText>
+          <ItemText>Ram_Mirror_App_u16</ItemText>
+        </Ww>
+        <Ww>
+          <count>2</count>
+          <WinNumber>2</WinNumber>
+          <ItemText>Ram_Mirror_Diag_u16</ItemText>
+        </Ww>
+        <Ww>
+          <count>3</count>
+          <WinNumber>2</WinNumber>
+          <ItemText>Ram_Mirror_Fbl_u16</ItemText>
         </Ww>
       </WatchWindow2>
       <MemoryWindow1>
         <Mm>
           <WinNumber>1</WinNumber>
           <SubType>0</SubType>
-          <ItemText>0x3D000</ItemText>
+          <ItemText>0x3C000</ItemText>
           <AccSizeX>0</AccSizeX>
         </Mm>
       </MemoryWindow1>
@@ -321,7 +373,7 @@
       <DebugFlag>
         <trace>0</trace>
         <periodic>1</periodic>
-        <aLwin>1</aLwin>
+        <aLwin>0</aLwin>
         <aCover>0</aCover>
         <aSer1>0</aSer1>
         <aSer2>0</aSer2>

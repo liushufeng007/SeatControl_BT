@@ -219,6 +219,7 @@ static FL_ErrorStatus UpdateOperateAddr(uint32_t *newStartAddr, uint32_t *oldSta
 {
     FL_ErrorStatus statusRes = FL_PASS;
     uint32_t eepromEndAddr = 0;
+    uint32_t eepromnewEndAddr = 0;
     uint32_t  flag = COPY_DATA_COMPLETE_FLAG;
 
     eepromEndAddr = s_eepromStartAddr[bankId] + s_eepromPages[bankId] * FL_FLASH_PGAE_SIZE_BYTE;
@@ -230,10 +231,6 @@ static FL_ErrorStatus UpdateOperateAddr(uint32_t *newStartAddr, uint32_t *oldSta
         *newStartAddr = s_eepromStartAddr[bankId] - s_eepromPages[bankId] * FL_FLASH_PGAE_SIZE_BYTE;
         *oldStartAddr = s_eepromStartAddr[bankId];
 		/*write current block inactive flag*/
-		if (OPERATE_EEPROM_AREA_WRITED == *(uint32_t *)(eepromEndAddr - EEPROM_SPACE_FLAG_OFFSET_0))
-		{
-			statusRes = FL_FLASH_Program_Word(FLASH,eepromEndAddr - EEPROM_SPACE_FLAG_OFFSET_0, flag);
-		}
 	}
 	else
 	{
@@ -244,15 +241,6 @@ static FL_ErrorStatus UpdateOperateAddr(uint32_t *newStartAddr, uint32_t *oldSta
 			*newStartAddr = s_eepromStartAddr[bankId];
 			*oldStartAddr = s_eepromStartAddr[bankId] - s_eepromPages[bankId] * FL_FLASH_PGAE_SIZE_BYTE;
 			eepromEndAddr = s_eepromStartAddr[bankId];
-			/*write back block inactive flag*/
-			if (OPERATE_EEPROM_AREA_WRITED == *(uint32_t *)(s_eepromStartAddr[bankId] - s_eepromPages[bankId] * FL_FLASH_PGAE_SIZE_BYTE - EEPROM_SPACE_FLAG_OFFSET_0))
-			{
-				statusRes = FL_FLASH_Program_Word(FLASH,s_eepromStartAddr[bankId] - s_eepromPages[bankId] * FL_FLASH_PGAE_SIZE_BYTE - EEPROM_SPACE_FLAG_OFFSET_0, flag);
-			}
-			if (OPERATE_EEPROM_AREA_WRITED == *(uint32_t *)(s_eepromStartAddr[bankId] - s_eepromPages[bankId] * FL_FLASH_PGAE_SIZE_BYTE - EEPROM_SPACE_FLAG_OFFSET_1))
-			{
-				statusRes = FL_FLASH_Program_Word(FLASH,s_eepromStartAddr[bankId] - s_eepromPages[bankId] * FL_FLASH_PGAE_SIZE_BYTE - EEPROM_SPACE_FLAG_OFFSET_1, flag);
-			}
 		}
 		else
 		{/*start flag be modify,current block == inactive block*/
@@ -260,22 +248,37 @@ static FL_ErrorStatus UpdateOperateAddr(uint32_t *newStartAddr, uint32_t *oldSta
 			*newStartAddr = s_eepromStartAddr[bankId] - s_eepromPages[bankId] * FL_FLASH_PGAE_SIZE_BYTE;
 			*oldStartAddr = s_eepromStartAddr[bankId];
 			/*write current block inactive flag*/
-			if (OPERATE_EEPROM_AREA_WRITED == *(uint32_t *)(eepromEndAddr - EEPROM_SPACE_FLAG_OFFSET_0))
-			{
-				statusRes = FL_FLASH_Program_Word(FLASH,eepromEndAddr - EEPROM_SPACE_FLAG_OFFSET_0, flag);
-			}
 		}
 	}
+	
 
     /* check data copy is successed last time, if not success, will copy data again to avoid power down suddenly*/
     if ((~flag) == *(uint32_t *) (eepromEndAddr - EEPROM_COPY_FLAG_OFFSET))
     {
         /* copy data again */
         statusRes = CopyDataToNewArea(*newStartAddr, *oldStartAddr,bankId);
+		eepromnewEndAddr = *oldStartAddr + s_eepromPages[bankId] * FL_FLASH_PGAE_SIZE_BYTE;
+		if (FL_PASS == statusRes)
+		{
+			if(OPERATE_EEPROM_AREA_WRITED == *(uint32_t *) (eepromnewEndAddr - EEPROM_SPACE_FLAG_OFFSET_0))
+			{
+			  statusRes = FL_FLASH_Program_Word(FLASH,eepromnewEndAddr  - EEPROM_SPACE_FLAG_OFFSET_0, flag);
+			}
+		}
+		if (FL_PASS == statusRes)
+		{
+			if(OPERATE_EEPROM_AREA_WRITED == *(uint32_t *) (eepromEndAddr - EEPROM_SPACE_FLAG_OFFSET_1))
+			{
+				statusRes = FL_FLASH_Program_Word(FLASH,eepromEndAddr - EEPROM_SPACE_FLAG_OFFSET_1, flag);
+			}
+		}
         if (FL_PASS == statusRes)
         {
+			if(OPERATE_EEPROM_AREA_WRITED == *(uint32_t *) (eepromEndAddr - EEPROM_COPY_FLAG_OFFSET))
+			{
+				statusRes = FL_FLASH_Program_Word(FLASH,eepromEndAddr - EEPROM_COPY_FLAG_OFFSET, flag);
+			}
             /* write copy complete flag in the eighth last position */
-            statusRes = FL_FLASH_Program_Word(FLASH,eepromEndAddr - EEPROM_COPY_FLAG_OFFSET, flag);
         }
     }
 
@@ -421,6 +424,7 @@ FL_ErrorStatus SWEEPROM_Read(uint16_t readAddr, uint16_t *dataBuffer, uint16_t r
     uint32_t eepromDataLen = 0;
     uint32_t validDataStartAddr = 0;
     uint32_t i = 0;
+    uint32_t oldStartAddr = 0;
 	
 	DEVICE_ASSERT(bankId<EEPROM_BANK_NUMBER);
     DEVICE_ASSERT(s_eepromSize[bankId] > readAddr);
@@ -428,25 +432,12 @@ FL_ErrorStatus SWEEPROM_Read(uint16_t readAddr, uint16_t *dataBuffer, uint16_t r
     DEVICE_ASSERT(dataBuffer != NULL);
 	DEVICE_ASSERT(bankId<EEPROM_BANK_NUMBER);
 	
-	/*current block == inactive block*/
-    if (OPERATE_EEPROM_AREA_WRITED != *(uint32_t *) (s_eepromStartAddr[bankId] + s_eepromPages[bankId] * FL_FLASH_PGAE_SIZE_BYTE - EEPROM_SPACE_FLAG_OFFSET_1))
+	statusRes = UpdateOperateAddr(&newStartAddr, &oldStartAddr,bankId);
+    if (FL_PASS != statusRes)
     {
-        newStartAddr = s_eepromStartAddr[bankId] - s_eepromPages[bankId] * FL_FLASH_PGAE_SIZE_BYTE;
-	}
-	else
-	{
-		/*start flag be modify,current block == active block*/
-	    if (OPERATE_EEPROM_AREA_WRITED != *(uint32_t *) (s_eepromStartAddr[bankId] + s_eepromPages[bankId] * FL_FLASH_PGAE_SIZE_BYTE - EEPROM_SPACE_FLAG_OFFSET_0))
-		{
-			/* operate address in eeprom area */
-	        newStartAddr = s_eepromStartAddr[bankId];
-		}
-		else
-		{   
-		    /*start flag be modify,current block == inactive block*/
-			newStartAddr = s_eepromStartAddr[bankId] - s_eepromPages[bankId] * FL_FLASH_PGAE_SIZE_BYTE;
-		}
-	}
+        return statusRes;
+    }
+	
     /* check the atart address of valid data */
     if (GetValidDataStartAddr(newStartAddr + s_eepromPages[bankId] * FL_FLASH_PGAE_SIZE_BYTE - EEPROM_END_ADDRESS_OFFSET, &validDataStartAddr,bankId))
     {

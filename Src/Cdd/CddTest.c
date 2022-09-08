@@ -51,14 +51,14 @@ uint32_t g_Temp_U32 = 0;
 uint16_t g_Temp_val = 0;
 uint16_t g_Temp_ch = 0;
 /* ============================================  Define  ============================================ */
-#define TEST_WORDS  20
+#define TEST_WORDS  6
 
 /* ===========================================  Typedef  ============================================ */
 
 /* ==========================================  Variables  =========================================== */
 
-uint16_t g_testA[TEST_WORDS*2] = {0};/* Buffer for software eeprom read and write */
-uint16_t g_testReadA[TEST_WORDS*2] = {0};
+uint16_t g_testA[4][TEST_WORDS*2] = {0};/* Buffer for software eeprom read and write */
+uint16_t g_testReadA[4][TEST_WORDS*2] = {0};
 /* ====================================  Functions declaration  ===================================== */
 
 
@@ -68,15 +68,16 @@ void CddTest_init(void)
 
 }
 
-void CddEeprom_Callback(uint8_t ret)
+void CddEeprom_Callback0(uint8_t ret)
 {
 	static  uint8_t retry = 0;
     uint8_t tempData = 0,i;
+	static uint8_t cycle = 1;
 	if(FALSE == ret)
 	{
 		if(retry++ < 3)
 		{
-			tempData =CddEeprom_Req_Write(EEPROM_BANK_MOTOR,0,TEST_WORDS,0,g_testA);
+			tempData =CddEeprom_Req_Write(EEPROM_BANK_MOTOR,0,TEST_WORDS,0,g_testA[0]);
 		}
 		else
 		{
@@ -86,10 +87,10 @@ void CddEeprom_Callback(uint8_t ret)
 	else
 	{
 		retry=0;
-		tempData =CddEeprom_Req_Read(EEPROM_BANK_MOTOR,0,TEST_WORDS,g_testReadA);
+		tempData =CddEeprom_Req_Read(EEPROM_BANK_MOTOR,0,TEST_WORDS,g_testReadA[0]);
 		 for(i = 0; i < TEST_WORDS; i++)
         {
-            if(g_testA[i] != g_testReadA[i])
+            if(g_testA[0][i] != g_testReadA[0][i])
             {
                 while (1);
             }
@@ -101,24 +102,138 @@ void CddEeprom_Callback(uint8_t ret)
 	}
 }
 
-void CddEeprom_Test(void)
+
+void CddEeprom_Callback1(uint8_t ret)
 {
+	static  uint8_t retry = 0;
+    uint8_t tempData = 0,i;
 
-    uint8_t tempData = 0,i =0;
-	uint8_t cycle= 0;
 
-	cycle++;
-	for(i = 0; i < TEST_WORDS*2; i++)
+
+	tempData = CddEeprom_Req_Write((uint8_t)EEPROM_BANK_MOTOR,(uint16_t)0,(uint16_t)TEST_WORDS,CddEeprom_Callback0,g_testA[0]);
+	if(FALSE == ret)
 	{
-		g_testA[i] = 0xAA00+i+cycle;  
+		if(retry++ < 3)
+		{
+			tempData =CddEeprom_Req_Write(EEPROM_BANK_APP,0,TEST_WORDS,0,g_testA[1]);
+		}
+		else
+		{
+			retry=0;
+		}
 	}
-	
+	else
+	{
+		retry=0;
 
-	tempData = CddEeprom_Req_Write((uint8_t)EEPROM_BANK_APP,(uint16_t)0,(uint16_t)TEST_WORDS,CddEeprom_Callback,g_testA);
+		 tempData =CddEeprom_Req_Read(EEPROM_BANK_APP,0,TEST_WORDS,g_testReadA[1]);
+		  for(i = 0; i < TEST_WORDS; i++)
+		 {
+			  if(g_testA[1][i] != g_testReadA[1][i])
+			 {
+				 while (1);
+			 }
+		 } 
+
+		  
+	}
 	if(!tempData)
 	{
 
 	}
+}
+
+void CddEeprom_Callback2(uint8_t ret)
+{
+	static  uint8_t retry = 0;
+    uint8_t tempData = 0,i;
+	if(FALSE == ret)
+	{
+		if(retry++ < 3)
+		{
+			tempData =CddEeprom_Req_Write(EEPROM_BANK_DIAG,0,TEST_WORDS,0,g_testA[2]);
+		}
+		else
+		{
+			retry=0;
+		}
+	}
+	else
+	{
+		retry=0;
+
+		  tempData =CddEeprom_Req_Read(EEPROM_BANK_DIAG,0,TEST_WORDS,g_testReadA[2]);
+		   for(i = 0; i < TEST_WORDS; i++)
+		  {
+			   if(g_testA[2][i] != g_testReadA[2][i])
+			  {
+				  while (1);
+			  }
+		  } 
+
+	}
+	if(!tempData)
+	{
+
+	}
+}
+
+void CddEeprom_Callback3(uint8_t ret)
+{
+	static  uint8_t retry = 0;
+    uint8_t tempData = 0,i;
+	if(FALSE == ret)
+	{
+		if(retry++ < 3)
+		{
+			tempData =CddEeprom_Req_Write(EEPROM_BANK_MOTOR,0,TEST_WORDS,0,g_testA[3]);
+		}
+		else
+		{
+			retry=0;
+		}
+	}
+	else
+	{
+		retry=0;
+		
+		   tempData =CddEeprom_Req_Read(EEPROM_BANK_MOTOR,0,TEST_WORDS,g_testReadA[3]);
+			for(i = 0; i < TEST_WORDS; i++)
+		   {
+				if(g_testA[3][i] != g_testReadA[3][i])
+			   {
+				   while (1);
+			   }
+		   } 
+	}
+	if(!tempData)
+	{
+
+	}
+}
+
+
+void CddEeprom_Test(void)
+{
+
+    uint8_t tempData = 0,i =0;
+	static uint8_t cycle= 0;
+
+	cycle++;
+	for(i = 0; i < TEST_WORDS*2; i++)
+	{
+		g_testA[0][i] = 0xAA00+i+cycle;  
+		g_testA[1][i] = 0xAA00+i+cycle;
+		g_testA[2][i] = 0xAA00+i+cycle;  
+		g_testA[3][i] = 0xAA00+i+cycle;  
+	}
+	
+
+	tempData = CddEeprom_Req_Write((uint8_t)EEPROM_BANK_MOTOR,(uint16_t)0,(uint16_t)TEST_WORDS,CddEeprom_Callback0,g_testA[0]);
+	tempData = CddEeprom_Req_Write((uint8_t)EEPROM_BANK_APP,(uint16_t)0,(uint16_t)TEST_WORDS,CddEeprom_Callback1,g_testA[1]);
+	tempData = CddEeprom_Req_Write((uint8_t)EEPROM_BANK_DIAG,(uint16_t)0,(uint16_t)TEST_WORDS,CddEeprom_Callback2,g_testA[2]);
+	tempData = CddEeprom_Req_Write((uint8_t)EEPROM_BANK_FBL,(uint16_t)0,(uint16_t)TEST_WORDS,CddEeprom_Callback3,g_testA[3]);
+	
 	
 
 
@@ -127,9 +242,18 @@ void CddEeprom_Test(void)
 void CddTest_Task(void)
 {
 	uint16_t fl_current_val = 0;
+	static uint8_t ticks  =0;
+
+
+	ticks++;
+
+	if(ticks % 10 == 0)
+	{
+		//CddEeprom_Test();
+
+	}
     //SWEEPROMDemoTest();
 	//return;
-    //CddEeprom_Test();
 	//if(GET_KEY())
 	{
 	//	retval = Ioif_SetPinLevel(GPIO_NUMBER_32,0);
@@ -234,6 +358,7 @@ void CddTest_Task(void)
 		case 15:
 			CddEeprom_Test();g_Temp_U32 = 0;
 		break;
+		
 		default:
 		break;
 	}
