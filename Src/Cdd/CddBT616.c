@@ -53,6 +53,7 @@ const uint8_t BT_cmd_to_Button_ID[][3] =
 	0xA3, BTN_ID_CTRL_MODE_MEETING_e  , 0,
 	0xA4, BTN_ID_CTRL_MODE_LEISURE_e  , 0,
 	0xA5, BTN_ID_CTRL_LED_e  , DIRECTION_FRONT,
+	0xA9, BTN_ID_CTRL_MODE_DRIVERIESS_CAR_e  , 0,/*reset button,process same as driveriess*/
 	0xAA, BTN_ID_CTRL_SAVE_e  , DIRECTION_FRONT,
 	0xAB, BTN_ID_CTRL_CALIBARTION_MTR_e  , DIRECTION_FRONT,
 	
