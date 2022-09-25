@@ -62,7 +62,7 @@ const CddMtr_Mng_Threshold_Ad_Str CddMtr_Mng_Ad_Threshold_Tbl[CDDMTR_HFKF_MAX_NU
 	280,  280, 798  , 990,  100 , 
 	280,  280, 307 , 990,  100 , 
 	280,  280, 798 , 990,  100 ,
-	280,  280, 552 , 990,  100 , 
+	280,  280, 798 , 990,  100 , 
 	280,  280, 798 , 990,  100 ,
 };
 
