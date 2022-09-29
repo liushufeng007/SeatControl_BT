@@ -319,7 +319,9 @@ void CddBT616_Update_Signal(void)
 
 	switch (mode)
 	{
-		case BTN_ID_CTRL_MODE_ZERO_GRAVITY_e: CddBT616_Main_Ctrl.txst.Data[index++] = 0xA1;   break;
+		/*A9 is reset
+		  A1 is Zero Gravity*/
+		case BTN_ID_CTRL_MODE_ZERO_GRAVITY_e: CddBT616_Main_Ctrl.txst.Data[index++] = 0xA9;   break;
 		case BTN_ID_CTRL_MODE_DRIVERIESS_CAR_e: CddBT616_Main_Ctrl.txst.Data[index++] = 0xA2;   break;
 		case BTN_ID_CTRL_MODE_MEETING_e:  CddBT616_Main_Ctrl.txst.Data[index++] = 0xA3;  break;
 		case BTN_ID_CTRL_MODE_LEISURE_e:  CddBT616_Main_Ctrl.txst.Data[index++] = 0xA4;  break;
@@ -381,7 +383,11 @@ void CddBT616_Update_Signal(void)
 
 	switch (mode)
 	{
-		case BTN_ID_CTRL_MODE_ZERO_GRAVITY_e: CddBT616_Main_Ctrl.txst.Data[index++] = 0xA1;   break;
+		/*
+		A9 is reset
+		 A1 is Zero Gravity
+		 */
+		case BTN_ID_CTRL_MODE_ZERO_GRAVITY_e: CddBT616_Main_Ctrl.txst.Data[index++] = 0xA9;   break;
 		case BTN_ID_CTRL_MODE_DRIVERIESS_CAR_e: CddBT616_Main_Ctrl.txst.Data[index++] = 0xA2;   break;
 		case BTN_ID_CTRL_MODE_MEETING_e:  CddBT616_Main_Ctrl.txst.Data[index++] = 0xA3;  break;
 		case BTN_ID_CTRL_MODE_LEISURE_e:  CddBT616_Main_Ctrl.txst.Data[index++] = 0xA4;  break;
